@@ -2,8 +2,6 @@
 
 # Proposal
 
-# Proposal
-
 ## Title
 
 iQuiz!
