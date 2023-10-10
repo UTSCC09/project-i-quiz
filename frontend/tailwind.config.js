@@ -4,7 +4,14 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        "logo-tile": "url('/src/media/iquiz_logo_tile.png')"
+      },
+      colors: {
+        "iquiz-blue": "#0366FF"
+      }
+    },
   },
   plugins: [],
 }
