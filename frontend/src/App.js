@@ -4,10 +4,10 @@ import logo from "./media/iquiz_logo.svg";
 function App() {
   return (
     <>
-    <div className="absolute w-screen h-screen bg-black bg-opacity-20"></div>
-      <div className="h-screen bg-[length:120vw] md:bg-[length:120vh] flex flex-row bg-center bg-logo-tile justify-center md:justify-end  items-center">
-      <SignInWindow />
-      </div>
+    <img src={logo} alt="iQuiz! Logo" className="absolute h-8 mt-16 ml-12 sm:ml-20"></img>
+    <div className="h-screen flex bg-center justify-center items-center  bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]" >
+      <SignInWindow/>
+    </div>
     </>
   );
 }
@@ -16,19 +16,19 @@ function SignInWindow() {
   return (
     <>
       <div
-        className="z-10 flex items-center px-12 bg-white border border-gray-100 rounded-md shadow-2xl h-96 w-fit justify-center md:mr-[20vw]"
+        className="z-10 flex items-center px-10 py-12 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-2xl h-fit w-fit justify-center"
       >
-        <div className="flex flex-col justify-start w-[50vw] sm:w-64">
+        <div className="flex flex-col justify-start w-56 sm:w-64">
           <div className="flex flex-col gap-1 mb-8">
             <div className="text-xl font-bold">
               <p>
                 Sign up to begin your unique
-                <img src={logo} className="w-14 mx-2 mb-0.5 inline self-baseline"></img>
+                <img src={logo} alt="iQuiz! Logo" className="w-14 mx-2 mb-0.5 inline self-baseline"></img>
                 experience
               </p>
             </div>
             <div className="text-xs text-gray-500">
-              <a>Or log in with an existing account</a>
+              <span>Or log in with an existing account</span>
             </div>
           </div>
           <form className="flex flex-col">
