@@ -4,4 +4,4 @@
 2. Run `yarn start` to run the app.
 
 ## Developer Tools
-- **Headwind**: A VS Code extention that helps sorting Tailwind CSS class names on save.
+- **Tailwind CSS IntelliSense**: A VS Code extention that enables autocomplete for Tailwind CSS classe names

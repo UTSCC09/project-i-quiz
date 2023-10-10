@@ -1,9 +1,13 @@
 import "./styles/components.css";
+import logo from "./media/iquiz_logo.svg";
 
 function App() {
   return (
     <>
-      <SignInWindow />
+    <img src={logo} alt="iQuiz! Logo" className="absolute h-8 mt-16 ml-12 sm:ml-20"></img>
+    <div className="h-screen flex bg-center justify-center items-center  bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]" >
+      <SignInWindow/>
+    </div>
     </>
   );
 }
@@ -12,31 +16,33 @@ function SignInWindow() {
   return (
     <>
       <div
-        className="flex items-center justify-center px-12 mx-auto mt-32 border border-gray-100 rounded-md shadow-2xl h-96 max-w-fit shadow-gray-300"
+        className="z-10 flex items-center px-10 py-12 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-2xl h-fit w-fit justify-center"
       >
-        <div className="flex flex-col justify-start w-64">
+        <div className="flex flex-col justify-start w-56 sm:w-64">
           <div className="flex flex-col gap-1 mb-8">
             <div className="text-xl font-bold">
-              <a>
+              <p>
                 Sign up to begin your unique
-                <a className="text-blue-600"> iQuiz! </a>
+                <img src={logo} alt="iQuiz! Logo" className="w-14 mx-2 mb-0.5 inline self-baseline"></img>
                 experience
-              </a>
+              </p>
             </div>
             <div className="text-xs text-gray-500">
-              <a>Or sign in with an existing account</a>
+              <span>Or log in with an existing account</span>
             </div>
           </div>
-          <input
-            className="single-line-input"
-            placeholder="Email address"
-          ></input>
-          <input
-            className="mt-2 single-line-input"
-            placeholder="Password"
-            type="password"
-          ></input>
-          <div className="flex gap-5 mt-6">
+          <form className="flex flex-col">
+            <input
+              className="single-line-input"
+              placeholder="Email address"
+            ></input>
+            <input
+              className="mt-2 single-line-input"
+              placeholder="Password"
+              type="password"
+            ></input>
+          </form>
+          <div className="flex justify-between gap-5 mt-6">
             <div className="btn-primary">Log in</div>
             <div className="btn-secondary">Sign up</div>
           </div>
