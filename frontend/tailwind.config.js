@@ -4,7 +4,11 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        "big-q": "url('/src/media/big_q_bg.png')"
+      }
+    },
   },
   plugins: [],
 }
