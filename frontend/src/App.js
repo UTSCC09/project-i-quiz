@@ -4,8 +4,8 @@ import logo from "./media/iquiz_logo.svg";
 function App() {
   return (
     <>
-    <img src={logo} className="absolute h-8 mt-12 ml-16"></img>
-      <div className="h-screen bg-[length:80vw] bg-no-repeat flex flex-row bg-left-bottom bg-big-q justify-center md:justify-end">
+    <div className="absolute w-screen h-screen bg-black bg-opacity-20"></div>
+      <div className="h-screen bg-[length:120vw] md:bg-[length:120vh] flex flex-row bg-center bg-logo-tile justify-center md:justify-end  items-center">
       <SignInWindow />
       </div>
     </>
@@ -16,7 +16,7 @@ function SignInWindow() {
   return (
     <>
       <div
-        className="z-10 flex items-center px-12 bg-white border border-gray-100 rounded-md shadow-2xl h-96 w-fit shadow-gray-300 mt-[18vh] sm:mt-[28vh] justify-center md:mr-[10vw]"
+        className="z-10 flex items-center px-12 bg-white border border-gray-100 rounded-md shadow-2xl h-96 w-fit justify-center md:mr-[20vw]"
       >
         <div className="flex flex-col justify-start w-[50vw] sm:w-64">
           <div className="flex flex-col gap-1 mb-8">

@@ -6,7 +6,10 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        "big-q": "url('/src/media/big_q_bg.png')"
+        "logo-tile": "url('/src/media/iquiz_logo_tile.png')"
+      },
+      colors: {
+        "iquiz-blue": "#0366FF"
       }
     },
   },
