@@ -4,7 +4,7 @@ import logo from "./media/iquiz_logo.svg";
 function App() {
   return (
     <>
-    <img src={logo} alt="iQuiz! Logo" className="absolute h-8 mt-16 ml-12"></img>
+    <img src={logo} alt="iQuiz! Logo" className="absolute h-8 mt-16 ml-12 sm:ml-20"></img>
     <div className="h-screen flex bg-center justify-center items-center  bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]" >
       <SignInWindow/>
     </div>
