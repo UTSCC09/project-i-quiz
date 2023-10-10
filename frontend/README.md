@@ -1,7 +1,7 @@
 # Steps to set up frontend
 
-1. Run `npm install` to install dependencies.
-2. Run `npm start` to run the app.
+1. Run `yarn` to install dependencies.
+2. Run `yarn start` to run the app.
 
 ## Developer Tools
-- **Headwind**: A Tailwind CSS class sorter extention that helps formatting the class names.
+- **Headwind**: A VS Code extention that helps sorting Tailwind CSS class names on save.
