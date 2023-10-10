@@ -16,7 +16,7 @@ function SignInWindow() {
   return (
     <>
       <div
-        className="z-10 flex items-center px-10 py-12 lg:ml-[50vw] bg-white border border-gray-100 rounded-md shadow-2xl h-fit w-fit justify-center"
+        className="z-10 flex items-center px-10 py-12 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-2xl h-fit w-fit justify-center"
       >
         <div className="flex flex-col justify-start w-56 sm:w-64">
           <div className="flex flex-col gap-1 mb-8">
