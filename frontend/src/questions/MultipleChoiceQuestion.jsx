@@ -13,7 +13,7 @@ const MultipleChoiceQuestion = ({questionObject, onAnswerChange}) => {
 
   return (
     <>
-      <span className="text-lg mb-8" dangerouslySetInnerHTML={{__html: questionObject.prompt}}></span>
+      <span className="font-medium text-lg mb-8" dangerouslySetInnerHTML={{__html: questionObject.prompt}}></span>
       {radioGroup}
     </>
   )

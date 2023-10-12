@@ -1,6 +1,7 @@
 import React from "react";
 import MultipleChoiceQuestion from "../questions/MultipleChoiceQuestion";
 import ShortAnswerQuestion from "../questions/ShortAnswerQuestion";
+import ClozeQuestion from "../questions/ClozeQuestion";
 
 const QuestionWrapper = ({questionObject, onAnswerChange}) => {
   let questionElmt;
@@ -15,6 +16,15 @@ const QuestionWrapper = ({questionObject, onAnswerChange}) => {
         <ShortAnswerQuestion questionObject={questionObject} onAnswerChange={onAnswerChange} />
       )
       break;
+    case "CLO":
+      questionElmt = (
+        <ClozeQuestion questionObject={questionObject} onAnswerChange={onAnswerChange} />
+      )
+      break;
+    default:
+      questionElmt=(
+        <div>Unexpected question type: "{questionObject.type}"</div>
+      )
   }
 
   return (

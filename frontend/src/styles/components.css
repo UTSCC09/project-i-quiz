@@ -16,3 +16,9 @@
     @apply ring ring-red-200
   }
 }
+
+@layer base {
+  ul, ol {
+    list-style: revert;
+  }
+}

@@ -30,6 +30,22 @@ const questions = [
     "image": null,
     "prompt": "<div>Describe your mood today!</div>",
     "maxLength": 180
+  },
+  {
+    "type": "CLO",
+    "prompt": "<div>Fill in the blanks.</div>",
+    "text": "<ul><li>To be or not to be: that is the q____. <i>- William Shakespeare</i></li><li>Do not go g____ into that good night. <i>- Dylan Thomas</i></li><li>Genius is one percent i____ and ninety-nine percent perspiration. <i>- Thomas Edison</i></li></ul>",
+    "answers": [
+      {"bid": 0, "answer": "uestion"},
+      {"bid": 1, "answer": "entle"},
+      {"bid": 2, "answer": "nspiration"}
+    ]
+  },
+  {
+    "type": "CLO",
+    "prompt": "<div>Fill in the blanks.</div>",
+    "text": "<div>What is your favorite food? ____</div>",
+    "answers": [[]]
   }
 ];
 
