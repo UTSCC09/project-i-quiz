@@ -1,6 +1,6 @@
 import React from "react";
-import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
-import ShortAnswerQuestion from "./ShortAnswerQuestion";
+import MultipleChoiceQuestion from "../questions/MultipleChoiceQuestion";
+import ShortAnswerQuestion from "../questions/ShortAnswerQuestion";
 
 const QuestionWrapper = ({questionObject, onAnswerChange}) => {
   let questionElmt;

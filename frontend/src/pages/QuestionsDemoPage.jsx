@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import QuestionWrapper from "../questions/QuestionWrapper";
+import QuestionWrapper from "../components/QuestionWrapper";
 
 const questions = [
   {
