@@ -19,11 +19,12 @@ const LandingPage = () => {
 
 const SignInWindow = () => {
   function mockLogin(email, password) {
-    if (email == "a@a.aa" && password == "a") {
+    if (email === "a@a.aa" && password === "a") {
       return true;
     }
     return false;
   }
+
   function signInOnSubmitHandler(e) {
     e.preventDefault();
     const email = e.target.emailInput.value;

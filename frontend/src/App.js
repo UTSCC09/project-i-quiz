@@ -6,6 +6,7 @@ const App = () => {
     <>
       <Routes>
         <Route path="/" element={ <LandingPage /> } />
+        <Route path="*" element={ <>404 Not Found</> } />
       </Routes>
     </>
   );
