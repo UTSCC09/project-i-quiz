@@ -77,13 +77,14 @@ const SignInWindow = () => {
               <span>Or log in with an existing account</span>
             </div>
           </div>
-          <form noValidate autoComplete="off" className="flex flex-col mt-3 " onSubmit={signInOnSubmitHandler}>
+          <form className="flex flex-col mt-3 " onSubmit={signInOnSubmitHandler}>
             <span id="login_error_msg" className="text-red-500 text-sm mb-1 pl-1 invisible">placeholder</span>
             <input
               className="single-line-input"
               name="emailInput"
               id="email_input"
               placeholder="Email address"
+              autoComplete="off"
               onChange={emailInputOnChangeHandler}
             ></input>
             <input
@@ -92,6 +93,7 @@ const SignInWindow = () => {
               id="password_input"
               placeholder="Password"
               type="password"
+              autoComplete="off"
             ></input>
             <div className="flex justify-between gap-5 mt-6">
               <button type="submit" className="btn-primary">Log in</button>
