@@ -6,12 +6,12 @@ const ClozeQuestion = ({ questionObject, onAnswerChange }) => {
 
   useEffect(() => {
     for (let i = 0; i < textHTMLSplitted.length-1; i++) {
-      document.getElementById("textElement").querySelector(`#input-bid-${i}`)
+      document.querySelector(`#input-qid-${questionObject.qid}-bid-${i}`)
       .addEventListener("input", (e) => {
         newAnswer[i] = (e.target.value);
         onAnswerChange(questionObject.qid, newAnswer);
         console.log(e.target.style.width)
-        e.target.style.width = (e.target.value.length * 8 + 8) + "px";
+        e.target.style.width = (e.target.value.length * 8 + 24) + "px";
       });
     }
   }, [onAnswerChange, textHTMLSplitted, newAnswer]);
@@ -21,7 +21,7 @@ const ClozeQuestion = ({ questionObject, onAnswerChange }) => {
       return textPart;
     }
     return `${textPart}<input
-    id="input-bid-${bid}"
+    id="input-qid-${questionObject.qid}-bid-${bid}"
     placeholder="${bid+1}"
     class="max-w-sm min-w-[4rem] text-center mt-4 w-16 px-1 mx-0.5 text-blue-800 border rounded-md"
     ></input>`
