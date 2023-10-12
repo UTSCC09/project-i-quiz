@@ -1,3 +1,5 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/components.css";
 import logo from "../media/iquiz_logo.svg";
 
@@ -18,6 +20,8 @@ const LandingPage = () => {
 }
 
 const SignInWindow = () => {
+  const navigate = useNavigate();
+
   function mockLogin(email, password) {
     if (email === "a@a.aa" && password === "a") {
       return true;
@@ -25,7 +29,7 @@ const SignInWindow = () => {
     return false;
   }
 
-  function signInOnSubmitHandler(e) {
+function signInOnSubmitHandler(e) {
     e.preventDefault();
     const email = e.target.emailInput.value;
     const password = e.target.passwordInput.value;
@@ -44,7 +48,8 @@ const SignInWindow = () => {
 
     }
     else {
-      alert(`email: ${email}\npassword: ${password}`);
+      // alert(`email: ${email}\npassword: ${password}`);
+      return navigate("/demo")
     }
   }
 
@@ -77,7 +82,7 @@ const SignInWindow = () => {
               <span>Or log in with an existing account</span>
             </div>
           </div>
-          <form className="flex flex-col mt-3 " onSubmit={signInOnSubmitHandler}>
+          <form className="flex flex-col mt-3 " onSubmit={(e) => signInOnSubmitHandler(e)}>
             <span id="login_error_msg" className="text-red-500 text-sm mb-1 pl-1 invisible">placeholder</span>
             <input
               className="single-line-input"
