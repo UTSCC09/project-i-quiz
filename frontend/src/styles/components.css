@@ -4,12 +4,15 @@
 
 @layer components {
   .btn-primary {
-    @apply flex items-center justify-center w-32 h-10 text-sm text-white bg-iquiz-blue rounded-md cursor-pointer select-none hover:opacity-80;
+    @apply flex items-center justify-center w-32 h-12 text-sm text-white bg-iquiz-blue rounded-md select-none hover:opacity-80 transition-all;
   }
   .btn-secondary {
-    @apply flex items-center justify-center w-32 h-10 text-sm text-black bg-gray-100 rounded-md cursor-pointer select-none hover:opacity-50;
+    @apply flex items-center justify-center w-32 h-12 text-sm text-black bg-gray-150 rounded-md select-none hover:opacity-50 transition-all;
   }
   .single-line-input {
-    @apply h-10 px-3 text-xs border border-gray-200 rounded-md focus:border-blue-300 focus:outline-none;
+    @apply h-12 px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-iquiz-blue focus:ring-opacity-20 transition-all;
+  }
+  .input-invalid-state {
+    @apply ring ring-red-200
   }
 }
