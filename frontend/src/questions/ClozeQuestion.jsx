@@ -7,7 +7,7 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
     textHTML = "<div>" + textHTML + "</div>";
   }
   let textHTMLSplitted = textHTML.split("____");
-  let newAnswer = savedAnswer;
+  let newAnswer = savedAnswer ?? {};
 
   useEffect(() => {
     for (let i = 0; i < textHTMLSplitted.length-1; i++) {

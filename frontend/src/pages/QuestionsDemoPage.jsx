@@ -61,16 +61,15 @@ const QuestionsDemoPage = () => {
     document.body.style.backgroundColor = colors.gray[100];
   })
   let studentAnswers = JSON.parse(localStorage.getItem("studentAnswers")) ?? {};
-  if (!studentAnswers) {
-    questions.map((questionObj) => {
-      studentAnswers[questionObj.qid] = null;
-    });
-  }
+
+  questions.map((questionObj) => {
+    studentAnswers[questionObj.qid] = studentAnswers[questionObj.qid] ?? null;
+  });
 
   function answerChangeHandler (qid, newAnswer) {
+    // console.log("studentAnswers:", studentAnswers);
     studentAnswers[qid] = newAnswer;
     localStorage.setItem("studentAnswers", JSON.stringify(studentAnswers));
-    // console.log("studentAnswers:", studentAnswers);
   }
 
   return (
@@ -98,20 +97,20 @@ const QuestionsDemoPage = () => {
           })}
           <div className="w-full flex justify-end mb-48">
             <button className="mt-6 btn-primary py-4 w-36 rounded-md" onClick={(e) => {
-              let correct = {};
+              let answerCheckResult = {};
               questions.map((questionObj, idx) => {
                 if (!questionObj.answers) {
-                  correct[idx] = "OPEN-ENDED";
+                  answerCheckResult[idx] = "OPEN-ENDED";
                 }
                 else if (JSON.stringify(questionObj.answers) != JSON.stringify(studentAnswers[idx])) {
-                  correct[idx] = false;
+                  answerCheckResult[idx] = false;
                   console.log("Your answer for question", idx+1, "\"", studentAnswers[idx],  "\"is different from the answer \"", questionObj.answers, "\"");
                 }
                 else {
-                  correct[idx] = true;
+                  answerCheckResult[idx] = true;
                 }
               })
-              console.log(correct);
+              alert(JSON.stringify(answerCheckResult));
               }}>Review & Submit</button>
           </div>
         </div>
