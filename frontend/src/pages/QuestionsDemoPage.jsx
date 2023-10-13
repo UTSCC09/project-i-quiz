@@ -9,10 +9,10 @@ const questions = [
     "image": null,
     "prompt": "<div>Which country has the largest area in the world?</div>",
     "choices": [
-      {"id": "a", "content": "<div>Canada</div>"},
-      {"id": "b", "content": "<div>United States</div>"},
-      {"id": "c", "content": "<div>Russia</div>"},
-      {"id": "d", "content": "<div>China</div>"}
+      { "id": "a", "content": "<div>Canada</div>" },
+      { "id": "b", "content": "<div>United States</div>" },
+      { "id": "c", "content": "<div>Russia</div>" },
+      { "id": "d", "content": "<div>China</div>" }
     ],
     "answers": "c"
   },
@@ -22,9 +22,9 @@ const questions = [
     "image": null,
     "prompt": "<div>Which of the following is not one of the three primary colors?</div>",
     "choices": [
-        {"id": "a", "content": "<div style='color:green'>Green</div>"},
-        {"id": "b", "content": "<div style='color:blue'>Blue</div>"},
-        {"id": "c", "content": "<div style='color:red'>Red</div>"}
+      { "id": "a", "content": "<div style='color:green'>Green</div>" },
+      { "id": "b", "content": "<div style='color:blue'>Blue</div>" },
+      { "id": "c", "content": "<div style='color:red'>Red</div>" }
     ],
     "answers": "a"
   },
@@ -66,9 +66,7 @@ const QuestionsDemoPage = () => {
     studentAnswers[questionObj.qid] = studentAnswers[questionObj.qid] ?? null;
   });
 
-  function answerChange (qid, newAnswer) {
-    // console.log("studentAnswers:", studentAnswers);
-    // studentAnswers[qid] = newAnswer;
+  function answerChange() {
     const formData = new FormData(document.querySelector("form"));
     let dct = {};
     formData.forEach((value, key) => {
@@ -92,48 +90,48 @@ const QuestionsDemoPage = () => {
 
   return (
     <>
-    <form onSubmit={onSubmit}>
-      <div className="w-screen flex flex-col items-center">
-        <div className="w-[80vw] lg:w-[48rem] flex flex-col items-center">
-          {
-          questions.map((questionObj, idx) => {
-            return (
-              <div
-                className="h-fit w-full m-12 flex flex-col border drop-shadow-sm bg-white shadow-gray-150 rounded-lg py-12"
-                key={questionObj.qid}
-              >
-                <span className="font-bold uppercase ml-12 text-iquiz-blue mb-4">Question {Number(questionObj.qid) + 1}</span>
-                <div className="border-b h-0 mb-6 mx-10"></div>
-                <div className="mx-12">
-                  <QuestionWrapper
-                      questionObject = {questionObj}
-                      savedAnswer = {studentAnswers[idx]}
-                      onAnswerChange = {answerChange}
-                  />
-                </div>
-              </div>
-            );
-          })}
-          <div className="w-full flex justify-end mb-48">
-            <button className="mt-6 btn-primary py-4 w-36 rounded-md" type="submit" onClick={(e) => {
-              // let answerCheckResult = {};
-              // questions.forEach((questionObj, idx) => {
-              //   if (!questionObj.answers) {
-              //     answerCheckResult[idx] = "OPEN-ENDED";
-              //   }
-              //   else if (JSON.stringify(questionObj.answers) !== JSON.stringify(studentAnswers[idx])) {
-              //     answerCheckResult[idx] = false;
-              //     console.log("Your answer for question", idx+1, "\"", studentAnswers[idx],  "\"is different from the answer \"", questionObj.answers, "\"");
-              //   }
-              //   else {
-              //     answerCheckResult[idx] = true;
-              //   }
-              // })
-              // alert(JSON.stringify(answerCheckResult));
+      <form onSubmit={onSubmit}>
+        <div className="w-screen flex flex-col items-center">
+          <div className="w-[80vw] lg:w-[48rem] flex flex-col items-center">
+            {
+              questions.map((questionObj, idx) => {
+                return (
+                  <div
+                    className="h-fit w-full m-12 flex flex-col border drop-shadow-sm bg-white shadow-gray-150 rounded-lg py-12"
+                    key={questionObj.qid}
+                  >
+                    <span className="font-bold uppercase ml-12 text-iquiz-blue mb-4">Question {Number(questionObj.qid) + 1}</span>
+                    <div className="border-b h-0 mb-6 mx-10"></div>
+                    <div className="mx-12">
+                      <QuestionWrapper
+                        questionObject={questionObj}
+                        savedAnswer={studentAnswers[idx]}
+                        onAnswerChange={answerChange}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            <div className="w-full flex justify-end mb-48">
+              <button className="mt-6 btn-primary py-4 w-36 rounded-md" type="submit" onClick={(e) => {
+                // let answerCheckResult = {};
+                // questions.forEach((questionObj, idx) => {
+                //   if (!questionObj.answers) {
+                //     answerCheckResult[idx] = "OPEN-ENDED";
+                //   }
+                //   else if (JSON.stringify(questionObj.answers) !== JSON.stringify(studentAnswers[idx])) {
+                //     answerCheckResult[idx] = false;
+                //     console.log("Your answer for question", idx+1, "\"", studentAnswers[idx],  "\"is different from the answer \"", questionObj.answers, "\"");
+                //   }
+                //   else {
+                //     answerCheckResult[idx] = true;
+                //   }
+                // })
+                // alert(JSON.stringify(answerCheckResult));
               }}>Review & Submit</button>
+            </div>
           </div>
-        </div>
-      </div></form>
+        </div></form>
     </>
   );
 };

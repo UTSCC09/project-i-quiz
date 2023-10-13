@@ -9,7 +9,7 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
   let textHTMLSplitted = textHTML.split("____");
 
   useEffect(() => {
-    for (let i = 0; i < textHTMLSplitted.length-1; i++) {
+    for (let i = 0; i < textHTMLSplitted.length - 1; i++) {
       const blank_input = document.querySelector(`#input-qid-${questionObject.qid}-bid-${i}`);
       if (savedAnswer) {
         blank_input.value = savedAnswer[i] ?? "";
@@ -30,7 +30,7 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
     return `${textPart}<input
     name="${questionObject.qid}"
     id="input-qid-${questionObject.qid}-bid-${bid}"
-    placeholder="${bid+1}"
+    placeholder="${bid + 1}"
     class="max-w-sm min-w-[4rem] text-center mt-4 w-16 px-1 py-0.5 mx-0.5 text-blue-800 border rounded-md"
     ></input>`
   }).join("");
@@ -39,7 +39,7 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
     <>
       <div>
         <div className="font-medium mb-2" dangerouslySetInnerHTML={{ __html: questionObject.prompt }}></div>
-        <div id="textElement" dangerouslySetInnerHTML={{ __html:  textHTMLString}}></div>
+        <div id="textElement" dangerouslySetInnerHTML={{ __html: textHTMLString }}></div>
       </div>
     </>
   );

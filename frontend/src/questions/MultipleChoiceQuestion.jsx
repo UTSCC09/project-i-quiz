@@ -16,7 +16,7 @@ const MultipleChoiceQuestion = (props) => {
 
   return (
     <div className="flex flex-col">
-      <span className="mb-6" dangerouslySetInnerHTML={{__html: props.questionObject.prompt}}></span>
+      <span className="mb-6" dangerouslySetInnerHTML={{ __html: props.questionObject.prompt }}></span>
       <RadioGroup radioGroupId={props.questionObject.qid} radioOptions={props.questionObject.choices} onOptionChange={onOptionChange} selectedOptionId={props.selectedOptionId} />
     </div>
   )
