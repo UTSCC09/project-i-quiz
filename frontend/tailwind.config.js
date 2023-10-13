@@ -6,10 +6,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "iquiz-blue": "#0366FF"
+        "iquiz-blue": "#0366FF",
+        "gray-150": "#EDEEF0"
       }
     },
   },
   plugins: [],
 }
-
