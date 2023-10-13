@@ -63,7 +63,7 @@ const QuestionsDemoPage = () => {
   let studentAnswers = JSON.parse(localStorage.getItem("studentAnswers")) ?? {};
 
   questions.forEach((questionObj) => {
-    studentAnswers[questionObj.qid] = studentAnswers[questionObj.qid] ?? null;
+    studentAnswers[questionObj.qid] = studentAnswers[questionObj.qid] ?? [];
   });
 
   function answerChange() {
