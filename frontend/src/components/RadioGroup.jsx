@@ -7,7 +7,8 @@ const RadioGroup = (props) => {
     <div className="flex items-center">
       <div className="bg-white dark:bg-gray-100 rounded-full w-4 h-4 flex flex-shrink-0 justify-center items-center relative">
           <input
-            type="radio" 
+            type="radio"
+            id={`radio-qid${props.radioGroupId}-oid${props.optionId}`}
             name={props.radioGroupId}
             value={props.choiceContent}
             checked={props.selectedOptionId == props.optionId}

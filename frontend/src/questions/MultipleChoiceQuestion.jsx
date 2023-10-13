@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import RadioGroup from "../components/RadioGroup";
 
-const MultipleChoiceQuestion = ({questionObject, onAnswerChange}) => {
+const MultipleChoiceQuestion = ({questionObject, savedAnswer, onAnswerChange}) => {
   const [selectedOptionId, setselectedOptionId] = useState(-1);
+
+  useEffect(() => {
+    if (savedAnswer) setselectedOptionId(savedAnswer);
+  }, [savedAnswer, setselectedOptionId])
+
   function onOptionChangeHandler (optionId) {
     setselectedOptionId(optionId);
     onAnswerChange(questionObject.qid, optionId);
