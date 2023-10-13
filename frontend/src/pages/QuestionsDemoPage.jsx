@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import colors from 'tailwindcss/colors'
 import QuestionWrapper from "../components/QuestionWrapper";
 
@@ -62,7 +62,7 @@ const QuestionsDemoPage = () => {
   })
   let studentAnswers = JSON.parse(localStorage.getItem("studentAnswers")) ?? {};
 
-  questions.map((questionObj) => {
+  questions.forEach((questionObj) => {
     studentAnswers[questionObj.qid] = studentAnswers[questionObj.qid] ?? null;
   });
 
@@ -98,11 +98,11 @@ const QuestionsDemoPage = () => {
           <div className="w-full flex justify-end mb-48">
             <button className="mt-6 btn-primary py-4 w-36 rounded-md" onClick={(e) => {
               let answerCheckResult = {};
-              questions.map((questionObj, idx) => {
+              questions.forEach((questionObj, idx) => {
                 if (!questionObj.answers) {
                   answerCheckResult[idx] = "OPEN-ENDED";
                 }
-                else if (JSON.stringify(questionObj.answers) != JSON.stringify(studentAnswers[idx])) {
+                else if (JSON.stringify(questionObj.answers) !== JSON.stringify(studentAnswers[idx])) {
                   answerCheckResult[idx] = false;
                   console.log("Your answer for question", idx+1, "\"", studentAnswers[idx],  "\"is different from the answer \"", questionObj.answers, "\"");
                 }
