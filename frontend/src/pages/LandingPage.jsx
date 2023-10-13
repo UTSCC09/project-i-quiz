@@ -11,15 +11,15 @@ const LandingPage = () => {
 
   return (
     <>
-    <div className="h-screen w-screen flex flex-col bg-center items-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]">
-      <header className="hidden md:flex h-28 w-full items-center px-16">
-        <img src={logo} alt="iQuiz! Logo" className="h-8"></img>
-      </header>
-      <header className="md:hidden h-28 w-full flex justify-center items-center">
-        <img src={logo} alt="iQuiz! Logo" className="h-8 md:ml-20"></img>
-      </header>
-      <SignInWindow/>
-    </div>
+      <div className="h-screen w-screen flex flex-col bg-center items-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]">
+        <header className="hidden md:flex h-28 w-full items-center px-16">
+          <img src={logo} alt="iQuiz! Logo" className="h-8"></img>
+        </header>
+        <header className="md:hidden h-28 w-full flex justify-center items-center">
+          <img src={logo} alt="iQuiz! Logo" className="h-8 md:ml-20"></img>
+        </header>
+        <SignInWindow />
+      </div>
     </>
   );
 }
@@ -34,7 +34,7 @@ const SignInWindow = () => {
     return false;
   }
 
-function signInOnSubmitHandler(e) {
+  function signInOnSubmitHandler(e) {
     e.preventDefault();
     const email = e.target.emailInput.value;
     const password = e.target.passwordInput.value;

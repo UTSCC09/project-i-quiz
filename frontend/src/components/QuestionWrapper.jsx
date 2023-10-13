@@ -22,7 +22,7 @@ const QuestionWrapper = (props) => {
       )
       break;
     default:
-      questionElmt=(
+      questionElmt = (
         <div>Unexpected question type: "{props.questionObject.type}"</div>
       )
   }
