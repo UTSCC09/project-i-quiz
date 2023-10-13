@@ -66,14 +66,33 @@ const QuestionsDemoPage = () => {
     studentAnswers[questionObj.qid] = studentAnswers[questionObj.qid] ?? null;
   });
 
-  function answerChangeHandler (qid, newAnswer) {
+  function answerChange (qid, newAnswer) {
     // console.log("studentAnswers:", studentAnswers);
-    studentAnswers[qid] = newAnswer;
-    localStorage.setItem("studentAnswers", JSON.stringify(studentAnswers));
+    // studentAnswers[qid] = newAnswer;
+    const formData = new FormData(document.querySelector("form"));
+    let dct = {};
+    formData.forEach((value, key) => {
+      if (!dct[key]) dct[key] = [];
+      dct[key].push(value);
+    });
+    console.log(dct)
+    localStorage.setItem("studentAnswers", JSON.stringify(dct));
+  }
+
+  function onSubmit(event) {
+    event.preventDefault();
+    const data = new FormData(event.target);
+    let dct = {};
+    data.forEach((value, key) => {
+      if (!dct[key]) dct[key] = [];
+      dct[key].push(value);
+    });
+    console.log(dct)
   }
 
   return (
     <>
+    <form onSubmit={onSubmit}>
       <div className="w-screen flex flex-col items-center">
         <div className="w-[80vw] lg:w-[48rem] flex flex-col items-center">
           {
@@ -89,32 +108,32 @@ const QuestionsDemoPage = () => {
                   <QuestionWrapper
                       questionObject = {questionObj}
                       savedAnswer = {studentAnswers[idx]}
-                      onAnswerChange = {answerChangeHandler}
+                      onAnswerChange = {answerChange}
                   />
                 </div>
               </div>
             );
           })}
           <div className="w-full flex justify-end mb-48">
-            <button className="mt-6 btn-primary py-4 w-36 rounded-md" onClick={(e) => {
-              let answerCheckResult = {};
-              questions.forEach((questionObj, idx) => {
-                if (!questionObj.answers) {
-                  answerCheckResult[idx] = "OPEN-ENDED";
-                }
-                else if (JSON.stringify(questionObj.answers) !== JSON.stringify(studentAnswers[idx])) {
-                  answerCheckResult[idx] = false;
-                  console.log("Your answer for question", idx+1, "\"", studentAnswers[idx],  "\"is different from the answer \"", questionObj.answers, "\"");
-                }
-                else {
-                  answerCheckResult[idx] = true;
-                }
-              })
-              alert(JSON.stringify(answerCheckResult));
+            <button className="mt-6 btn-primary py-4 w-36 rounded-md" type="submit" onClick={(e) => {
+              // let answerCheckResult = {};
+              // questions.forEach((questionObj, idx) => {
+              //   if (!questionObj.answers) {
+              //     answerCheckResult[idx] = "OPEN-ENDED";
+              //   }
+              //   else if (JSON.stringify(questionObj.answers) !== JSON.stringify(studentAnswers[idx])) {
+              //     answerCheckResult[idx] = false;
+              //     console.log("Your answer for question", idx+1, "\"", studentAnswers[idx],  "\"is different from the answer \"", questionObj.answers, "\"");
+              //   }
+              //   else {
+              //     answerCheckResult[idx] = true;
+              //   }
+              // })
+              // alert(JSON.stringify(answerCheckResult));
               }}>Review & Submit</button>
           </div>
         </div>
-      </div>
+      </div></form>
     </>
   );
 };

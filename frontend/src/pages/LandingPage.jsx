@@ -58,7 +58,7 @@ function signInOnSubmitHandler(e) {
     }
   }
 
-  function emailInputOnChangeHandler(e) {
+  function onEmailInputChange(e) {
     if (validateEmailFormat(e.target.value)) {
       document.querySelector("#login_error_msg").classList.add("invisible");
       document.querySelector("#email_input").classList.remove("input-invalid-state");
@@ -95,7 +95,7 @@ function signInOnSubmitHandler(e) {
               id="email_input"
               placeholder="Email address"
               autoComplete="off"
-              onChange={emailInputOnChangeHandler}
+              onChange={onEmailInputChange}
             ></input>
             <input
               className="mt-3 single-line-input"
