@@ -8,29 +8,17 @@ const QuestionWrapper = (props) => {
   switch (props.questionObject.type) {
     case "MCQ":
       questionElmt = (
-        <MultipleChoiceQuestion
-          questionObject={props.questionObject}
-          savedAnswer={props.savedAnswer}
-          onAnswerChange={props.onAnswerChange}
-        />
+        <MultipleChoiceQuestion {...props} />
       )
       break;
     case "SAQ":
       questionElmt = (
-        <ShortAnswerQuestion
-        questionObject={props.questionObject}
-        savedAnswer={props.savedAnswer}
-        onAnswerChange={props.onAnswerChange}
-      />
+        <ShortAnswerQuestion {...props} />
       )
       break;
     case "CLO":
       questionElmt = (
-        <ClozeQuestion
-        questionObject={props.questionObject}
-        savedAnswer={props.savedAnswer}
-        onAnswerChange={props.onAnswerChange}
-      />
+        <ClozeQuestion {...props} />
       )
       break;
     default:
