@@ -17,10 +17,10 @@ const MultipleChoiceQuestion = ({questionObject, savedAnswer, onAnswerChange}) =
   (<RadioGroup radioGroupId={questionObject.qid} radioOptions={questionObject.choices} onOptionChangeHandler={onOptionChangeHandler} selectedOptionId={selectedOptionId} />);
 
   return (
-    <>
-      <span className="font-medium text-lg mb-8" dangerouslySetInnerHTML={{__html: questionObject.prompt}}></span>
+    <div className="flex flex-col">
+      <span className="mb-6" dangerouslySetInnerHTML={{__html: questionObject.prompt}}></span>
       {radioGroup}
-    </>
+    </div>
   )
 }
 

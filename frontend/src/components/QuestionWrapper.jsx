@@ -4,7 +4,6 @@ import ShortAnswerQuestion from "../questions/ShortAnswerQuestion";
 import ClozeQuestion from "../questions/ClozeQuestion";
 
 const QuestionWrapper = (props) => {
-  console.log(1, props)
   let questionElmt;
   switch (props.questionObject.type) {
     case "MCQ":
@@ -40,14 +39,7 @@ const QuestionWrapper = (props) => {
       )
   }
 
-  return (
-  <>
-  <div className="flex flex-col">
-    <span className="font-bold text-lg text-blue-800 mb-4">Question {Number(props.questionObject.qid) + 1}</span>
-    {questionElmt}
-  </div>
-  </>
-  );
+  return <div className="w-full">{questionElmt}</div>;
 }
 
 export default QuestionWrapper;

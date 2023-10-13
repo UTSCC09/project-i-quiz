@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import colors from 'tailwindcss/colors'
 import QuestionWrapper from "../components/QuestionWrapper";
 
 const questions = [
@@ -56,6 +57,9 @@ const questions = [
 ];
 
 const QuestionsDemoPage = () => {
+  useEffect(() => {
+    document.body.style.backgroundColor = colors.gray[100];
+  })
   let studentAnswers = JSON.parse(localStorage.getItem("studentAnswers")) ?? {};
   if (!studentAnswers) {
     questions.map((questionObj) => {
@@ -66,36 +70,51 @@ const QuestionsDemoPage = () => {
   function answerChangeHandler (qid, newAnswer) {
     studentAnswers[qid] = newAnswer;
     localStorage.setItem("studentAnswers", JSON.stringify(studentAnswers));
-    console.log("studentAnswers:", studentAnswers);
+    // console.log("studentAnswers:", studentAnswers);
   }
 
   return (
     <>
-      <div className="h-screen w-screen flex flex-col items-center">
-        {questions.map((questionObj, idx) => {
-          return (
-            <div
-              className="h-fit w-[60vw] m-12 flex flex-col border-gray-200 shadow-xl shadow-gray-150 rounded-lg px-16 py-16"
-              key={questionObj.qid}
-            >
-              <QuestionWrapper
-                  questionObject = {questionObj}
-                  savedAnswer = {studentAnswers[idx]}
-                  onAnswerChange = {answerChangeHandler}
-              />
-            </div>
-          );
-        })}
-        <div className="w-[60vw] flex justify-end">
-          <button className="mt-12 btn-primary py-8 w-48 font-bold text-lg uppercase rounded-md" onClick={(e) => {
-            questions.map((questionObj, id) => {
-              if (JSON.stringify(questionObj.answers) != JSON.stringify(studentAnswers[id])) {
-                console.log("Your answer for question", id+1, "\"", studentAnswers[id],  "\"is different from the answer \"", questionObj.answers, "\"");
-              }
-            })
-            }}>Review & Submit</button>
+      <div className="w-screen flex flex-col items-center">
+        <div className="w-[80vw] lg:w-[48rem] flex flex-col items-center">
+          {
+          questions.map((questionObj, idx) => {
+            return (
+              <div
+                className="h-fit w-full m-12 flex flex-col border drop-shadow-sm bg-white shadow-gray-150 rounded-lg py-12"
+                key={questionObj.qid}
+              >
+                <span className="font-bold uppercase ml-12 text-iquiz-blue mb-4">Question {Number(questionObj.qid) + 1}</span>
+                <div className="border-b h-0 mb-6 mx-10"></div>
+                <div className="mx-12">
+                  <QuestionWrapper
+                      questionObject = {questionObj}
+                      savedAnswer = {studentAnswers[idx]}
+                      onAnswerChange = {answerChangeHandler}
+                  />
+                </div>
+              </div>
+            );
+          })}
+          <div className="w-full flex justify-end mb-48">
+            <button className="mt-6 btn-primary py-4 w-36 rounded-md" onClick={(e) => {
+              let correct = {};
+              questions.map((questionObj, idx) => {
+                if (!questionObj.answers) {
+                  correct[idx] = "OPEN-ENDED";
+                }
+                else if (JSON.stringify(questionObj.answers) != JSON.stringify(studentAnswers[idx])) {
+                  correct[idx] = false;
+                  console.log("Your answer for question", idx+1, "\"", studentAnswers[idx],  "\"is different from the answer \"", questionObj.answers, "\"");
+                }
+                else {
+                  correct[idx] = true;
+                }
+              })
+              console.log(correct);
+              }}>Review & Submit</button>
+          </div>
         </div>
-        <footer className="py-32">Footer</footer>
       </div>
     </>
   );

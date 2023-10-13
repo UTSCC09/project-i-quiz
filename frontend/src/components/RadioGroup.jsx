@@ -1,37 +1,34 @@
 import React from "react";
+import {CheckCircleIcon} from "@heroicons/react/24/solid";
 
 const RadioGroup = (props) => {
   const RadioOption = (props) => {
     const onOptionChangeHandler = props.onOptionChangeHandler;
     return (
-    <div className="flex items-center">
-      <div className="bg-white dark:bg-gray-100 rounded-full w-4 h-4 flex flex-shrink-0 justify-center items-center relative">
-          <input
-            type="radio"
-            id={`radio-qid${props.radioGroupId}-oid${props.optionId}`}
-            name={props.radioGroupId}
-            value={props.choiceContent}
-            checked={props.selectedOptionId == props.optionId}
-            onChange={ () => { onOptionChangeHandler(props.optionId) } }
-            className="checkbox appearance-none focus:outline-none border rounded-full border-gray-400 absolute cursor-pointer w-full h-full checked:border-none transition-all duration-500"
-          />
-          <div
-          className="check-icon hidden border-4 border-iquiz-blue rounded-full w-full h-full z-1"></div>
-      </div>
-      <span
+    <div>
+      <input
+        type="radio"
+        id={`radio-qid${props.radioGroupId}-oid${props.optionId}`}
+        name={props.radioGroupId}
+        value={props.choiceContent}
+        checked={props.selectedOptionId == props.optionId}
+        onChange={ () => { onOptionChangeHandler(props.optionId) } }
+        // apply effect to ">label>.check-icon" and ">label>span" when checked
+        className="peer hidden [&:checked_+_label_.check-icon]:block [&:checked_+_label_span]:font-medium"
+      />
+      <label
+        htmlFor={`radio-qid${props.radioGroupId}-oid${props.optionId}`}
           id={`radioLabel-qid${props.radioGroupId}-oid${props.optionId}`} 
-          dangerouslySetInnerHTML={ { __html: props.choiceContent } } className="ml-2 leading-4 font-normal text-gray-800 dark:text-gray-100"></span>
-      <style>
-        {`
-          .checkbox:checked { border: none; }
-          .checkbox:checked + .check-icon { display: flex; }
-        `}
-      </style>
+          className="flex cursor-pointer items-center rounded-lg border border-gray-100 bg-white p-4 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500"
+      >
+        <CheckCircleIcon className="check-icon hidden h-5 fill-iquiz-blue drop-shadow-sm" />
+        <span className="ml-3" dangerouslySetInnerHTML={ { __html: props.choiceContent } }></span>
+      </label>
     </div>
     )
   }
   return (
-  <form className="flex flex-col gap-8">
+  <form className="flex flex-col gap-3">
   {
     props.radioOptions.map((option) =>
       {

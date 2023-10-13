@@ -32,14 +32,14 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
     return `${textPart}<input
     id="input-qid-${questionObject.qid}-bid-${bid}"
     placeholder="${bid+1}"
-    class="max-w-sm min-w-[4rem] text-center mt-4 w-16 px-1 mx-0.5 text-blue-800 border rounded-md"
+    class="max-w-sm min-w-[4rem] text-center mt-4 w-16 px-1 py-0.5 mx-0.5 text-blue-800 border rounded-md"
     ></input>`
   }).join("");
 
   return (
     <>
-      <div className="flex flex-col gap-4">
-        <div className="font-medium text-lg" dangerouslySetInnerHTML={{ __html: questionObject.prompt }}></div>
+      <div>
+        <div className="font-medium mb-2" dangerouslySetInnerHTML={{ __html: questionObject.prompt }}></div>
         <div id="textElement" dangerouslySetInnerHTML={{ __html:  textHTMLString}}></div>
       </div>
     </>
