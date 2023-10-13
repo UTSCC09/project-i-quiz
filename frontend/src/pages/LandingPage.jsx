@@ -11,8 +11,13 @@ const LandingPage = () => {
 
   return (
     <>
-    <img src={logo} alt="iQuiz! Logo" className="absolute h-8 mt-16 ml-12 sm:ml-20"></img>
-    <div className="h-screen flex bg-center justify-center items-center  bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]" >
+    <div className="h-screen w-screen flex flex-col bg-center items-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]">
+      <header className="hidden md:flex h-28 w-full items-center px-16">
+        <img src={logo} alt="iQuiz! Logo" className="h-8"></img>
+      </header>
+      <header className="md:hidden h-28 w-full flex justify-center items-center">
+        <img src={logo} alt="iQuiz! Logo" className="h-8 md:ml-20"></img>
+      </header>
       <SignInWindow/>
     </div>
     </>
@@ -67,7 +72,7 @@ function signInOnSubmitHandler(e) {
   return (
     <>
       <div
-        className="z-10 flex items-center sm:px-14 sm:py-20 px-10 py-12 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-2xl h-fit w-fit justify-center"
+        className="flex items-center sm:px-14 sm:py-20 px-10 py-12 md:mt-10 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-2xl h-fit w-fit justify-center"
       >
         <div className="flex flex-col justify-start w-56 sm:w-64">
           <div className="flex flex-col gap-2">
