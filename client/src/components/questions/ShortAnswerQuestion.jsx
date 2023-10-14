@@ -1,6 +1,6 @@
 import React from "react";
 
-const ShortAnswerQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
+const ShortAnswerQuestion = ({ questionObject, savedAnswer, autoSaveAnswers }) => {
   return (
     <>
       <div className="mb-6" dangerouslySetInnerHTML={{ __html: questionObject.prompt }}></div>
@@ -9,7 +9,7 @@ const ShortAnswerQuestion = ({ questionObject, savedAnswer, onAnswerChange }) =>
         name={questionObject.qid}
         maxLength={questionObject.maxLength}
         defaultValue={savedAnswer}
-        onChange={onAnswerChange}
+        onChange={autoSaveAnswers}
       ></textarea>
     </>
   )

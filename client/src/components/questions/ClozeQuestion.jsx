@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
+const ClozeQuestion = ({ questionObject, savedAnswer, autoSaveAnswers }) => {
   let textHTML = questionObject.text;
   // if the not wrapped in a tag, wrap it with a <div>
   if (textHTML.endsWith("____")) {
@@ -17,11 +17,11 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
       }
       blank_input
         .addEventListener("input", (e) => {
-          onAnswerChange();
+          autoSaveAnswers();
           e.target.style.width = (e.target.value.length * 8 + 24) + "px";
         });
     }
-  }, [onAnswerChange, textHTMLSplitted, savedAnswer, questionObject.qid]);
+  }, [autoSaveAnswers, textHTMLSplitted, savedAnswer, questionObject.qid]);
 
   let textHTMLString = textHTMLSplitted.map((textPart, bid) => {
     if (textHTMLSplitted.length - 1 === bid) {

@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       colors: {
         "iquiz-blue": "#0366FF",
+        "blue-10": "#F8FCFF",
         "gray-150": "#EDEEF0"
       }
     },

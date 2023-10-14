@@ -1,0 +1,62 @@
+{
+  "0": {
+    "qid": 0,
+    "type": "MCQ",
+    "image": null,
+    "prompt": "<div>Which country has the largest area in the world?</div>",
+    "choices": [
+      { "id": "a", "content": "<div>Canada</div>" },
+      { "id": "b", "content": "<div>United States</div>" },
+      { "id": "c", "content": "<div>Russia</div>" },
+      { "id": "d", "content": "<div>China</div>" }
+    ],
+    "answers": "c"
+  },
+  "1": {
+    "qid": 1,
+    "type": "MSQ",
+    "image": null,
+    "prompt": "Select <b>ALL</b> Asian countries from the below options.",
+    "choices": [
+      { "id": "a", "content": "Japan" },
+      { "id": "b", "content": "Mexico" },
+      { "id": "c", "content": "Egypt" },
+      { "id": "d", "content": "Philippines" },
+      { "id": "e", "content": "Thailand" },
+      { "id": "f", "content": "Israel" },
+      { "id": "g", "content": "This is an extra long very long very very very very long sentence. This is an extra long very long very very very very long sentence. This is an extra long very long very very very very long sentence." }
+    ],
+    "answers": "c"
+  },
+  "2": {
+    "qid": 2,
+    "type": "MCQ",
+    "image": null,
+    "prompt": "<div>Which of the following is not one of the three primary colors?</div>",
+    "choices": [
+      { "id": "a", "content": "<div style='color:green'>Green</div>" },
+      { "id": "b", "content": "<div style='color:blue'>Blue</div>" },
+      { "id": "c", "content": "<div style='color:red'>Red</div>" }
+    ],
+    "answers": "a"
+  },
+  "3": {
+    "qid": 3,
+    "type": "SAQ",
+    "image": null,
+    "prompt": "What is the meaning of the French word <i>\"travailler\"?</i>",
+    "maxLength": 180,
+    "answers": "work"
+  },
+  "4": {
+    "qid": 4,
+    "type": "CLO",
+    "prompt": "<div>Fill in the blanks.</div>",
+    "text": "<ul><li>To be or not to be: that is the q____. <i>- William Shakespeare</i></li><li>Do not go g____ into that good night. <i>- Dylan Thomas</i></li><li>Genius is one percent i____ and ninety-nine percent perspiration. <i>- Thomas Edison</i></li></ul>",
+    "answers": {
+      "0": "uestion",
+      "1": "entle",
+      "2": "nspiration"
+    }
+  }
+}
