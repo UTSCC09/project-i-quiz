@@ -11,15 +11,15 @@ const LandingPage = () => {
 
   return (
     <>
-    <div className="h-screen w-screen flex flex-col bg-center items-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]">
-      <header className="hidden md:flex h-28 w-full items-center px-16">
-        <img src={logo} alt="iQuiz! Logo" className="h-8"></img>
-      </header>
-      <header className="md:hidden h-28 w-full flex justify-center items-center">
-        <img src={logo} alt="iQuiz! Logo" className="h-8 md:ml-20"></img>
-      </header>
-      <SignInWindow/>
-    </div>
+      <div className="h-screen w-screen flex flex-col bg-center items-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]">
+        <header className="hidden md:flex h-28 w-full items-center px-16">
+          <img src={logo} alt="iQuiz! Logo" className="h-8"></img>
+        </header>
+        <header className="md:hidden h-28 w-full flex justify-center items-center">
+          <img src={logo} alt="iQuiz! Logo" className="h-8 md:ml-20"></img>
+        </header>
+        <SignInWindow />
+      </div>
     </>
   );
 }
@@ -34,7 +34,7 @@ const SignInWindow = () => {
     return false;
   }
 
-function signInOnSubmitHandler(e) {
+  function signInOnSubmitHandler(e) {
     e.preventDefault();
     const email = e.target.emailInput.value;
     const password = e.target.passwordInput.value;
@@ -58,7 +58,7 @@ function signInOnSubmitHandler(e) {
     }
   }
 
-  function emailInputOnChangeHandler(e) {
+  function onEmailInputChange(e) {
     if (validateEmailFormat(e.target.value)) {
       document.querySelector("#login_error_msg").classList.add("invisible");
       document.querySelector("#email_input").classList.remove("input-invalid-state");
@@ -95,7 +95,7 @@ function signInOnSubmitHandler(e) {
               id="email_input"
               placeholder="Email address"
               autoComplete="off"
-              onChange={emailInputOnChangeHandler}
+              onChange={onEmailInputChange}
             ></input>
             <input
               className="mt-3 single-line-input"

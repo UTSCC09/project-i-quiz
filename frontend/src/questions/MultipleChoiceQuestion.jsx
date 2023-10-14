@@ -2,24 +2,27 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import RadioGroup from "../components/RadioGroup";
 
-const MultipleChoiceQuestion = ({questionObject, savedAnswer, onAnswerChange}) => {
-  const [selectedOptionId, setselectedOptionId] = useState(-1);
+const MultipleChoiceQuestion = (props) => {
+  let [selectedOptionId, setSelectedOptionId] = useState(-1);
 
   useEffect(() => {
-    if (savedAnswer) setselectedOptionId(savedAnswer);
-  }, [savedAnswer, setselectedOptionId])
+    if (props.savedAnswer) { setSelectedOptionId(props.savedAnswer[0]); }
+  }, [props.savedAnswer, setSelectedOptionId]);
 
-  function onOptionChangeHandler (optionId) {
-    setselectedOptionId(optionId);
-    onAnswerChange(questionObject.qid, optionId);
+  function onOptionChange(optionId) {
+    setSelectedOptionId(optionId);
+    props.onAnswerChange();
   }
-  const radioGroup = 
-  (<RadioGroup radioGroupId={questionObject.qid} radioOptions={questionObject.choices} onOptionChangeHandler={onOptionChangeHandler} selectedOptionId={selectedOptionId} />);
 
   return (
     <div className="flex flex-col">
-      <span className="mb-6" dangerouslySetInnerHTML={{__html: questionObject.prompt}}></span>
-      {radioGroup}
+      <span className="mb-6" dangerouslySetInnerHTML={{ __html: props.questionObject.prompt }}></span>
+      <RadioGroup
+        radioGroupId={props.questionObject.qid}
+        radioOptions={props.questionObject.choices}
+        onOptionChange={onOptionChange}
+        selectedOptionId={selectedOptionId}
+      />
     </div>
   )
 }
