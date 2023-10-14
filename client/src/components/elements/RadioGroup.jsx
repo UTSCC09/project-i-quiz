@@ -31,14 +31,12 @@ const RadioGroup = (props) => {
 
 function RadioOption(props) {
   const checkIconVariants = {
-    unchecked: {
-      x: "-16px", opacity: 0, transition: { duration: 0.1, delay: 0.1 }
-    },
+    unchecked: { x: "-16px", opacity: 0, transition: { duration: 0.1 } },
     checked: { x: 0, opacity: 1, transition: { duration: 0.2 } },
   };
   const labelTextVariant = {
-    unchecked: { x: "-16px", transition: { duration: 0.1 } },
-    checked: { x: 0, transition: { duration: 0.2 } }
+    unchecked: { x: 0, transition: { duration: 0.1 } },
+    checked: { x: "16px", transition: { duration: 0.2 } }
   };
 
   return (
@@ -67,7 +65,7 @@ function RadioOption(props) {
           initial="unchecked"
           animate={props.selectedOptionId === props.optionId ? "checked" : "unchecked"}
           variants={labelTextVariant}
-          className="ml-2 sm:ml-3 text-sm sm:text-base" dangerouslySetInnerHTML={{ __html: props.optionText }}>
+          className="-ml-2 text-sm sm:text-base" dangerouslySetInnerHTML={{ __html: props.optionText }}>
         </motion.div>
       </label>
     </div>

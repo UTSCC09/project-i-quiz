@@ -15,7 +15,7 @@ export default function CheckBoxGroup(props) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {
         props.options.map((option) => {
           return <CheckOption
@@ -34,11 +34,11 @@ export default function CheckBoxGroup(props) {
 function CheckOption(props) {
   const checkIconVariants = {
     unchecked: { pathLength: 0, opacity: 0, transition: { duration: 0.1 } },
-    checked: { pathLength: 1, opacity: 1, transition: { duration: 0.2 } },
+    checked: { pathLength: 1, opacity: 1, transition: { duration: 0.2 } }
   };
   const labelTextVariant = {
-    unchecked: { x: "-16px", transition: { duration: 0.1 } },
-    checked: { x: 0, transition: { duration: 0.2 } },
+    unchecked: { x: 0, transition: { duration: 0.1 } },
+    checked: { x: "14px", transition: { duration: 0.2 } }
   };
 
   return (
@@ -78,7 +78,7 @@ function CheckOption(props) {
         <motion.div
           animate={props.optionDict[props.oid] ? "checked" : "unchecked"}
           variants={labelTextVariant}
-          className="ml-2 sm:ml-3 text-sm sm:text-base"
+          className="text-sm sm:text-base"
           dangerouslySetInnerHTML={{ __html: props.text }}></motion.div>
       </label>
     </div >
