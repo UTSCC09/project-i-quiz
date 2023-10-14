@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import colors from 'tailwindcss/colors'
 import QuestionWrapper from "../components/QuestionWrapper";
-import MockQuizObject from "../data/MockQuiz.json"
+import MockQuizObject from "../mock_data/QuizMock1.json"
 
 const questions = MockQuizObject;
 
@@ -41,7 +41,7 @@ const QuestionsDemoPage = () => {
                     key={questionObj.qid}
                   >
                     <span className="font-bold text-sm uppercase ml-12 text-gray-500 mb-4">
-                      Question {idx + 1}/{Object.keys(questions).length}
+                      Question {idx + 1} / {Object.keys(questions).length}
                     </span>
                     <div className="border-b h-0 mb-6 mx-10"></div>
                     <div className="mx-12">
