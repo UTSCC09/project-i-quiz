@@ -3,6 +3,7 @@ import LandingPage from "./pages/LandingPage";
 import React from "react";
 import QuestionsDemoPage from "./pages/QuestionsDemoPage";
 import SignUpPage from "./pages/SignUpPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const App = () => {
   return (
@@ -12,7 +13,7 @@ const App = () => {
         <Route path="/login" element={ <LandingPage /> } />
         <Route path="/signup" element={ <SignUpPage /> } />
         <Route path="/demo" element={ <QuestionsDemoPage />} />
-        <Route path="*" element={ <>404 Not Found</> } />
+        <Route path="*" element={ <NotFoundPage />} />
       </Routes>
     </>
   );
