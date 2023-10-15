@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/components.css";
 import logo from "../media/iquiz_logo.svg";
 import SingleLineInput from "../components/SingleLineInput";
@@ -97,9 +97,9 @@ const SignInWindow = () => {
             </div>
             <div className="mt-6 flex flex-col sm:flex-row sm:justify-between gap-3">
               <button type="submit" className="btn-primary">Log in</button>
-              <a className="btn-secondary" href="/signup">Sign up</a>
+              <Link to="/signup" className="btn-secondary">Sign up</Link>
             </div>
-            <span className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <a className="underline" href="/">Reset</a></span>
+            <span className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <Link className="underline" to="/">Reset</Link></span>
           </form>
         </div>
       </div>

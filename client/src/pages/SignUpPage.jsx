@@ -1,6 +1,7 @@
 import React from "react";
 import SingleLineInput from "../components/SingleLineInput";
 import iquizLogo from "../media/iquiz_logo.svg";
+import { Link } from "react-router-dom";
 
 export default function SignUpPage() {
   return (
@@ -49,7 +50,7 @@ function SignUpWindow() {
           <button className="btn-primary">Create an account</button>
           <p className="mt-4 text-sm text-gray-500">
             Already have an account?{" "}
-            <a href="/login" className="text-gray-700 underline">Log in</a>.
+            <Link to="/login" className="text-gray-700 underline">Log in</Link>.
           </p>
         </div>
       </form>
