@@ -13,10 +13,22 @@ export default function SignUpPage() {
   )
 }
 
+function onSubmit(event) {
+  event.preventDefault();
+  document.querySelectorAll("Input").forEach((inputElmt) => {
+    if (!inputElmt.value) {
+      document.getElementById(inputElmt.id + "Label").classList.add("input-invalid-state");
+      inputElmt.addEventListener("input", (e) => {
+        document.getElementById(e.target.id + "Label").classList.remove("input-invalid-state");
+      })
+    }
+  })
+}
+
 function SignUpWindow() {
   return (
     <div className="bg-white h-full w-full sm:h-fit sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-24 mt-24 sm:mt-0 sm:place-self-center py-20 sm:rounded-md">
-      <form action="#" className="sm:mt-8 grid grid-cols-6 gap-4">
+      <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4" autoComplete="off">
         <div className="col-span-6 mb-4">
           <h1 className="self-start text-3xl font-bold">
             Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
@@ -35,15 +47,15 @@ function SignUpWindow() {
         </div>
 
         <div className="col-span-6">
-          <SingleLineInput id="emailInput" name="email" label="Email" />
+          <SingleLineInput id="emailInput" name="email" label="Email" autoComplete="username" />
         </div>
 
         <div className="col-span-6 sm:col-span-3">
-          <SingleLineInput id="passwordInput" name="password" label="Password" inputType="password" />
+          <SingleLineInput id="passwordInput" name="password" label="Password" inputType="password" autoComplete="new-password" />
         </div>
 
         <div className="col-span-6 sm:col-span-3">
-          <SingleLineInput id="passwordConfirmInput" label="Confirm Password" inputType="password" />
+          <SingleLineInput id="passwordConfirmInput" label="Confirm Password" inputType="password" autoComplete="new-password" />
         </div>
 
         <div className="mt-4 col-span-full flex flex-col items-center">

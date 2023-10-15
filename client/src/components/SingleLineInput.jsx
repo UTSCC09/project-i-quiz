@@ -7,13 +7,14 @@ const checkIconVariants = {
   checked: { pathLength: 1, transition: { duration: 0.1 } }
 };
 
-export default function SingleLineInput({ id, name, label, onChange, inputType = "text" }) {
+export default function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
   return (
     <label
       id={id + "Label"}
       htmlFor={id}
-      className={"relative flex overflow-hidden rounded-md border px-4 pt-3 focus-within:ring focus-within:ring-blue-200 transition"}
+      className="relative flex overflow-hidden rounded-md border px-4 pt-3 focus-within:ring focus-within:ring-blue-200 transition"
     >
       {inputType === "password" &&
         <VisibilityToggle id={id + "VisibilityToggle"} isPasswordVisible={isPasswordVisible} setIsPasswordVisible={setIsPasswordVisible} />
@@ -24,6 +25,7 @@ export default function SingleLineInput({ id, name, label, onChange, inputType =
         name={name}
         placeholder={label}
         onChange={onChange}
+        autoComplete={autoComplete}
         className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
       />
       <span

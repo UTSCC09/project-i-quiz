@@ -90,9 +90,9 @@ const SignInWindow = () => {
             <span id="login_error_msg" className="text-red-500 text-sm mb-1 pl-1 invisible">placeholder</span>
             <div className="flex flex-col gap-3">
               <SingleLineInput
-                id="emailInput" name="email" label="Email" onChange={onEmailInputChange} />
+                id="emailInput" name="email" label="Email" onChange={onEmailInputChange} autoComplete="username" />
               <SingleLineInput
-                id="passwordInput" name="password" inputType="password" onChange={onPasswordInputChange} label="Password" />
+                id="passwordInput" name="password" inputType="password" onChange={onPasswordInputChange} label="Password" autoComplete="password" />
               <SimpleCheckBox id="checkboxRemember" name="checkboxRemember" label="Remember me" />
             </div>
             <div className="mt-6 flex flex-col sm:flex-row sm:justify-between gap-3">
