@@ -71,7 +71,7 @@ const SignInWindow = () => {
   return (
     <>
       <div
-        className="flex sm:items-center px-12 sm:px-14 py-20 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[28rem] justify-center"
+        className="flex sm:items-center px-12 sm:px-14 py-20 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[26rem] justify-center"
       >
         <div className="flex flex-col justify-start w-full">
           <div className="flex flex-col gap-2">
@@ -99,7 +99,7 @@ const SignInWindow = () => {
               <button type="submit" className="btn-primary">Log in</button>
               <a className="btn-secondary" href="/signup">Sign up</a>
             </div>
-            <a className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <a className="underline" href="/">Reset</a></a>
+            <span className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <a className="underline" href="/">Reset</a></span>
           </form>
         </div>
       </div>
