@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/components.css";
 import logo from "../media/iquiz_logo.svg";
 import SingleLineInput from "../components/SingleLineInput";
+import SimpleCheckBox from "../components/SimpleCheckBox";
 
 const LandingPage = () => {
   /* Disable auto-zooming in Safari */
@@ -107,6 +108,7 @@ const SignInWindow = () => {
                 id="emailInput" name="email" label="Email" onChange={onEmailInputChange} />
               <SingleLineInput
                 id="passwordInput" name="password" inputType="password" onChange={onPasswordInputChange} label="Password" />
+              <SimpleCheckBox id="checkboxRemember" name="checkboxRemember" label="Remember me" />
             </div>
             <div className="flex justify-between gap-5 mt-6">
               <button type="submit" className="btn-primary">Log in</button>
