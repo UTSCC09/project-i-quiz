@@ -1,3 +1,4 @@
+import { EyeIcon } from "@heroicons/react/24/outline";
 import React from "react";
 
 export default function SingleLineInput({ id, name, label, onChange, inputType = "text" }) {
@@ -7,11 +8,14 @@ export default function SingleLineInput({ id, name, label, onChange, inputType =
       htmlFor={id}
       className={"relative block overflow-hidden rounded-md border px-4 pt-3  focus-within:ring focus-within:ring-blue-200 transition"}
     >
+      {(inputType === "password") &&
+        <EyeIcon className="h-5 absolute stroke-gray-400 end-4" />
+      }
       <input
         type={inputType}
         id={id}
         name={name}
-        placeholder=""
+        placeholder={label}
         onChange={onChange}
         className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
       />
