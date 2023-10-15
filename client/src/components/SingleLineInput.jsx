@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function SingleLineInput({ id, label, onChange, inputType = "text" }) {
+export default function SingleLineInput({ id, name, label, onChange, inputType = "text" }) {
   return (
     <label
       id={id + "Label"}
@@ -10,6 +10,7 @@ export default function SingleLineInput({ id, label, onChange, inputType = "text
       <input
         type={inputType}
         id={id}
+        name={name}
         placeholder=""
         onChange={onChange}
         className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"

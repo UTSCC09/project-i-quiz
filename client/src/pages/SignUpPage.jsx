@@ -18,7 +18,7 @@ function SignUpWindow() {
       <form action="#" className="mt-8 grid grid-cols-6 gap-4">
         <div className="col-span-6 mb-4">
           <h1 className="mt-6 self-start text-2xl sm:text-3xl font-bold">
-            Welcome to <img src={iquizLogo} className="h-5 sm:h-6 mx-1 mb-0.5 inline self-baseline" fill="#FFFFFF"></img>
+            Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-5 sm:h-6 mx-1 mb-0.5 inline self-baseline" fill="#FFFFFF"></img>
           </h1>
           <p className="mt-2 text-sm text-gray-500">
             Sign up with your school email address
@@ -26,19 +26,19 @@ function SignUpWindow() {
         </div>
 
         <div className="col-span-6 sm:col-span-3">
-          <SingleLineInput id="firstNameInput" label="First Name" />
+          <SingleLineInput id="firstNameInput" name="firstName" label="First Name" />
         </div>
 
         <div className="col-span-6 sm:col-span-3">
-          <SingleLineInput id="lastNameInput" label="Last Name" />
+          <SingleLineInput id="lastNameInput" name="lastName" label="Last Name" />
         </div>
 
         <div className="col-span-6">
-          <SingleLineInput id="emailInput" label="Email" />
+          <SingleLineInput id="emailInput" name="email" label="Email" />
         </div>
 
         <div className="col-span-6 sm:col-span-3">
-          <SingleLineInput id="passwordInput" label="Password" inputType="password" />
+          <SingleLineInput id="passwordInput" name="password" label="Password" inputType="password" />
         </div>
 
         <div className="col-span-6 sm:col-span-3">

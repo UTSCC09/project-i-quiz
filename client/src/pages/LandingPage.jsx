@@ -104,9 +104,9 @@ const SignInWindow = () => {
             <span id="login_error_msg" className="text-red-500 text-sm mb-1 pl-1 invisible">placeholder</span>
             <div className="flex flex-col gap-3">
               <SingleLineInput
-                id="emailInput" label="Email" onChange={onEmailInputChange} />
+                id="emailInput" name="email" label="Email" onChange={onEmailInputChange} />
               <SingleLineInput
-                id="passwordInput" inputType="password" onChange={onPasswordInputChange} label="Password" />
+                id="passwordInput" name="password" inputType="password" onChange={onPasswordInputChange} label="Password" />
             </div>
             <div className="flex justify-between gap-5 mt-6">
               <button type="submit" className="btn-primary">Log in</button>
