@@ -3,7 +3,7 @@ import colors from 'tailwindcss/colors'
 import QuestionWrapper from "../components/QuestionWrapper";
 import MockQuizObject from "../mock_data/QuizMock1.json"
 
-const questions = MockQuizObject;
+const mockQuizObject = MockQuizObject;
 
 const QuestionsDemoPage = () => {
   useEffect(() => {
@@ -14,7 +14,7 @@ const QuestionsDemoPage = () => {
 
   console.log("Fetched saved aswers from LocalStorage:", savedAnswers);
 
-  Object.values(questions).forEach((questionObj) => {
+  mockQuizObject.questions.forEach((questionObj) => {
     savedAnswers[questionObj.qid] = savedAnswers[questionObj.qid] ?? [];
   });
 
@@ -34,14 +34,14 @@ const QuestionsDemoPage = () => {
         <div className="w-screen flex justify-center">
           <div className="w-[80vw] lg:w-[48rem] flex flex-col items-center">
             {
-              Object.values(questions).map((questionObj, idx) => {
+              mockQuizObject.questions.map((questionObj, idx) => {
                 return (
                   <div
                     className="h-fit w-full m-5 flex flex-col border drop-shadow-sm bg-white shadow-gray-150 rounded-md py-12"
                     key={questionObj.qid}
                   >
                     <span className="font-bold text-sm uppercase ml-12 text-gray-500 mb-4">
-                      Question {idx + 1} / {Object.keys(questions).length}
+                      Question {idx + 1} / {mockQuizObject.questions.length}
                     </span>
                     <div className="border-b h-0 mb-6 mx-10"></div>
                     <div className="mx-12">

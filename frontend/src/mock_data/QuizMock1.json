@@ -1,5 +1,6 @@
 {
-  "0": {
+  "quizId": "quiz-001",
+  "questions": [{
     "qid": 0,
     "type": "MCQ",
     "image": null,
@@ -12,7 +13,7 @@
     ],
     "answers": ["c"]
   },
-  "1": {
+  {
     "qid": 1,
     "type": "MSQ",
     "image": null,
@@ -27,7 +28,7 @@
     ],
     "answers": ["a", "d", "e"]
   },
-  "2": {
+  {
     "qid": 2,
     "type": "MCQ",
     "image": null,
@@ -39,18 +40,18 @@
     ],
     "answers": ["a"]
   },
-  "3": {
+  {
     "qid": 3,
     "type": "CLO",
     "prompt": "Complete the following quotes.",
     "text": "<ul><li>To be or not to be: that is the ____. <i>- William Shakespeare</i></li><li>Do not go ____ into that good night. <i>- Dylan Thomas</i></li><li>Genius is one percent ____ and ninety-nine percent perspiration. <i>- Thomas Edison</i></li></ul>",
     "answers": ["question", "gentle", "inspiration"]
   },
-  "4": {
+  {
     "qid": 4,
     "type": "SAQ",
     "image": null,
     "prompt": "What is the meaning of the French word <i>\"travailler\"?</i>",
     "maxLength": 180
-  }
+  }]
 }
