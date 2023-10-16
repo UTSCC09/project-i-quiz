@@ -16,16 +16,16 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
     return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);
   }
 
-  function validate(checks = []) {
+  function validate(checks = inputType) {
     const innerInput = innerInputRef.current;
     const innerLabel = innerLabelRef.current;
 
-    if (checks.includes("nonempty") && !innerInput.value) {
+    if (checks.includes("required") && !innerInput.value) {
       innerLabel.classList.add("input-invalid-state");
       return false;
     }
 
-    if (checks.includes("emailFormat") && !validateEmailFormat(innerInput.value)) {
+    if (checks.includes("email") && !validateEmailFormat(innerInput.value)) {
       innerLabel.classList.add("input-invalid-state");
       return false;
     }
@@ -63,27 +63,25 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
       ref={innerLabelRef}
       className="relative flex overflow-hidden rounded-md border px-4 pt-3 focus-within:ring focus-within:ring-blue-200 transition"
     >
-      <div className="flex grow">
-        <input
-          type={isPasswordVisible ? "text" : inputType}
-          id={id}
-          name={name}
-          placeholder={label}
-          onChange={(e) => {
-            validate();
-            if (onChange) onChange(e);
-          }}
-          defaultValue={defaultValue}
-          autoComplete={autoComplete}
-          ref={innerInputRef}
-          className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-        <span
-          className="absolute start-4 top-3 -translate-y-1/2 text-xs text-gray-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
-        >
-          {label}
-        </span>
-      </div>
+      <input
+        type={isPasswordVisible ? "text" : inputType}
+        id={id}
+        name={name}
+        placeholder={label}
+        onChange={(e) => {
+          validate(inputType);
+          if (onChange) onChange(e);
+        }}
+        defaultValue={defaultValue}
+        autoComplete={autoComplete}
+        ref={innerInputRef}
+        className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+      />
+      <span
+        className="absolute start-4 top-3 -translate-y-1/2 text-xs text-gray-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
+      >
+        {label}
+      </span>
       {inputType === "password" &&
         <div className="w-5">
           <VisibilityToggle id={id + "VisibilityToggle"} isPasswordVisible={isPasswordVisible} setIsPasswordVisible={setIsPasswordVisible} />

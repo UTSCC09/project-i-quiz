@@ -25,11 +25,11 @@ function SignUpWindow({ email }) {
     event.preventDefault();
     let flag = true;
     inputRefs.current.forEach((inputElmt, idx) => {
-      if (!inputElmt.validate("nonempty")) {
+      if (!inputElmt.validate("required")) {
         flag = false;
         alertRef.current.innerHTML = "Please fill out all fields";
       }
-      if (idx === 2 && inputElmt.validate("nonempty") && !inputElmt.validate("emailFormat")) {
+      if (idx === 2 && inputElmt.validate("nonempty") && !inputElmt.validate("email")) {
         flag = false;
         alertRef.current.innerHTML = "Invalid email address format";
       }
@@ -68,11 +68,11 @@ function SignUpWindow({ email }) {
           <SingleLineInput id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" defaultValue={email} ref={(elmt) => inputRefs.current[2] = elmt} />
         </div>
 
-        <div className="col-span-6 sm:col-span-3">
+        <div className="col-span-6">
           <SingleLineInput id="passwordInput" name="password" label="Password" inputType="password" autoComplete="new-password" ref={(elmt) => inputRefs.current[3] = elmt} />
         </div>
 
-        <div className="col-span-6 sm:col-span-3">
+        <div className="col-span-6">
           <SingleLineInput id="passwordConfirmInput" label="Confirm Password" inputType="password" autoComplete="new-password" ref={(elmt) => inputRefs.current[4] = elmt} />
         </div>
 

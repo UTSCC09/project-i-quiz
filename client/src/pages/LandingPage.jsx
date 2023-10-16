@@ -49,21 +49,10 @@ const SignInWindow = () => {
     }
   }
 
-  function onEmailInputChange() {
-    setEmail(emailInputRef.current.getValue())
-    if (emailInputRef.current.validate()) {
-      errorMessageRef.current.classList.add("hidden");
-    }
-  }
-
-  function onPasswordInputChange() {
-    emailInputRef.current.setValidationState(true);
-  }
-
   return (
     <>
       <div
-        className="flex sm:items-center px-12 sm:px-14 py-20 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[26rem] justify-center"
+        className="flex sm:items-center px-12 sm:px-14 py-20 lg:ml-[40vw] bg-white border border-gray-100 sm:rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[26rem] justify-center"
       >
         <div className="flex flex-col justify-start w-full">
           <div className="flex flex-col gap-2">
@@ -84,9 +73,9 @@ const SignInWindow = () => {
             </div>
             <div className="flex flex-col gap-3 mt-4">
               <SingleLineInput
-                id="emailInput" name="email" label="Email" onChange={onEmailInputChange} inputType="email" autoComplete="username" ref={emailInputRef} />
+                id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" ref={emailInputRef} />
               <SingleLineInput
-                id="passwordInput" name="password" inputType="password" onChange={onPasswordInputChange} label="Password" autoComplete="password" ref={passwordInputRef} />
+                id="passwordInput" name="password" inputType="password" label="Password" autoComplete="password" ref={passwordInputRef} />
               <SimpleCheckBox id="checkboxRemember" name="checkboxRemember" label="Remember me" />
             </div>
             <div className="mt-6 flex flex-col sm:flex-row sm:justify-between gap-3">
