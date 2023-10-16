@@ -1,45 +1,90 @@
-import { EyeIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 const checkIconVariants = {
   unchecked: { pathLength: 0, transition: { duration: 0.1 } },
   checked: { pathLength: 1, transition: { duration: 0.1 } }
 };
 
-export default function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete }) {
+function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete }, ref) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const innerInputRef = useRef();
+  const innerLabelRef = useRef();
+
+  function validateEmailFormat(stringVal) {
+    return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);
+  }
+
+  function validate() {
+    const innerInput = innerInputRef.current;
+    const innerLabel = innerLabelRef.current;
+
+    if (!innerInput.value) {
+      innerLabel.classList.add("input-invalid-state");
+      return false;
+    }
+    else if (innerInput.type === "email" && !validateEmailFormat(innerInput.value)) {
+      innerLabel.classList.add("input-invalid-state");
+      return false;
+    }
+
+    innerLabel.classList.remove("input-invalid-state");
+    return true;
+  };
+
+  function setValidationState(isValidated) {
+    if (isValidated) {
+      innerLabelRef.current.classList.remove("input-invalid-state");
+    }
+    else {
+      innerLabelRef.current.classList.add("input-invalid-state");
+    }
+  }
+
+  useImperativeHandle(ref, () => ({
+    validate, setValidationState
+  }));
 
   return (
     <label
       id={id + "Label"}
       htmlFor={id}
+      ref={innerLabelRef}
       className="relative flex overflow-hidden rounded-md border px-4 pt-3 focus-within:ring focus-within:ring-blue-200 transition"
     >
+      <div className="flex grow">
+        <input
+          type={isPasswordVisible ? "text" : inputType}
+          id={id}
+          name={name}
+          placeholder={label}
+          onChange={(e) => {
+            validate();
+            if (onChange) onChange(e);
+          }}
+          autoComplete={autoComplete}
+          ref={innerInputRef}
+          className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+        />
+        <span
+          className="absolute start-4 top-3 -translate-y-1/2 text-xs text-gray-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
+        >
+          {label}
+        </span>
+      </div>
       {inputType === "password" &&
-        <VisibilityToggle id={id + "VisibilityToggle"} isPasswordVisible={isPasswordVisible} setIsPasswordVisible={setIsPasswordVisible} />
+        <div className="w-5">
+          <VisibilityToggle id={id + "VisibilityToggle"} isPasswordVisible={isPasswordVisible} setIsPasswordVisible={setIsPasswordVisible} />
+        </div>
       }
-      <input
-        type={isPasswordVisible ? "text" : inputType}
-        id={id}
-        name={name}
-        placeholder={label}
-        onChange={onChange}
-        autoComplete={autoComplete}
-        className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-      />
-      <span
-        className="absolute start-4 top-3 -translate-y-1/2 text-xs text-gray-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
-      >
-        {label}
-      </span>
     </label>
   );
 }
 
 function VisibilityToggle({ id, isPasswordVisible, setIsPasswordVisible }) {
   return (
-    <label htmlFor={id} className="absolute text-gray-400 -translate-y-1/2 -translate-x-1/2 top-1/2 end-2 h-[18px] w-[18px] flex items-center cursor-pointer">
+    <label htmlFor={id} className="absolute text-gray-400 hover:text-gray-300 -translate-y-1/2 -translate-x-1/2 top-1/2 -end-4 h-[40px] w-[40px] flex items-center justify-center cursor-pointer">
       <input
         id={id}
         name={id}
@@ -48,7 +93,7 @@ function VisibilityToggle({ id, isPasswordVisible, setIsPasswordVisible }) {
         onChange={() => setIsPasswordVisible(!isPasswordVisible)}
         className="invisible"
       />
-      <div className="pointer-events-none absolute w-full h-full">
+      <div className="pointer-events-none absolute w-4 h-4">
         <motion.svg
           initial="checked"
           animate={!isPasswordVisible ? "checked" : "unchecked"}
@@ -72,3 +117,5 @@ function VisibilityToggle({ id, isPasswordVisible, setIsPasswordVisible }) {
     </label>
   )
 }
+
+export default forwardRef(SingleLineInput)

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import SingleLineInput from "../components/SingleLineInput";
 import iquizLogo from "../media/iquiz_logo.svg";
 import { Link } from "react-router-dom";
@@ -13,22 +13,19 @@ export default function SignUpPage() {
   )
 }
 
-function onSubmit(event) {
-  event.preventDefault();
-  document.querySelectorAll("Input").forEach((inputElmt) => {
-    if (!inputElmt.value) {
-      document.getElementById(inputElmt.id + "Label").classList.add("input-invalid-state");
-      inputElmt.addEventListener("input", (e) => {
-        document.getElementById(e.target.id + "Label").classList.remove("input-invalid-state");
-      })
-    }
-  })
-}
-
 function SignUpWindow() {
+  const inputRefs = useRef([]);
+
+  function onSubmit(event) {
+    event.preventDefault();
+    inputRefs.current.forEach((inputElmt) => {
+      inputElmt.validate();
+    })
+  }
+
   return (
     <div className="bg-white h-full w-full sm:h-fit sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-24 mt-24 sm:mt-0 sm:place-self-center py-20 sm:rounded-md">
-      <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4" autoComplete="off">
+      <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4" autoComplete="off" noValidate>
         <div className="col-span-6 mb-4">
           <h1 className="self-start text-3xl font-bold">
             Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
@@ -39,23 +36,23 @@ function SignUpWindow() {
         </div>
 
         <div className="col-span-3 sm:col-span-3">
-          <SingleLineInput id="firstNameInput" name="firstName" label="First Name" />
+          <SingleLineInput id="firstNameInput" name="firstName" label="First Name" ref={(elmt) => inputRefs.current[0] = elmt} />
         </div>
 
         <div className="col-span-3 sm:col-span-3">
-          <SingleLineInput id="lastNameInput" name="lastName" label="Last Name" />
+          <SingleLineInput id="lastNameInput" name="lastName" label="Last Name" ref={(elmt) => inputRefs.current[1] = elmt} />
         </div>
 
         <div className="col-span-6">
-          <SingleLineInput id="emailInput" name="email" label="Email" autoComplete="username" />
+          <SingleLineInput id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" ref={(elmt) => inputRefs.current[2] = elmt} />
         </div>
 
         <div className="col-span-6 sm:col-span-3">
-          <SingleLineInput id="passwordInput" name="password" label="Password" inputType="password" autoComplete="new-password" />
+          <SingleLineInput id="passwordInput" name="password" label="Password" inputType="password" autoComplete="new-password" ref={(elmt) => inputRefs.current[3] = elmt} />
         </div>
 
         <div className="col-span-6 sm:col-span-3">
-          <SingleLineInput id="passwordConfirmInput" label="Confirm Password" inputType="password" autoComplete="new-password" />
+          <SingleLineInput id="passwordConfirmInput" label="Confirm Password" inputType="password" autoComplete="new-password" ref={(elmt) => inputRefs.current[4] = elmt} />
         </div>
 
         <div className="mt-4 col-span-full flex flex-col items-center">

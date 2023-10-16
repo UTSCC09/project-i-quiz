@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/components.css";
 import logo from "../media/iquiz_logo.svg";
@@ -17,6 +17,9 @@ const LandingPage = () => {
 
 const SignInWindow = () => {
   const navigate = useNavigate();
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+  const errorMessageRef = useRef();
 
   function mockLogin(email, password) {
     if (email === "a@a.aa" && password === "a") {
@@ -27,21 +30,17 @@ const SignInWindow = () => {
 
   function signInOnSubmitHandler(e) {
     e.preventDefault();
-    const email = e.target.emailInput.value;
-    const password = e.target.passwordInput.value;
 
-    if (!validateEmailFormat(email)) {
-      document.querySelector("#login_error_msg").textContent = "Invalid email address format";
-      document.querySelector("#login_error_msg").classList.remove("invisible");
-      document.querySelector("#emailInputLabel").classList.add("input-invalid-state");
+    if (!emailInputRef.current.validate()) {
+      errorMessageRef.current.textContent = "Invalid email address format";
+      errorMessageRef.current.classList.remove("invisible");
       return;
     }
-    else if (!mockLogin(email, password)) {
-      document.querySelector("#login_error_msg").textContent = "Incorrect login credentials";
-      document.querySelector("#login_error_msg").classList.remove("invisible");
-      document.querySelector("#emailInputLabel").classList.add("input-invalid-state");
-      document.querySelector("#passwordInputLabel").classList.add("input-invalid-state");
-
+    else if (!mockLogin(emailInputRef.current.value, passwordInputRef.current.value)) {
+      errorMessageRef.current.textContent = "Incorrect login credentials";
+      errorMessageRef.current.classList.remove("invisible");
+      emailInputRef.current.setValidationState(false);
+      passwordInputRef.current.setValidationState(false);
     }
     else {
       // alert(`email: ${email}\npassword: ${password}`);
@@ -49,23 +48,14 @@ const SignInWindow = () => {
     }
   }
 
-  function onEmailInputChange(e) {
-    if (validateEmailFormat(e.target.value)) {
-      document.querySelector("#login_error_msg").classList.add("invisible");
-      document.querySelector("#emailInputLabel").classList.remove("input-invalid-state");
+  function onEmailInputChange() {
+    if (emailInputRef.current.validate()) {
+      errorMessageRef.current.classList.add("invisible");
     }
   }
 
-  function onPasswordInputChange(e) {
-    document.querySelector("#passwordInputLabel").classList.remove("input-invalid-state");
-    if (validateEmailFormat(document.querySelector("#emailInput").value)) {
-      document.querySelector("#login_error_msg").classList.add("invisible");
-      document.querySelector("#emailInputLabel").classList.remove("input-invalid-state");
-    }
-  }
-
-  function validateEmailFormat(stringVal) {
-    return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);
+  function onPasswordInputChange() {
+    emailInputRef.current.setValidationState(true);
   }
 
   return (
@@ -86,20 +76,20 @@ const SignInWindow = () => {
               <span>Or create a new account with us today!</span>
             </div>
           </div>
-          <form className="flex flex-col mt-3 " onSubmit={(e) => signInOnSubmitHandler(e)}>
-            <span id="login_error_msg" className="text-red-500 text-sm mb-1 pl-1 invisible">placeholder</span>
+          <form className="flex flex-col mt-3 " onSubmit={(e) => signInOnSubmitHandler(e)} noValidate>
+            <span ref={errorMessageRef} className="text-red-500 text-sm mb-1 pl-1 invisible">Invalid input</span>
             <div className="flex flex-col gap-3">
               <SingleLineInput
-                id="emailInput" name="email" label="Email" onChange={onEmailInputChange} autoComplete="username" />
+                id="emailInput" name="email" label="Email" onChange={onEmailInputChange} inputType="email" autoComplete="username" ref={emailInputRef} />
               <SingleLineInput
-                id="passwordInput" name="password" inputType="password" onChange={onPasswordInputChange} label="Password" autoComplete="password" />
+                id="passwordInput" name="password" inputType="password" onChange={onPasswordInputChange} label="Password" autoComplete="password" ref={passwordInputRef} />
               <SimpleCheckBox id="checkboxRemember" name="checkboxRemember" label="Remember me" />
             </div>
             <div className="mt-6 flex flex-col sm:flex-row sm:justify-between gap-3">
               <button type="submit" className="btn-primary">Log in</button>
               <Link to="/signup" className="btn-secondary">Sign up</Link>
             </div>
-            <span className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <Link className="underline" to="/">Reset</Link></span>
+            {/* <span className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <Link className="underline" to="/">Reset</Link></span> */}
           </form>
         </div>
       </div>
