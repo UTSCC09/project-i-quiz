@@ -2,25 +2,44 @@ import React, { useRef } from "react";
 import SingleLineInput from "../components/SingleLineInput";
 import iquizLogo from "../media/iquiz_logo.svg";
 import { Link } from "react-router-dom";
+import { useLocation } from 'react-router-dom'
 
 export default function SignUpPage() {
+  const location = useLocation();
+  const { email } = location.state;
+
   return (
     <>
       <div className="h-screen w-screen flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
-        <SignUpWindow />
+        <SignUpWindow email={email} />
       </div>
     </>
   )
 }
 
-function SignUpWindow() {
+function SignUpWindow({ email }) {
   const inputRefs = useRef([]);
+  const alertRef = useRef();
 
   function onSubmit(event) {
     event.preventDefault();
-    inputRefs.current.forEach((inputElmt) => {
-      inputElmt.validate();
+    let flag = true;
+    inputRefs.current.forEach((inputElmt, idx) => {
+      if (!inputElmt.validate("nonempty")) {
+        flag = false;
+        alertRef.current.innerHTML = "Please fill out all fields";
+      }
+      if (idx === 2 && inputElmt.validate("nonempty") && !inputElmt.validate("emailFormat")) {
+        flag = false;
+        alertRef.current.innerHTML = "Invalid email address format";
+      }
     })
+    if (!flag) {
+      alertRef.current.classList.remove("hidden");
+      return;
+    }
+    alertRef.current.classList.add("hidden");
+    // TODO: Send request to server
   }
 
   return (
@@ -34,17 +53,19 @@ function SignUpWindow() {
             Sign up with your school email address
           </p>
         </div>
-
-        <div className="col-span-3 sm:col-span-3">
+        <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden">
+          Please fill out all fields
+        </div>
+        <div className="col-span-3">
           <SingleLineInput id="firstNameInput" name="firstName" label="First Name" ref={(elmt) => inputRefs.current[0] = elmt} />
         </div>
 
-        <div className="col-span-3 sm:col-span-3">
+        <div className="col-span-3">
           <SingleLineInput id="lastNameInput" name="lastName" label="Last Name" ref={(elmt) => inputRefs.current[1] = elmt} />
         </div>
 
         <div className="col-span-6">
-          <SingleLineInput id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" ref={(elmt) => inputRefs.current[2] = elmt} />
+          <SingleLineInput id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" defaultValue={email} ref={(elmt) => inputRefs.current[2] = elmt} />
         </div>
 
         <div className="col-span-6 sm:col-span-3">

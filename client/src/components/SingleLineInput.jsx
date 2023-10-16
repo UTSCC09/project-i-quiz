@@ -2,11 +2,11 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from "react"
 import { motion } from "framer-motion";
 
 const checkIconVariants = {
-  unchecked: { pathLength: 0, transition: { duration: 0.1 } },
-  checked: { pathLength: 1, transition: { duration: 0.1 } }
+  unchecked: { opacity: 0, pathLength: 0, transition: { duration: 0.1 } },
+  checked: { opacity: 1, pathLength: 1, transition: { duration: 0.1 } }
 };
 
-function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete }, ref) {
+function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete, defaultValue = "" }, ref) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const innerInputRef = useRef();
@@ -16,15 +16,21 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
     return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);
   }
 
-  function validate() {
+  function validate(checks = []) {
     const innerInput = innerInputRef.current;
     const innerLabel = innerLabelRef.current;
 
-    if (!innerInput.value) {
+    if (checks.includes("nonempty") && !innerInput.value) {
       innerLabel.classList.add("input-invalid-state");
       return false;
     }
-    else if (innerInput.type === "email" && !validateEmailFormat(innerInput.value)) {
+
+    if (checks.includes("emailFormat") && !validateEmailFormat(innerInput.value)) {
+      innerLabel.classList.add("input-invalid-state");
+      return false;
+    }
+
+    if (checks.includes("email") && !validateEmailFormat(innerInput.value)) {
       innerLabel.classList.add("input-invalid-state");
       return false;
     }
@@ -42,8 +48,12 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
     }
   }
 
+  function getValue() {
+    return innerInputRef.current.value;
+  }
+
   useImperativeHandle(ref, () => ({
-    validate, setValidationState
+    validate, setValidationState, getValue
   }));
 
   return (
@@ -63,6 +73,7 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
             validate();
             if (onChange) onChange(e);
           }}
+          defaultValue={defaultValue}
           autoComplete={autoComplete}
           ref={innerInputRef}
           className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -84,7 +95,7 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
 
 function VisibilityToggle({ id, isPasswordVisible, setIsPasswordVisible }) {
   return (
-    <label htmlFor={id} className="absolute text-gray-400 hover:text-gray-300 -translate-y-1/2 -translate-x-1/2 top-1/2 -end-4 h-[40px] w-[40px] flex items-center justify-center cursor-pointer">
+    <label htmlFor={id} className="absolute text-gray-400 hover:bg-gray-100 -translate-y-1/2 -translate-x-1/2 top-1/2 -end-2 h-[32px] w-[32px] flex items-center justify-center cursor-pointer rounded-md transition-all">
       <input
         id={id}
         name={id}
@@ -105,7 +116,7 @@ function VisibilityToggle({ id, isPasswordVisible, setIsPasswordVisible }) {
         <motion.svg
           initial="unchecked"
           animate={isPasswordVisible ? "checked" : "unchecked"}
-          fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="absolute h-full">
+          fill="none" stroke="#757575" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="absolute h-full">
           <motion.path
             variants={checkIconVariants}
             strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></motion.path>
