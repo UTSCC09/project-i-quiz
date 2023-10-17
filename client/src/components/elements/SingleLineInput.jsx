@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const checkIconVariants = {
@@ -6,11 +6,19 @@ const checkIconVariants = {
   checked: { opacity: 1, pathLength: 1, transition: { duration: 0.1 } }
 };
 
-function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete, defaultValue = "", maxLength = 256 }, ref) {
+function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete, acceptSpace = false, defaultValue = "", maxLength = 256 }, ref) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const innerInputRef = useRef();
   const innerLabelRef = useRef();
+
+  useEffect(() => {
+    innerInputRef.current.addEventListener("keydown", (e) => {
+      if (!acceptSpace && e.which === 32) {
+        e.preventDefault();
+      }
+    });
+  }, [innerInputRef, acceptSpace])
 
   function validateEmailFormat(stringVal) {
     return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);
@@ -21,11 +29,6 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
     const innerLabel = innerLabelRef.current;
 
     if (checks.includes("required") && !innerInput.value) {
-      innerLabel.classList.add("input-invalid-state");
-      return false;
-    }
-
-    if (checks.includes("email") && !validateEmailFormat(innerInput.value)) {
       innerLabel.classList.add("input-invalid-state");
       return false;
     }

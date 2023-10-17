@@ -23,29 +23,43 @@ function SignUpWindow({ email }) {
 
   function onSubmit(e) {
     e.preventDefault();
+
     let flag = true;
+    // Check every input field
     inputRefs.current.forEach((inputElmt, idx) => {
+      // Validate non-emptiness
       if (!inputElmt.validate("required")) {
         flag = false;
         alertRef.current.innerHTML = "Please fill out all fields";
       }
+      // Validate no space
+      if (!inputElmt.validate("nospace")) {
+        flag = false;
+        alertRef.current.innerHTML = "Input contains space";
+      }
+      // Validate email input (inputRefs[2])
       if (idx === 2 && inputElmt.validate("required") && !inputElmt.validate("email")) {
         flag = false;
         alertRef.current.innerHTML = "Invalid email address format";
       }
     })
 
+    // If the above validation failed, show alert banner and return
     if (!flag) {
       alertRef.current.classList.remove("hidden");
       return;
     }
 
+    // Validate password format
+    // (at least 8 characters and contain at least one letter and one number)
+    // [Credit]: RegEx from https://stackoverflow.com/a/21456918
     if (!inputRefs.current[3].getValue().match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
       flag = false;
       inputRefs.current[3].setValidationState(false);
       alertRef.current.innerHTML = "Passwords must be at least 8 characters and contain at least one letter and one number";
     }
 
+    // Check passwords match
     else if (inputRefs.current[3].getValue() !== inputRefs.current[4].getValue()) {
       flag = false;
       inputRefs.current[3].setValidationState(false);
@@ -53,10 +67,13 @@ function SignUpWindow({ email }) {
       alertRef.current.innerHTML = "Passwords doesn't match";
     }
 
+    // If validation failed, show alert banner and return
     if (!flag) {
       alertRef.current.classList.remove("hidden");
       return;
     }
+
+    // If validation passed, remove alert banner
     alertRef.current.classList.add("hidden");
     // TODO: Send request to server
   }
@@ -72,7 +89,7 @@ function SignUpWindow({ email }) {
             Sign up with your school email address
           </p>
         </div>
-        <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm w-full col-span-6 hidden">
+        <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden">
           Please fill out all fields
         </div>
         <div className="col-span-3">
