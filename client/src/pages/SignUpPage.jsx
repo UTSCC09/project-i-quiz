@@ -32,11 +32,6 @@ function SignUpWindow({ email }) {
         flag = false;
         alertRef.current.innerHTML = "Please fill out all fields";
       }
-      // Validate no space
-      if (!inputElmt.validate("nospace")) {
-        flag = false;
-        alertRef.current.innerHTML = "Input contains space";
-      }
       // Validate email input (inputRefs[2])
       if (idx === 2 && inputElmt.validate("required") && !inputElmt.validate("email")) {
         flag = false;
