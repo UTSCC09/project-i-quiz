@@ -7,8 +7,8 @@ export default function CourseDashboard() {
 
   return (
     <>
-      <div className="h-screen w-screen bg-gray-100">
-        <header className="fixed h-28 w-full bg-white shadow-sm flex items-center px-24 justify-between z-50">
+      <div className="h-fit lg:h-screen w-screen bg-gray-100">
+        <header className="fixed h-28 w-full bg-white shadow-sm flex items-center px-8 md:px-24 justify-between z-50">
           <Link to="/"><img src={logo} alt="iQuiz! Logo" className="h-7"></img></Link>
           <div className="flex gap-6">
             <NotificationButton />
@@ -16,7 +16,7 @@ export default function CourseDashboard() {
           </div>
         </header>
         <main className="h-full pt-20 w-full">
-          <div className="flex h-full w-fit gap-x-16 flex-col sm:flex-wrap gap-11 px-24 py-20">
+          <div className="flex h-full w-full lg:w-fit gap-x-16 flex-col lg:flex-wrap gap-8 md:gap-11 px-8 md:px-24 py-20">
             <CourseCard courseCode="CSCC09" courseName="Programming on the Web" courseSession="Fall 23" notificationNum={1} />
             <CourseCard courseCode="MATB24" courseName="Linear Algebra II" courseSession="Fall 23" accentColor={colors.rose[500]} />
             <CourseCard courseCode="STAC50" courseName="Data Collection" courseSession="Fall 23" accentColor={colors.orange[500]} />
@@ -34,16 +34,16 @@ function CourseCard({ courseCode, courseName, courseSession, accentColor = color
   return (
     <>
       <div className="rounded-md border-l-[24px] shadow-lg shadow-gray-200 cursor-pointer group" style={{ borderLeftColor: accentColor }}>
-        <div className="border border-l-0 h-36 box-border w-96 shrink-0 items-end bg-white rounded-r-md flex pl-6 group-hover:bg-gray-100 transition">
-          <div className="flex flex-col mb-6 w-full">
+        <div className="border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border lg:w-96 shrink-0 items-center md:items-end bg-white rounded-r-md flex pl-6 group-hover:bg-gray-100 transition">
+          <div className="flex flex-col md:mb-6 w-full">
+            <div className="flex mb-1 relative items-center h-fit w-fit px-1.5 font-medium py-0.5 rounded text-xs text-blue-600" style={{ color: accentColor }}>
+              {courseSession}
+              <div className="absolute w-full h-5 rounded opacity-10 -translate-x-1/2 left-1/2 -translate-y-1/2 top-1/2" style={{ backgroundColor: accentColor }}></div>
+            </div>
             <div className="flex items-center">
-              <span className="text-gray-900 font-bold text-4xl">
+              <span className="text-gray-900 font-bold text-3xl md:text-4xl">
                 {courseCode}
               </span>
-              <div className="flex relative items-center ml-4 h-fit w-fit px-1.5 font-medium py-0.5 rounded text-xs text-blue-600" style={{ color: accentColor }}>
-                {courseSession}
-                <div className="absolute w-full h-5 rounded opacity-10 -translate-x-1/2 left-1/2 -translate-y-1/2 top-1/2" style={{ backgroundColor: accentColor }}></div>
-              </div>
             </div>
             <span className="text-gray-500 text-xs ml-1 mt-0.5">{courseName}</span>
           </div>
