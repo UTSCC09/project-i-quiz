@@ -73,7 +73,7 @@ const SignInWindow = () => {
             </div>
             <div className="flex flex-col gap-3 mt-4">
               <SingleLineInput
-                id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" ref={emailInputRef} />
+                id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" onChange={() => setEmail(emailInputRef.current.getValue())} ref={emailInputRef} />
               <SingleLineInput
                 id="passwordInput" name="password" inputType="password" label="Password" autoComplete="password" ref={passwordInputRef} />
               <SimpleCheckBox id="checkboxRemember" name="checkboxRemember" label="Remember me" />
