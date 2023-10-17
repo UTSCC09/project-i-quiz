@@ -68,7 +68,7 @@ const SignInWindow = () => {
             </div>
           </div>
           <form className="flex flex-col mt-4 " onSubmit={(e) => signInOnSubmitHandler(e)} noValidate>
-            <div ref={errorMessageRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm hidden">
+            <div ref={errorMessageRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm w-full hidden">
               Incorrect login credentials
             </div>
             <div className="flex flex-col gap-3 mt-4">

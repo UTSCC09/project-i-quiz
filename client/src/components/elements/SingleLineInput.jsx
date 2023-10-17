@@ -6,7 +6,7 @@ const checkIconVariants = {
   checked: { opacity: 1, pathLength: 1, transition: { duration: 0.1 } }
 };
 
-function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete, defaultValue = "" }, ref) {
+function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete, defaultValue = "", maxLength = 256 }, ref) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const innerInputRef = useRef();
@@ -72,6 +72,7 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
           validate(inputType);
           if (onChange) onChange(e);
         }}
+        maxLength={maxLength}
         defaultValue={defaultValue}
         autoComplete={autoComplete}
         ref={innerInputRef}

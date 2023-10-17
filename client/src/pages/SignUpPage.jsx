@@ -21,19 +21,38 @@ function SignUpWindow({ email }) {
   const inputRefs = useRef([]);
   const alertRef = useRef();
 
-  function onSubmit(event) {
-    event.preventDefault();
+  function onSubmit(e) {
+    e.preventDefault();
     let flag = true;
     inputRefs.current.forEach((inputElmt, idx) => {
       if (!inputElmt.validate("required")) {
         flag = false;
         alertRef.current.innerHTML = "Please fill out all fields";
       }
-      if (idx === 2 && inputElmt.validate("nonempty") && !inputElmt.validate("email")) {
+      if (idx === 2 && inputElmt.validate("required") && !inputElmt.validate("email")) {
         flag = false;
         alertRef.current.innerHTML = "Invalid email address format";
       }
     })
+
+    if (!flag) {
+      alertRef.current.classList.remove("hidden");
+      return;
+    }
+
+    if (!inputRefs.current[3].getValue().match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
+      flag = false;
+      inputRefs.current[3].setValidationState(false);
+      alertRef.current.innerHTML = "Passwords must be at least 8 characters and contain at least one letter and one number";
+    }
+
+    else if (inputRefs.current[3].getValue() !== inputRefs.current[4].getValue()) {
+      flag = false;
+      inputRefs.current[3].setValidationState(false);
+      inputRefs.current[4].setValidationState(false);
+      alertRef.current.innerHTML = "Passwords doesn't match";
+    }
+
     if (!flag) {
       alertRef.current.classList.remove("hidden");
       return;
@@ -44,7 +63,7 @@ function SignUpWindow({ email }) {
 
   return (
     <div className="bg-white h-full w-full sm:h-fit sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-24 mt-24 sm:mt-0 sm:place-self-center py-20 sm:rounded-md">
-      <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4" autoComplete="off" noValidate>
+      <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4 w-96" autoComplete="off" noValidate>
         <div className="col-span-6 mb-4">
           <h1 className="self-start text-3xl font-bold">
             Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
@@ -53,7 +72,7 @@ function SignUpWindow({ email }) {
             Sign up with your school email address
           </p>
         </div>
-        <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden">
+        <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm w-full col-span-6 hidden">
           Please fill out all fields
         </div>
         <div className="col-span-3">
