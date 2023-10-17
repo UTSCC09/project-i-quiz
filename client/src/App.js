@@ -4,6 +4,7 @@ import React from "react";
 import QuestionsDemoPage from "pages/QuestionsDemoPage";
 import SignUpPage from "pages/SignUpPage";
 import NotFoundPage from "pages/NotFoundPage";
+import CourseDashboard from "pages/CourseDashboard";
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route path="/login" element={ <LandingPage /> } />
         <Route path="/signup" element={ <SignUpPage /> } />
         <Route path="/demo" element={ <QuestionsDemoPage />} />
+        <Route path="/courses" element={ <CourseDashboard />} />
         <Route path="*" element={ <NotFoundPage />} />
       </Routes>
     </>
