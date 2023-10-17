@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import SingleLineInput from "../components/SingleLineInput";
-import iquizLogo from "../media/iquiz_logo.svg";
+import SingleLineInput from "components/elements/SingleLineInput";
+import iquizLogo from "media/iquiz_logo.svg";
 import { Link } from "react-router-dom";
 import { useLocation } from 'react-router-dom'
 

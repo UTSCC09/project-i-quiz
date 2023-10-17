@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import RadioGroup from "../components/RadioGroup";
+import RadioGroup from "components/elements/RadioGroup";
 
 const MultipleChoiceQuestion = (props) => {
   let [selectedOptionId, setSelectedOptionId] = useState(-1);

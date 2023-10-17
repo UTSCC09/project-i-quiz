@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router";
-import LandingPage from "./pages/LandingPage";
+import LandingPage from "pages/LandingPage";
 import React from "react";
-import QuestionsDemoPage from "./pages/QuestionsDemoPage";
-import SignUpPage from "./pages/SignUpPage";
-import NotFoundPage from "./pages/NotFoundPage";
+import QuestionsDemoPage from "pages/QuestionsDemoPage";
+import SignUpPage from "pages/SignUpPage";
+import NotFoundPage from "pages/NotFoundPage";
 
 const App = () => {
   return (

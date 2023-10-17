@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/components.css";
-import logo from "../media/iquiz_logo.svg";
-import SingleLineInput from "../components/SingleLineInput";
-import SimpleCheckBox from "../components/SimpleCheckBox";
+import "styles/components.css";
+import logo from "media/iquiz_logo.svg";
+import SingleLineInput from "components/elements/SingleLineInput";
+import SimpleCheckBox from "components/elements/SimpleCheckBox";
 
 const LandingPage = () => {
   return (

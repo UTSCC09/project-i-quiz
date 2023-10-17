@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import colors from 'tailwindcss/colors'
-import QuestionWrapper from "../components/QuestionWrapper";
+import QuestionWrapper from "components/questions/QuestionWrapper";
 
 const questions = [
   {
