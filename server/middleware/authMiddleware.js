@@ -1,36 +1,33 @@
 import asyncHandler from "express-async-handler";
-import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import { createRequire } from "module";
 import User from "../models/User.js";
 
+const require = createRequire(import.meta.url);
+const jwt = require("jsonwebtoken");
+dotenv.config();
+
 const protect = asyncHandler(async (req, res, next) => {
-  let token;
+  let token = req.session.token ? req.session.token : null;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
+  if (token) {
     try {
-      // Get token from header
-      token = req.headers.authorization.split(" ")[1];
-
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Get all user fields except hashed password
       req.user = await User.findById(decoded.id).select("-password");
+      if (req.user){
+        next();
+      }
 
-      // Call next middleware
-      next();
     } catch (error) {
       console.log(error);
-      res.status(401);
-      throw new Error("Error authenticating user");
+      return res.status(401).send("Error authenticating user");
     }
   }
-
-  if (!token) {
-    res.status(401);
-    throw new Error("Not authorized, no token");
+  else {
+    return res.status(401).send("Not authorized, no token");
   }
 });
 
