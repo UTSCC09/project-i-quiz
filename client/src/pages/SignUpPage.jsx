@@ -75,7 +75,7 @@ function SignUpWindow({ email }) {
 
   return (
     <div className="bg-white h-full w-full sm:h-fit sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-24 mt-24 sm:mt-0 sm:place-self-center py-20 sm:rounded-md">
-      <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4 w-96" autoComplete="off" noValidate>
+      <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4 sm:w-96" autoComplete="off" noValidate>
         <div className="col-span-6 mb-4">
           <h1 className="self-start text-3xl font-bold">
             Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>

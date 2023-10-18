@@ -2,6 +2,7 @@ import React from "react";
 import colors from "tailwindcss/colors";
 import logo from "media/iquiz_logo.svg"
 import { Link } from "react-router-dom";
+import Badge from "components/elements/Badge";
 
 export default function CourseDashboard() {
 
@@ -10,52 +11,80 @@ export default function CourseDashboard() {
       <div className="h-fit lg:h-screen w-screen bg-gray-100">
         <header className="fixed h-28 w-full bg-white shadow-sm flex items-center px-8 md:px-24 justify-between z-50">
           <Link to="/"><img src={logo} alt="iQuiz! Logo" className="h-7"></img></Link>
-          <div className="flex gap-6">
+          <div className="flex gap-2 md:gap-6">
             <NotificationButton />
             <SettingsButton />
           </div>
         </header>
-        <main className="h-full pt-20 w-full">
-          <div className="flex h-full w-full lg:w-fit gap-x-16 flex-col lg:flex-wrap gap-8 md:gap-11 px-8 md:px-24 py-20">
-            <CourseCard courseCode="CSCC09" courseName="Programming on the Web" courseSession="Fall 23" notificationNum={1} />
-            <CourseCard courseCode="MATB24" courseName="Linear Algebra II" courseSession="Fall 23" accentColor={colors.rose[500]} />
-            <CourseCard courseCode="STAC50" courseName="Data Collection" courseSession="Fall 23" accentColor={colors.orange[500]} />
-            {/* <CourseCard courseCode="LINA01" courseName="Introduction to Linguistics" courseSession="Summer 23" accentColor={colors.teal[600]} /> */}
-            <CourseCard courseCode="CSCD58" courseName="Computer Networks" courseSession="Summer 23" accentColor={colors.emerald[600]} />
-            <CourseCard courseCode="CSCC01" courseName="Introduction to Software Engineering" courseSession="Winter 22" accentColor={colors.indigo[600]} notificationNum={1} />
+        <main className="h-full py-36 px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row">
+          <div className="flex flex-col gap-4 md:gap-6 lg:w-[30%] xl:w-[30%]">
+            <div className="text-slate-600 font-medium">Available quizzes</div>
+            <QuizCard quizName={"Quiz 1"} courseCode={"CSCC09"} accentColor={colors.blue[600]} deadline={"Oct 20 9:00 p.m."} />
+            <QuizCard quizName={"Final Assessment"} courseCode={"CSCC01"} accentColor={colors.indigo[500]} deadline={"Oct 20 9:00 p.m."} />
           </div>
-        </main>
-      </div>
+          <div className=" lg:w-[70%] xl:w-[70%]">
+            <div className="text-slate-600 font-medium mb-6">My Courses</div>
+            <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3%] gap-y-6 md:gap-y-8 h-fit lg:w1-fit">
+              <CourseCard courseCode="CSCC09" courseName="Programming on the Web" courseSession="Fall 23" notificationNum={1} />
+              <CourseCard courseCode="MATB24" courseName="Linear Algebra II" courseSession="Fall 23" accentColor={colors.rose[500]} />
+              <CourseCard courseCode="STAC50" courseName="Data Collection" courseSession="Fall 23" accentColor={colors.orange[500]} />
+              {/* <CourseCard courseCode="LINA01" courseName="Introduction to Linguistics" courseSession="Summer 23" accentColor={colors.teal[600]} /> */}
+              <CourseCard courseCode="CSCD58" courseName="Computer Networks" courseSession="Summer 23" accentColor={colors.emerald[600]} />
+              <CourseCard courseCode="CSCC01" courseName="Introduction to Software Engineering" courseSession="Winter 22" accentColor={colors.indigo[600]} notificationNum={1} />
+            </div>
+          </div>
+        </main >
+      </div >
     </>
   )
 }
 
 function CourseCard({ courseCode, courseName, courseSession, accentColor = colors.blue[600], notificationNum = 0 }) {
   return (
-    <>
-      <div className="rounded-md border-l-[24px] shadow-lg shadow-gray-200 cursor-pointer group" style={{ borderLeftColor: accentColor }}>
-        <div className="border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border lg:w-96 shrink-0 items-center md:items-end bg-white rounded-r-md flex pl-6 group-hover:bg-gray-100 transition">
-          <div className="flex flex-col md:mb-6 w-full">
-            <div className="flex mb-1 relative items-center h-fit w-fit px-1.5 font-medium py-0.5 rounded text-xs text-blue-600" style={{ color: accentColor }}>
-              {courseSession}
-              <div className="absolute w-full h-5 rounded opacity-10 -translate-x-1/2 left-1/2 -translate-y-1/2 top-1/2" style={{ backgroundColor: accentColor }}></div>
-            </div>
+    <div className="w-full lg:w-[48%] 2xl:w-[30%]">
+      <div className="rounded-md border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer group h-fit" style={{ borderLeftColor: accentColor }}>
+        <div className="border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex pl-4 md:pl-6 group-hover:bg-gray-100 transition">
+          <div className="flex flex-col md:mb-6 w-full pr-4">
+            <Badge label={courseSession} accentColor={accentColor} />
             <div className="flex items-center">
-              <span className="text-gray-900 font-bold text-3xl md:text-4xl">
+              <span className="text-gray-900 font-bold text-2xl md:text-3xl">
                 {courseCode}
               </span>
             </div>
             <span className="text-gray-500 text-xs ml-1 mt-0.5">{courseName}</span>
           </div>
           {notificationNum !== 0 &&
-            <div className="self-start m-8 shrink-0 rounded-full h-5 w-5 text-center flex items-center justify-center text-white font-bold text-xs bg-red-500">
+            <div className="self-start mr-8 mt-8 shrink-0 rounded-full h-5 w-5 text-center flex items-center justify-center text-white font-bold text-xs bg-red-500">
               {notificationNum}
             </div>
           }
         </div>
       </div >
-    </>
+    </div>
   )
+}
+
+function QuizCard({ quizName, courseCode, deadline, accentColor }) {
+  return (
+    <>
+      <div class="h-fit rounded-md border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor }}>
+        <div class="w-full py-4 md:py-0 h-fit md:h-[120px] bg-white group-hover:bg-gray-100 rounded-r-md border px-6 shrink-0 flex items-center transition">
+          <div class="flex-col justify-center items-start inline-flex">
+            <div class="justify-start items-center gap-3 inline-flex">
+              <div class="text-black md:text-lg xl:text-2xl font-semibold">
+                {quizName}
+              </div>
+              <div class="w-2.5 h-2.5 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
+              <Badge label={courseCode} accentColor={accentColor} />
+            </div>
+            <div class="text-gray-500 text-xs font-normal">
+              Available untill {deadline}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 function NotificationButton() {
