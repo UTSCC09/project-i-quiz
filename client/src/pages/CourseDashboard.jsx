@@ -17,12 +17,12 @@ export default function CourseDashboard() {
           </div>
         </header>
         <main className="h-full py-36 px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row">
-          <div className="flex flex-col gap-4 md:gap-6 lg:w-[30%] xl:w-[30%]">
+          <div className="flex flex-col gap-4 md:gap-6 lg:w-[30%]">
             <div className="text-slate-600 font-medium">Available quizzes</div>
             <QuizCard quizName={"Quiz 1"} courseCode={"CSCC09"} accentColor={colors.blue[600]} deadline={"Oct 20 9:00 p.m."} />
             <QuizCard quizName={"Final Assessment"} courseCode={"CSCC01"} accentColor={colors.indigo[500]} deadline={"Oct 20 9:00 p.m."} />
           </div>
-          <div className=" lg:w-[70%] xl:w-[70%]">
+          <div className="lg:w-[70%]">
             <div className="text-slate-600 font-medium mb-6">My Courses</div>
             <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3%] gap-y-6 md:gap-y-8 h-fit lg:w1-fit">
               <CourseCard courseCode="CSCC09" courseName="Programming on the Web" courseSession="Fall 23" notificationNum={1} />
@@ -41,9 +41,9 @@ export default function CourseDashboard() {
 
 function CourseCard({ courseCode, courseName, courseSession, accentColor = colors.blue[600], notificationNum = 0 }) {
   return (
-    <div className="w-full lg:w-[48%] 2xl:w-[30%]">
+    <div className="w-full md:w-[48%] lg:w-[48%] 2xl:w-[30%]">
       <div className="rounded-md border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer group h-fit" style={{ borderLeftColor: accentColor }}>
-        <div className="border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex pl-4 md:pl-6 group-hover:bg-gray-100 transition">
+        <div className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex pl-4 md:pl-6 group-hover:bg-gray-100 transition">
           <div className="flex flex-col md:mb-6 w-full pr-4">
             <Badge label={courseSession} accentColor={accentColor} />
             <div className="flex items-center">
@@ -54,7 +54,7 @@ function CourseCard({ courseCode, courseName, courseSession, accentColor = color
             <span className="text-gray-500 text-xs ml-1 mt-0.5">{courseName}</span>
           </div>
           {notificationNum !== 0 &&
-            <div className="self-start mr-8 mt-8 shrink-0 rounded-full h-5 w-5 text-center flex items-center justify-center text-white font-bold text-xs bg-red-500">
+            <div className="absolute md:top-8 right-8 shrink-0 rounded-full h-5 w-5 text-center flex items-center justify-center text-white font-bold text-xs bg-red-500">
               {notificationNum}
             </div>
           }
@@ -68,10 +68,10 @@ function QuizCard({ quizName, courseCode, deadline, accentColor }) {
   return (
     <>
       <div class="h-fit rounded-md border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor }}>
-        <div class="w-full py-4 md:py-0 h-fit md:h-[120px] bg-white group-hover:bg-gray-100 rounded-r-md border px-6 shrink-0 flex items-center transition">
+        <div class="w-full py-4 md:py-0 h-fit md:h-24 bg-white group-hover:bg-gray-100 rounded-r-md border px-6 shrink-0 flex items-center transition">
           <div class="flex-col justify-center items-start inline-flex">
             <div class="justify-start items-center gap-3 inline-flex">
-              <div class="text-black md:text-lg xl:text-2xl font-semibold">
+              <div class="text-black md:text-lg font-semibold">
                 {quizName}
               </div>
               <div class="w-2.5 h-2.5 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
