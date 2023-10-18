@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import colors from 'tailwindcss/colors'
-import QuestionWrapper from "../components/QuestionWrapper";
-import MockQuizObject from "../mock_data/QuizMock1.json"
+import QuestionWrapper from "components/questions/QuestionWrapper";
+import MockQuizObject from "mock_data/QuizMock1.json"
 
 const mockQuizObject = MockQuizObject;
 

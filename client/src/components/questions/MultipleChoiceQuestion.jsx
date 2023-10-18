@@ -1,5 +1,5 @@
 import React from "react";
-import RadioGroup from "../components/RadioGroup";
+import RadioGroup from "components/elements/RadioGroup";
 
 const MultipleChoiceQuestion = (props) => {
   return (

@@ -1,5 +1,5 @@
 import React from "react"
-import CheckBoxGroup from "../components/CheckBoxGroup"
+import CheckBoxGroup from "components/elements/CheckBoxGroup"
 
 export default function MultipleSelectQuestion(props) {
   return (
