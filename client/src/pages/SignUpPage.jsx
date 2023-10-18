@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom'
 
 export default function SignUpPage() {
   const location = useLocation();
-  const { email } = location.state;
+  const { email } = location.state ?? "";
 
   return (
     <>
