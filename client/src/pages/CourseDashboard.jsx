@@ -24,7 +24,7 @@ export default function CourseDashboard() {
           </div>
           <div className="lg:w-[70%]">
             <div className="text-slate-600 font-medium mb-6">My Courses</div>
-            <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3%] gap-y-6 md:gap-y-8 h-fit lg:w1-fit">
+            <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3.5%] gap-y-6 md:gap-y-8 h-fit lg:w1-fit">
               <CourseCard courseCode="CSCC09" courseName="Programming on the Web" courseSession="Fall 23" notificationNum={1} />
               <CourseCard courseCode="MATB24" courseName="Linear Algebra II" courseSession="Fall 23" accentColor={colors.rose[500]} />
               <CourseCard courseCode="STAC50" courseName="Data Collection" courseSession="Fall 23" accentColor={colors.orange[500]} />
@@ -41,7 +41,7 @@ export default function CourseDashboard() {
 
 function CourseCard({ courseCode, courseName, courseSession, accentColor = colors.blue[600], notificationNum = 0 }) {
   return (
-    <div className="w-full md:w-[48%] lg:w-[48%] 2xl:w-[30%]">
+    <div className="w-full md:w-[48%] lg:w-[48%] 2xl:w-[31%]">
       <div className="rounded-md border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer group h-fit" style={{ borderLeftColor: accentColor }}>
         <div className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex pl-4 md:pl-6 group-hover:bg-gray-100 transition">
           <div className="flex flex-col md:mb-6 w-full pr-4">
