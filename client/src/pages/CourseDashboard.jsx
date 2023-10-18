@@ -1,69 +1,12 @@
 import React from "react";
-import colors from "tailwindcss/colors";
 import logo from "media/iquiz_logo.svg"
 import { Link } from "react-router-dom";
 import Badge from "components/elements/Badge";
+import CoursesMock from "mock_data/CourseDashboard/CoursesMock.json";
+import QuizzesMock from "mock_data/CourseDashboard/QuizzesMock.json";
 
-const courseData = {
-  courseList: [
-    {
-      courseCode: "CSCC09",
-      courseName: "Programming on the Web",
-      courseSession: "Fall 23",
-      accentColor: colors.blue[600],
-    },
-    {
-      courseCode: "MATB24",
-      courseName: "Linear Algebra II",
-      courseSession: "Fall 23",
-      accentColor: colors.rose[500],
-    },
-    {
-      courseCode: "STAC50",
-      courseName: "Data Collection",
-      courseSession: "Fall 23",
-      accentColor: colors.orange[500],
-    },
-    {
-      courseCode: "LINA01",
-      courseName: "Introduction to Linguistics",
-      courseSession: "Summer 23",
-      accentColor: colors.teal[500],
-    },
-    {
-      courseCode: "CSCD58",
-      courseName: "Computer Networks",
-      courseSession: "Fall 23",
-      accentColor: colors.indigo[500],
-    }
-  ]
-}
-const jsonData = {
-  quizList: [
-    {
-      quizName: "Quiz 1",
-      courseCode: "CSCC09",
-      startTime: "Oct 14, 2023 10:25:00",
-      endTime: "Oct 20, 2023 10:25:00",
-      accentColor: colors.blue[600],
-    },
-    {
-      quizName: "Quiz 2",
-      courseCode: "CSCC09",
-      startTime: "Oct 20, 2023 10:25:00",
-      endTime: "Oct 23, 2023 10:25:00",
-      accentColor: colors.blue[600],
-    },
-    {
-      quizName: "Term Test 1",
-      courseCode: "MATB24",
-      startTime: "Oct 20, 2023 10:25:00",
-      endTime: "Oct 22, 2023 10:25:00",
-      accentColor: colors.rose[500],
-    }
-  ]
-};
-const quizList = jsonData.quizList;
+const courseData = CoursesMock;
+const quizData = QuizzesMock;
 
 export default function CourseDashboard() {
   return (
@@ -135,7 +78,7 @@ function QuizListSection() {
 
         <div className="mt-4 flex flex-col gap-4 lg:gap-6">
           {
-            quizList.map((quizObject, idx) => {
+            quizData.quizList.map((quizObject, idx) => {
               if (isQuizAvailable(quizObject)) {
                 return <QuizCard quizObject={quizObject} key={idx} />
               }
@@ -149,7 +92,7 @@ function QuizListSection() {
         <div className="text-slate-600 font-medium">Upcoming quizzes</div>
         <div className="mt-4 flex flex-col gap-4 lg:gap-6">
           {
-            quizList.map((quizObject, idx) => {
+            quizData.quizList.map((quizObject, idx) => {
               if (!isQuizAvailable(quizObject)) {
                 return <QuizCard quizObject={quizObject} key={idx} />
               }
@@ -186,12 +129,12 @@ function QuizCard({ quizObject }) {
       <div className="h-fit rounded-md border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor, pointerEvents: isAvailable ? "auto" : "none", opacity: isAvailable ? 1 : 0.5 }}>
         <div className="w-full py-4 md:py-0 h-fit md:h-24 bg-white group-hover:bg-gray-100 rounded-r-md border px-4 md:px-6 shrink-0 flex items-center transition">
           <div className="flex-col justify-center items-start inline-flex">
-            <div className="items-center gap-3 inline-flex">
+            <div className="items-center gap-2.5 inline-flex">
               <div className="md:text-lg font-semibold">
                 {quizName}
               </div>
               {isAvailable &&
-                <div className="w-2.5 h-2.5 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
+                <div className="w-2 h-2 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
               }
               <Badge label={courseCode} accentColor={accentColor} />
             </div>

@@ -1,0 +1,25 @@
+{
+  "quizList": [
+    {
+      "quizName": "Quiz 1",
+      "courseCode": "CSCC09",
+      "startTime": "Oct 14, 2023 10:25:00",
+      "endTime": "Oct 20, 2023 10:25:00",
+      "accentColor": "#2563eb"
+    },
+    {
+      "quizName": "Quiz 2",
+      "courseCode": "CSCC09",
+      "startTime": "Oct 20, 2023 10:25:00",
+      "endTime": "Oct 23, 2023 10:25:00",
+      "accentColor": "#2563eb"
+    },
+    {
+      "quizName": "Term Test 1",
+      "courseCode": "MATB24",
+      "startTime": "Oct 20, 2023 10:25:00",
+      "endTime": "Oct 22, 2023 10:25:00",
+      "accentColor": "#f43f5e"
+    }
+  ]
+}
