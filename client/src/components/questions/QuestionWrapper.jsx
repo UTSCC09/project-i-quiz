@@ -1,7 +1,8 @@
 import React from "react";
-import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
-import ShortAnswerQuestion from "./ShortAnswerQuestion";
-import ClozeQuestion from "./ClozeQuestion";
+import MultipleChoiceQuestion from "../questions/MultipleChoiceQuestion";
+import ShortAnswerQuestion from "../questions/ShortAnswerQuestion";
+import ClozeQuestion from "../questions/ClozeQuestion";
+import MultipleSelectQuestion from "../questions/MultipleSelectQuestion";
 
 const QuestionWrapper = (props) => {
   let questionElmt;
@@ -9,6 +10,11 @@ const QuestionWrapper = (props) => {
     case "MCQ":
       questionElmt = (
         <MultipleChoiceQuestion {...props} />
+      )
+      break;
+    case "MSQ":
+      questionElmt = (
+        <MultipleSelectQuestion {...props} />
       )
       break;
     case "SAQ":

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
+const ClozeQuestion = ({ questionObject, savedAnswer, autoSaveAnswers }) => {
   let textHTML = questionObject.text;
   // if the not wrapped in a tag, wrap it with a <div>
   if (textHTML.endsWith("____")) {
@@ -17,11 +17,11 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
       }
       blank_input
         .addEventListener("input", (e) => {
-          onAnswerChange();
+          autoSaveAnswers();
           e.target.style.width = (e.target.value.length * 8 + 24) + "px";
         });
     }
-  }, [onAnswerChange, textHTMLSplitted, savedAnswer, questionObject.qid]);
+  }, [autoSaveAnswers, textHTMLSplitted, savedAnswer, questionObject.qid]);
 
   let textHTMLString = textHTMLSplitted.map((textPart, bid) => {
     if (textHTMLSplitted.length - 1 === bid) {
@@ -31,7 +31,7 @@ const ClozeQuestion = ({ questionObject, savedAnswer, onAnswerChange }) => {
     name="${questionObject.qid}"
     id="input-qid-${questionObject.qid}-bid-${bid}"
     placeholder="${bid + 1}"
-    class="max-w-sm min-w-[4rem] text-center mt-4 w-16 px-1 py-0.5 mx-0.5 text-blue-800 border rounded-md"
+    class="max-w-sm min-w-[4rem] text-center mt-4 w-16 pt-0.5 mx-0.5 text-blue-700 border-b focus:border-blue-700 focus:outline-none"
     ></input>`
   }).join("");
 
