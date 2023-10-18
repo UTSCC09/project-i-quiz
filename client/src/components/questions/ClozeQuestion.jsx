@@ -31,7 +31,7 @@ const ClozeQuestion = ({ questionObject, savedAnswer, autoSaveAnswers }) => {
     name="${questionObject.qid}"
     id="input-qid-${questionObject.qid}-bid-${bid}"
     placeholder="${bid + 1}"
-    className="max-w-sm min-w-[4rem] text-center mt-4 w-16 pt-0.5 mx-0.5 text-blue-700 border-b focus:border-blue-700 focus:outline-none"
+    class="max-w-sm min-w-[4rem] text-center mt-4 w-16 pt-0.5 mx-0.5 text-blue-700 border-b focus:border-blue-700 focus:outline-none"
     ></input>`
   }).join("");
 
