@@ -4,13 +4,10 @@
 
 @layer components {
   .btn-primary {
-    @apply flex items-center justify-center drop-shadow-sm w-32 h-12 text-sm text-white focus:outline-none bg-iquiz-blue rounded-md select-none focus:ring focus:ring-blue-300 hover:opacity-80 transition-all;
+    @apply rounded-md text-center border border-blue-600 bg-blue-600 w-full py-3 font-medium text-white transition select-none hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring focus:ring-blue-200;
   }
   .btn-secondary {
-    @apply flex items-center justify-center drop-shadow-sm w-32 h-12 text-sm text-black focus:outline-none bg-gray-150 rounded-md select-none focus:ring focus:ring-gray-200 hover:opacity-50 transition-all;
-  }
-  .single-line-input {
-    @apply h-12 px-4 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-iquiz-blue focus:ring-opacity-20 transition-all;
+    @apply rounded-md text-center border border-gray-150 bg-gray-150 w-full py-3 font-medium transition select-none hover:bg-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none focus:ring focus:ring-blue-200;
   }
   .input-invalid-state {
     @apply ring ring-red-200

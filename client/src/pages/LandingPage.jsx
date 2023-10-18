@@ -1,23 +1,14 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/components.css";
-import logo from "../media/iquiz_logo.svg";
+import React, { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "styles/components.css";
+import logo from "media/iquiz_logo.svg";
+import SingleLineInput from "components/elements/SingleLineInput";
+import SimpleCheckBox from "components/elements/SimpleCheckBox";
 
 const LandingPage = () => {
-  /* Disable auto-zooming in Safari */
-  if (isIOS()) {
-    document.head.querySelector('meta[name="viewport"]').content = "width=device-width, initial-scale=1, maximum-scale=1";
-  }
-
   return (
     <>
-      <div className="h-screen w-screen flex flex-col bg-center items-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')]">
-        <header className="hidden md:flex h-28 w-full items-center px-16">
-          <img src={logo} alt="iQuiz! Logo" className="h-8"></img>
-        </header>
-        <header className="md:hidden h-28 w-full flex justify-center items-center">
-          <img src={logo} alt="iQuiz! Logo" className="h-8 md:ml-20"></img>
-        </header>
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <SignInWindow />
       </div>
     </>
@@ -26,6 +17,10 @@ const LandingPage = () => {
 
 const SignInWindow = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+  const errorMessageRef = useRef();
 
   function mockLogin(email, password) {
     if (email === "a@a.aa" && password === "a") {
@@ -36,21 +31,17 @@ const SignInWindow = () => {
 
   function signInOnSubmitHandler(e) {
     e.preventDefault();
-    const email = e.target.emailInput.value;
-    const password = e.target.passwordInput.value;
 
-    if (!validateEmailFormat(email)) {
-      document.querySelector("#login_error_msg").textContent = "Invalid email address format";
-      document.querySelector("#login_error_msg").classList.remove("invisible");
-      document.querySelector("#email_input").classList.add("input-invalid-state");
+    if (!emailInputRef.current.validate()) {
+      errorMessageRef.current.textContent = "Invalid email address format";
+      errorMessageRef.current.classList.remove("hidden");
       return;
     }
-    else if (!mockLogin(email, password)) {
-      document.querySelector("#login_error_msg").textContent = "Incorrect login credentials";
-      document.querySelector("#login_error_msg").classList.remove("invisible");
-      document.querySelector("#email_input").classList.add("input-invalid-state");
-      document.querySelector("#password_input").classList.add("input-invalid-state");
-
+    else if (!mockLogin(emailInputRef.current.value, passwordInputRef.current.value)) {
+      errorMessageRef.current.textContent = "Incorrect login credentials";
+      errorMessageRef.current.classList.remove("hidden");
+      emailInputRef.current.setValidationState(false);
+      passwordInputRef.current.setValidationState(false);
     }
     else {
       // alert(`email: ${email}\npassword: ${password}`);
@@ -58,73 +49,45 @@ const SignInWindow = () => {
     }
   }
 
-  function onEmailInputChange(e) {
-    if (validateEmailFormat(e.target.value)) {
-      document.querySelector("#login_error_msg").classList.add("invisible");
-      document.querySelector("#email_input").classList.remove("input-invalid-state");
-    }
-  }
-
-  function validateEmailFormat(stringVal) {
-    return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);
-  }
-
   return (
     <>
       <div
-        className="flex items-center sm:px-14 sm:py-20 px-10 py-12 md:mt-10 lg:ml-[40vw] bg-white border border-gray-100 rounded-md shadow-2xl h-fit w-fit justify-center"
+        className="flex sm:items-center px-12 sm:px-14 py-20 lg:ml-[40vw] bg-white border border-gray-100 sm:rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[26rem] justify-center"
       >
-        <div className="flex flex-col justify-start w-56 sm:w-64">
+        <div className="flex flex-col justify-start w-full">
           <div className="flex flex-col gap-2">
-            <div className="text-xl font-bold">
-              <p>
-                Sign up to begin your unique
-                <img src={logo} alt="iQuiz! Logo" className="w-14 mx-2 mb-0.5 inline self-baseline"></img>
-                experience
-              </p>
+            <div className="text-2xl font-bold">
+              <span>
+                Sign in to begin <br />your{" "}
+                <img src={logo} alt="iQuiz! Logo" className="h-5 mx-1 mb-1 inline self-baseline"></img>
+                {" "}experience
+              </span>
             </div>
             <div className="text-sm text-gray-500">
-              <span>Or log in with an existing account</span>
+              <span>Or create a new account with us today!</span>
             </div>
           </div>
-          <form className="flex flex-col mt-3 " onSubmit={(e) => signInOnSubmitHandler(e)}>
-            <span id="login_error_msg" className="text-red-500 text-sm mb-1 pl-1 invisible">placeholder</span>
-            <input
-              className="single-line-input"
-              name="emailInput"
-              id="email_input"
-              placeholder="Email address"
-              autoComplete="off"
-              onChange={onEmailInputChange}
-            ></input>
-            <input
-              className="mt-3 single-line-input"
-              name="passwordInput"
-              id="password_input"
-              placeholder="Password"
-              type="password"
-              autoComplete="off"
-            ></input>
-            <div className="flex justify-between gap-5 mt-6">
-              <button type="submit" className="btn-primary">Log in</button>
-              <button className="btn-secondary">Sign up</button>
+          <form className="flex flex-col mt-4 " onSubmit={(e) => signInOnSubmitHandler(e)} noValidate>
+            <div ref={errorMessageRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm w-full hidden">
+              Incorrect login credentials
             </div>
+            <div className="flex flex-col gap-3 mt-4">
+              <SingleLineInput
+                id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" onChange={() => setEmail(emailInputRef.current.getValue())} ref={emailInputRef} />
+              <SingleLineInput
+                id="passwordInput" name="password" inputType="password" label="Password" autoComplete="password" ref={passwordInputRef} />
+              <SimpleCheckBox id="checkboxRemember" name="checkboxRemember" label="Remember me" />
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row sm:justify-between gap-3">
+              <button type="submit" className="btn-primary">Log in</button>
+              <Link to="/signup" state={{ email }} className="btn-secondary">Sign up</Link>
+            </div>
+            {/* <span className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <Link className="underline" to="/">Reset</Link></span> */}
           </form>
         </div>
       </div>
     </>
   );
-}
-
-function isIOS() {
-  return [
-    'iPad Simulator',
-    'iPhone Simulator',
-    'iPod Simulator',
-    'iPad',
-    'iPhone',
-    'iPod'
-  ].includes(navigator.platform);
 }
 
 export default LandingPage;
