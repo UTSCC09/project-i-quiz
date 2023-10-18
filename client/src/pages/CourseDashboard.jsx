@@ -139,6 +139,7 @@ function QuizListSection() {
               if (isQuizAvailable(quizObject)) {
                 return <QuizCard quizObject={quizObject} key={idx} />
               }
+              return null;
             })
           }
         </div>
@@ -152,6 +153,7 @@ function QuizListSection() {
               if (!isQuizAvailable(quizObject)) {
                 return <QuizCard quizObject={quizObject} key={idx} />
               }
+              return null;
             })
           }
         </div>
