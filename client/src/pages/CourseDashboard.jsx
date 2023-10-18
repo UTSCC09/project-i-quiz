@@ -4,8 +4,68 @@ import logo from "media/iquiz_logo.svg"
 import { Link } from "react-router-dom";
 import Badge from "components/elements/Badge";
 
-export default function CourseDashboard() {
+const courseData = {
+  courseList: [
+    {
+      courseCode: "CSCC09",
+      courseName: "Programming on the Web",
+      courseSession: "Fall 23",
+      accentColor: colors.blue[600],
+    },
+    {
+      courseCode: "MATB24",
+      courseName: "Linear Algebra II",
+      courseSession: "Fall 23",
+      accentColor: colors.rose[500],
+    },
+    {
+      courseCode: "STAC50",
+      courseName: "Data Collection",
+      courseSession: "Fall 23",
+      accentColor: colors.orange[500],
+    },
+    {
+      courseCode: "LINA01",
+      courseName: "Introduction to Linguistics",
+      courseSession: "Summer 23",
+      accentColor: colors.teal[500],
+    },
+    {
+      courseCode: "CSCD58",
+      courseName: "Computer Networks",
+      courseSession: "Fall 23",
+      accentColor: colors.indigo[500],
+    }
+  ]
+}
+const jsonData = {
+  quizList: [
+    {
+      quizName: "Quiz 1",
+      courseCode: "CSCC09",
+      startTime: "Oct 14, 2023 10:25:00",
+      endTime: "Oct 20, 2023 10:25:00",
+      accentColor: colors.blue[600],
+    },
+    {
+      quizName: "Quiz 2",
+      courseCode: "CSCC09",
+      startTime: "Oct 20, 2023 10:25:00",
+      endTime: "Oct 23, 2023 10:25:00",
+      accentColor: colors.blue[600],
+    },
+    {
+      quizName: "Term Test 1",
+      courseCode: "MATB24",
+      startTime: "Oct 20, 2023 10:25:00",
+      endTime: "Oct 22, 2023 10:25:00",
+      accentColor: colors.rose[500],
+    }
+  ]
+};
+const quizList = jsonData.quizList;
 
+export default function CourseDashboard() {
   return (
     <>
       <div className="h-fit lg:h-screen w-screen bg-gray-100">
@@ -17,20 +77,17 @@ export default function CourseDashboard() {
           </div>
         </header>
         <main className="h-full py-36 px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row">
-          <div className="flex flex-col gap-4 md:gap-6 lg:w-[30%]">
-            <div className="text-slate-600 font-medium">Available quizzes</div>
-            <QuizCard quizName={"Quiz 1"} courseCode={"CSCC09"} accentColor={colors.blue[600]} deadline={"Oct 20 9:00 p.m."} />
-            <QuizCard quizName={"Final Assessment"} courseCode={"CSCC01"} accentColor={colors.indigo[500]} deadline={"Oct 20 9:00 p.m."} />
+          <div className="lg:w-[30%]">
+            <QuizListSection />
           </div>
           <div className="lg:w-[70%]">
             <div className="text-slate-600 font-medium mb-6">My Courses</div>
             <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3.5%] gap-y-6 md:gap-y-8 h-fit lg:w1-fit">
-              <CourseCard courseCode="CSCC09" courseName="Programming on the Web" courseSession="Fall 23" notificationNum={1} />
-              <CourseCard courseCode="MATB24" courseName="Linear Algebra II" courseSession="Fall 23" accentColor={colors.rose[500]} />
-              <CourseCard courseCode="STAC50" courseName="Data Collection" courseSession="Fall 23" accentColor={colors.orange[500]} />
-              {/* <CourseCard courseCode="LINA01" courseName="Introduction to Linguistics" courseSession="Summer 23" accentColor={colors.teal[600]} /> */}
-              <CourseCard courseCode="CSCD58" courseName="Computer Networks" courseSession="Summer 23" accentColor={colors.emerald[600]} />
-              <CourseCard courseCode="CSCC01" courseName="Introduction to Software Engineering" courseSession="Winter 22" accentColor={colors.indigo[600]} notificationNum={1} />
+              {
+                courseData.courseList.map((courseObject, idx) => {
+                  return <CourseCard courseObject={courseObject} key={idx} />
+                })
+              }
             </div>
           </div>
         </main >
@@ -39,11 +96,16 @@ export default function CourseDashboard() {
   )
 }
 
-function CourseCard({ courseCode, courseName, courseSession, accentColor = colors.blue[600], notificationNum = 0 }) {
+function CourseCard({ courseObject, notificationNum = 0 }) {
+  const courseCode = courseObject.courseCode;
+  const courseName = courseObject.courseName;
+  const courseSession = courseObject.courseSession;
+  const accentColor = courseObject.accentColor;
+
   return (
     <div className="w-full md:w-[48%] lg:w-[48%] 2xl:w-[31%]">
       <div className="rounded-md border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer group h-fit" style={{ borderLeftColor: accentColor }}>
-        <div className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex pl-4 md:pl-6 group-hover:bg-gray-100 transition">
+        <div className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 group-hover:bg-gray-100 transition">
           <div className="flex flex-col md:mb-6 w-full pr-4">
             <Badge label={courseSession} accentColor={accentColor} />
             <div className="flex items-center">
@@ -64,21 +126,75 @@ function CourseCard({ courseCode, courseName, courseSession, accentColor = color
   )
 }
 
-function QuizCard({ quizName, courseCode, deadline, accentColor }) {
+function QuizListSection() {
   return (
     <>
-      <div class="h-fit rounded-md border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor }}>
-        <div class="w-full py-4 md:py-0 h-fit md:h-24 bg-white group-hover:bg-gray-100 rounded-r-md border px-6 shrink-0 flex items-center transition">
-          <div class="flex-col justify-center items-start inline-flex">
-            <div class="justify-start items-center gap-3 inline-flex">
-              <div class="text-black md:text-lg font-semibold">
+      {/* Available quizzes */}
+      <div className="flex flex-col">
+        <div className="text-slate-600 font-medium">Available quizzes</div>
+
+        <div className="mt-4 flex flex-col gap-4 lg:gap-6">
+          {
+            quizList.map((quizObject, idx) => {
+              if (isQuizAvailable(quizObject)) {
+                return <QuizCard quizObject={quizObject} key={idx} />
+              }
+            })
+          }
+        </div>
+      </div>
+      {/* Upcoming quizzes */}
+      <div className="mt-8 flex flex-col">
+        <div className="text-slate-600 font-medium">Upcoming quizzes</div>
+        <div className="mt-4 flex flex-col gap-4 lg:gap-6">
+          {
+            quizList.map((quizObject, idx) => {
+              if (!isQuizAvailable(quizObject)) {
+                return <QuizCard quizObject={quizObject} key={idx} />
+              }
+            })
+          }
+        </div>
+      </div >
+    </>
+  )
+}
+
+function isQuizAvailable(quizObject) {
+  const startTime = quizObject.startTime;
+  const endTime = quizObject.endTime;
+  const currentTime = new Date();
+  return (new Date(startTime)) < currentTime && (new Date(endTime)) > currentTime
+}
+
+function QuizCard({ quizObject }) {
+  const quizName = quizObject.quizName;
+  const courseCode = quizObject.courseCode;
+  const endTime = new Date(quizObject.endTime);
+  const accentColor = quizObject.accentColor;
+
+  const isAvailable = isQuizAvailable(quizObject);
+
+  const quizAvailabilityPrompt = isAvailable ?
+    "Available untill " : "Will be available on "
+
+  const options = { month: "short", day: "numeric", hour: "numeric", minute: "numeric" };
+  return (
+    <>
+      <div className="h-fit rounded-md border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor, pointerEvents: isAvailable ? "auto" : "none", opacity: isAvailable ? 1 : 0.5 }}>
+        <div className="w-full py-4 md:py-0 h-fit md:h-24 bg-white group-hover:bg-gray-100 rounded-r-md border px-4 md:px-6 shrink-0 flex items-center transition">
+          <div className="flex-col justify-center items-start inline-flex">
+            <div className="items-center gap-3 inline-flex">
+              <div className="md:text-lg font-semibold">
                 {quizName}
               </div>
-              <div class="w-2.5 h-2.5 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
+              {isAvailable &&
+                <div className="w-2.5 h-2.5 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
+              }
               <Badge label={courseCode} accentColor={accentColor} />
             </div>
-            <div class="text-gray-500 text-xs font-normal">
-              Available untill {deadline}
+            <div className="text-gray-500 text-xs font-normal">
+              {quizAvailabilityPrompt + endTime.toLocaleString(undefined, options)}
             </div>
           </div>
         </div>
