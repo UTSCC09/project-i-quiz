@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion"
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
 import CourseArrMock from "mock_data/CourseDashboard/CourseArrMock.json";
@@ -36,12 +37,27 @@ export default function CoursePage() {
 
   const [quizList, setQuizList] = useState(getQuizData("new"));
 
-  useEffect(() => {
-  }, [quizList, setQuizList])
-
   function onChange() {
     setQuizList(getQuizData(document.getElementById("filterSelect").value))
   }
+
+  const variants = {
+    show: {
+      opacity: 1,
+      scale: 1,
+      height: "auto",
+      transition: {
+        ease: "easeInOut",
+        duration: 0.3,
+        opacity: { delay: 0.15 }
+      }
+    },
+    hide: {
+      opacity: 0,
+      scale: 0.95,
+      height: 0
+    }
+  };
 
   return (
     <>
@@ -73,16 +89,22 @@ export default function CoursePage() {
               </select>
             </div>
           </div>
-          <QuizList quizDataArr={quizList} />
+          <AnimatePresence>{
+            <motion.div key={quizList} variants={variants} animate={"show"} initial={"hide"} exit={"hide"}> {
+              <QuizList quizDataArr={quizList} />
+            }
+            </motion.div>
+          }
+          </AnimatePresence>
         </div>
       </div >
     </>
   )
 }
 
-function QuizList({ className, quizDataArr }) {
+function QuizList({ quizDataArr }) {
   return (
-    <div className={"flex flex-col w-full gap-4 " + className}>
+    <div className={"flex flex-col w-full gap-4"}>
       {
         quizDataArr.map((quizObject, idx) => {
           return <QuizCard quizObject={quizObject} key={idx} />

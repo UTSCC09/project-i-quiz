@@ -1,14 +1,9 @@
-import React, { useEffect } from "react";
-import colors from 'tailwindcss/colors'
+import React from "react";
 import QuestionWrapper from "components/questions/QuestionWrapper";
 import QuizMock from "mock_data/QuizPage/QuizMock_1.json"
 import NavBar from "components/page_components/NavBar";
 
 const QuizPage = () => {
-  useEffect(() => {
-    document.body.style.backgroundColor = colors.gray[100];
-  })
-
   let savedAnswers = JSON.parse(localStorage.getItem("savedAnswers")) ?? {};
 
   console.log("Fetched saved aswers from LocalStorage:", savedAnswers);
@@ -31,7 +26,7 @@ const QuizPage = () => {
     <>
       <NavBar />
       <form>
-        <div className="w-screen flex justify-center py-36">
+        <div className="w-screen flex justify-center py-36 bg-gray-100">
           <div className="w-full px-8 md:w-[48rem] flex flex-col items-center">
             {
               QuizMock.questions.map((questionObj, idx) => {

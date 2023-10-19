@@ -67,7 +67,7 @@ export default function QuizCard({ quizObject }) {
               <div className="md:text-lg font-semibold">
                 {quizName}
               </div>
-              {isAvailable &&
+              {isAvailable && !submitted &&
                 <div className="w-2 h-2 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
               }
               <Badge label={courseCode} accentColor={accentColor} />

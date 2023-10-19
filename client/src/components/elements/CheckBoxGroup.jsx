@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function CheckBoxGroup(props) {
   const optionDictInit = {}
@@ -52,35 +52,38 @@ function CheckOption(props) {
         onChange={() => props.onOptionChange(props.oid)}
         className="peer hidden [&:checked_+_label_span]:font-medium"
       />
-      <label
-        htmlFor={props.oid}
-        className="flex cursor-pointer items-center rounded-lg border border-gray-100 bg-white p-4 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500 peer-checked:bg-blue-10 peer-checked:font-medium"
-      >
-        <div>
-          <motion.svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="5"
-            stroke="currentColor"
-            className="h-3.5 w-3.5 text-iquiz-blue"
-            initial={"unchecked"}
+      <AnimatePresence initial={false}>
+        <label
+          htmlFor={props.oid}
+          className="flex cursor-pointer items-center rounded-lg border border-gray-100 bg-white p-4 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500 peer-checked:bg-blue-10 peer-checked:font-medium"
+        >
+          <div>
+            <motion.svg
+              key="check"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="5"
+              stroke="currentColor"
+              className="h-3.5 w-3.5 text-iquiz-blue"
+              initial={"unchecked"}
+              animate={props.optionDict[props.oid] ? "checked" : "unchecked"}
+            >
+              <motion.path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+                variants={checkIconVariants}
+              />
+            </motion.svg>
+          </div>
+          <motion.div
             animate={props.optionDict[props.oid] ? "checked" : "unchecked"}
-          >
-            <motion.path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-              variants={checkIconVariants}
-            />
-          </motion.svg>
-        </div>
-        <motion.div
-          animate={props.optionDict[props.oid] ? "checked" : "unchecked"}
-          variants={labelTextVariant}
-          className="text-sm sm:text-base"
-          dangerouslySetInnerHTML={{ __html: props.text }}></motion.div>
-      </label>
+            variants={labelTextVariant}
+            className="text-sm sm:text-base"
+            dangerouslySetInnerHTML={{ __html: props.text }}></motion.div>
+        </label>
+      </AnimatePresence>
     </div >
   )
 }
