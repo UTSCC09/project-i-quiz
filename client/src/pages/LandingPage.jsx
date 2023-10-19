@@ -22,30 +22,49 @@ const SignInWindow = () => {
   const passwordInputRef = useRef();
   const errorMessageRef = useRef();
 
-  function mockLogin(email, password) {
-    if (email === "a@a.aa" && password === "a") {
-      return true;
-    }
-    return false;
+  function login(email, password) {
+    const baseUrl = process.env.REACT_APP_API_BASE_URL;
+
+    fetch(new URL("/api/users/login", baseUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }).then((response) => response.json())
+      .then((result) => {
+        if (result.hasOwnProperty("token")) {
+          return result.token;
+        }
+      });
+    return;
   }
 
-  function signInOnSubmitHandler(e) {
+  function onAuthFormSubmitHandler(e) {
     e.preventDefault();
 
+    // Validate email address format
     if (!emailInputRef.current.validate()) {
       errorMessageRef.current.textContent = "Invalid email address format";
       errorMessageRef.current.classList.remove("hidden");
       return;
     }
-    else if (!mockLogin(emailInputRef.current.value, passwordInputRef.current.value)) {
+
+    // Login
+    const formData = new FormData(e.target);
+    const loginToken = login(formData.get("email"), formData.get("password"))
+
+    // Handle login result
+    // TODO: handle session
+    if (loginToken) {
+      navigate("/dashboard")
+    }
+    else {
       errorMessageRef.current.textContent = "Incorrect login credentials";
       errorMessageRef.current.classList.remove("hidden");
       emailInputRef.current.setValidationState(false);
       passwordInputRef.current.setValidationState(false);
-    }
-    else {
-      // alert(`email: ${email}\npassword: ${password}`);
-      return navigate("/dashboard")
     }
   }
 
@@ -67,7 +86,7 @@ const SignInWindow = () => {
               <span>Or create a new account with us today!</span>
             </div>
           </div>
-          <form className="flex flex-col mt-4 " onSubmit={(e) => signInOnSubmitHandler(e)} noValidate>
+          <form className="flex flex-col mt-4 " onSubmit={(e) => onAuthFormSubmitHandler(e)} noValidate>
             <div ref={errorMessageRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm w-full hidden">
               Incorrect login credentials
             </div>
