@@ -21,6 +21,27 @@ function SignUpWindow({ email }) {
   const inputRefs = useRef([]);
   const alertRef = useRef();
 
+  function signUp(firstName, lastName, email, password) {
+    const baseUrl = process.env.REACT_APP_API_BASE_URL;
+
+    fetch(new URL("/api/users", baseUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password
+      })
+    }).then((response) => response.json())
+      .then((result) => {
+        if (result.hasOwnProperty("_id")) {
+          return result._id;
+        }
+      });
+    return;
+  }
+
   function onSubmit(e) {
     e.preventDefault();
 
@@ -70,7 +91,13 @@ function SignUpWindow({ email }) {
 
     // If validation passed, remove alert banner
     alertRef.current.classList.add("hidden");
-    // TODO: Send request to server
+
+    // Call Sign Up API
+    const formData = new FormData(e.target);
+
+    signUp(formData.get("firstName"), formData.get("lastName"), formData.get("email"), formData.get("password"));
+
+    // TODO: handle session
   }
 
   return (
