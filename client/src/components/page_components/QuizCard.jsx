@@ -14,38 +14,45 @@ function getQuizState(quizObject) {
     return "available";
   }
   else {
-    return "expired";
+    return "closed";
   }
 }
 
-// quizState: available, upcoming, expired
+function getFormattedDateStr(time) {
+  const dateFormatOptions = { month: "short", day: "numeric" };
+  const timeFormatOptions = { hour: "numeric", minute: "numeric" };
+  return time.toLocaleDateString(undefined, dateFormatOptions) + " at " + time.toLocaleTimeString(undefined, timeFormatOptions);
+}
+
+// quizState: available, upcoming, closed
 export default function QuizCard({ quizObject }) {
   const quizName = quizObject.quizName;
   const courseCode = quizObject.courseCode;
+  const startTime = new Date(quizObject.endTime);
   const endTime = new Date(quizObject.endTime);
   const accentColor = quizObject.accentColor;
 
   const quizState = getQuizState(quizObject);
 
+  const startTimeStr = getFormattedDateStr(startTime);
+  const endTimeStr = getFormattedDateStr(endTime);
+
   let quizAvailabilityPrompt, isAvailable;
 
   switch (quizState) {
     case "available":
-      quizAvailabilityPrompt = "Available untill";
+      quizAvailabilityPrompt = "Available untill " + startTimeStr;
       isAvailable = true;
       break;
     case "upcoming":
-      quizAvailabilityPrompt = "Unlocks on";
+      quizAvailabilityPrompt = "Unlocks on " + startTimeStr;
       isAvailable = false;
       break;
-    case "expired":
-      quizAvailabilityPrompt = "Expired on";
+    case "closed":
+      quizAvailabilityPrompt = "Closed on " + endTimeStr;
       isAvailable = false;
       break;
   }
-
-  const dateFormatOptions = { month: "short", day: "numeric" };
-  const timeFormatOptions = { hour: "numeric", minute: "numeric" };
   return (
     <>
       <div className="h-fit rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor, pointerEvents: isAvailable ? "auto" : "none", opacity: isAvailable ? 1 : 0.5 }}>
@@ -61,7 +68,7 @@ export default function QuizCard({ quizObject }) {
               <Badge label={courseCode} accentColor={accentColor} />
             </div>
             <div className="text-gray-500 text-xs font-normal">
-              {quizAvailabilityPrompt + " " + endTime.toLocaleDateString(undefined, dateFormatOptions) + " at " + endTime.toLocaleTimeString(undefined, timeFormatOptions)}
+              {quizAvailabilityPrompt}
             </div>
           </div>
         </div>

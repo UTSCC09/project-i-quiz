@@ -1,0 +1,18 @@
+{
+  "response": [
+    {
+      "quizName": "Quiz 1",
+      "courseCode": "CSCC09",
+      "startTime": "Sep 10, 2023 9:00",
+      "endTime": "Sep 10, 2023 10:00:00",
+      "accentColor": "#2563eb"
+    },
+    {
+      "quizName": "Quiz 2",
+      "courseCode": "CSCC09",
+      "startTime": "Oct 14, 2023 9:00",
+      "endTime": "Oct 14, 2023 10:00:00",
+      "accentColor": "#2563eb"
+    }
+  ]
+}

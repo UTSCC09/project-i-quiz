@@ -1,14 +1,16 @@
 import React from "react";
 import Badge from "components/elements/Badge";
+import { Link } from "react-router-dom";
 
 export default function CourseCard({ courseObject, notificationNum = 0 }) {
+  const courseId = courseObject._id;
   const courseCode = courseObject.courseCode;
   const courseName = courseObject.courseName;
   const courseSession = courseObject.courseSession;
   const accentColor = courseObject.accentColor;
 
   return (
-    <div className="w-full md:w-[48%] lg:w-[48%] 2xl:w-[31%]">
+    <Link to={"/courses/" + courseId} className="w-full md:w-[48%] lg:w-[48%] 2xl:w-[31%]">
       <div className="rounded-md border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer group h-fit" style={{ borderLeftColor: accentColor }}>
         <div className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 group-hover:bg-gray-100 transition">
           <div className="flex flex-col md:mb-6 w-full pr-4">
@@ -27,6 +29,6 @@ export default function CourseCard({ courseObject, notificationNum = 0 }) {
           }
         </div>
       </div >
-    </div>
+    </Link>
   )
 }

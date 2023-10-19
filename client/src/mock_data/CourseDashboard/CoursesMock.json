@@ -1,30 +1,35 @@
 {
   "courseList": [
     {
+      "_id": "0",
       "courseCode": "CSCC09",
       "courseName": "Programming on the Web",
       "courseSession": "Fall 23",
       "accentColor": "#2563eb"
     },
     {
+      "_id": "1",
       "courseCode": "MATB24",
       "courseName": "Linear Algebra II",
       "courseSession": "Fall 23",
       "accentColor": "#f43f5e"
     },
     {
+      "_id": "2",
       "courseCode": "STAC50",
       "courseName": "Data Collection",
       "courseSession": "Fall 23",
       "accentColor": "#f97316"
     },
     {
+      "_id": "3",
       "courseCode": "LINA01",
       "courseName": "Introduction to Linguistics",
       "courseSession": "Summer 23",
       "accentColor": "#14b8a6"
     },
     {
+      "_id": "4",
       "courseCode": "CSCD58",
       "courseName": "Computer Networks",
       "courseSession": "Fall 23",
