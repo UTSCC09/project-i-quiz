@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion"
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
@@ -15,11 +15,11 @@ function getCourseInfo(courseId) {
 
 function getQuizData(filter) {
   switch (filter) {
-    case "new":
+    case "New Quizzes":
       return QuizArrMockNew.response;
-    case "all":
+    case "All Quizzes":
       return QuizArrMockAll.response;
-    case "past":
+    case "Past Quizzes":
       return QuizArrMockPast.response;
     default:
       return;
@@ -28,6 +28,10 @@ function getQuizData(filter) {
 }
 
 export default function CoursePage() {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selection, setSelection] = useState("New Quizzes");
+  const [quizList, setQuizList] = useState(getQuizData(selection));
+
   const { courseId } = useParams();
   const courseInfo = getCourseInfo(courseId);
   const courseCode = courseInfo.courseCode;
@@ -35,10 +39,11 @@ export default function CoursePage() {
   const courseName = courseInfo.courseName;
   const accentColor = courseInfo.accentColor;
 
-  const [quizList, setQuizList] = useState(getQuizData("new"));
-
-  function onChange() {
-    setQuizList(getQuizData(document.getElementById("filterSelect").value))
+  function onSelectionChange(selection) {
+    setShowDropdown(selection);
+    setSelection(selection);
+    setQuizList(getQuizData(selection));
+    setShowDropdown(false);
   }
 
   const variants = {
@@ -49,13 +54,12 @@ export default function CoursePage() {
       transition: {
         ease: "easeInOut",
         duration: 0.3,
-        opacity: { delay: 0.15 }
       }
     },
     hide: {
       opacity: 0,
       scale: 0.95,
-      height: 0
+      height: 0,
     }
   };
 
@@ -74,19 +78,38 @@ export default function CoursePage() {
               </div>
               <span className="text-gray-500 text-xs ml-1 mt-0.5">{courseName}</span>
             </div>
-            <div className="shadow-sm rounded-lg border">
-              <select
-                name="quizFilter"
-                id="filterSelect"
-                className="w-36 outline-1 pl-3 h-8 rounded-lg border-gray-300 text-gray-700 text-sm border-r-[12px] border-r-transparent"
-                style={{ outlineColor: courseInfo.accentColor }}
-                defaultValue="new"
-                onChange={onChange}
+            <div>
+              <button
+                onClick={(e) => {
+                  setShowDropdown(!showDropdown);
+                  e.target.focus();
+                }}
+                onBlur={() => setShowDropdown(false)}
+                className="text-slate-600 border shadow-sm bg-white hover:bg-gray-200 rounded-lg text-sm w-36 h-10 flex items-center justify-between px-4 focus:ring focus:ring-blue-300"
               >
-                <option value="new">New Quizzes</option>
-                <option value="past">Past Quizzes</option>
-                <option value="all">All Quizzes</option>
-              </select>
+                {selection}
+                <input type="checkbox" className="peer hidden" checked={showDropdown} readOnly />
+                <svg className="h-3.5 transition ease-in-out duration-200 peer-checked:rotate-180" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path clipRule="evenodd" fillRule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" stroke="currentColor" strokeWidth="1"></path>
+                </svg>
+              </button>
+              <input type="checkbox" className="peer hidden" checked={showDropdown} readOnly />
+              <AnimatePresence>{showDropdown &&
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  onBlur={() => setShowDropdown(false)}
+                  className="z-10 absolute mt-2 hidden peer-checked:block bg-white rounded-lg shadow-lg w-36">
+                  <div className="py-2 text-sm text-gray-700">
+                    <button onMouseDown={() => { onSelectionChange("New Quizzes") }} className="px-4 py-2 w-full hover:bg-gray-150">New Quizzes</button>
+                    <button onMouseDown={() => { onSelectionChange("All Quizzes") }} className="px-4 py-2 w-full hover:bg-gray-150">All Quizzes</button>
+                    <button onMouseDown={() => { onSelectionChange("Past Quizzes") }} className="px-4 py-2 w-full hover:bg-gray-150">Past Quizzes</button>
+                  </div>
+                </motion.div>
+              }
+              </AnimatePresence>
+
             </div>
           </div>
           <AnimatePresence>{
@@ -96,7 +119,7 @@ export default function CoursePage() {
             </motion.div>
           }
           </AnimatePresence>
-        </div>
+        </div >
       </div >
     </>
   )
