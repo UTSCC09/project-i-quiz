@@ -52,6 +52,8 @@ export default function QuizCard({ quizObject }) {
       quizAvailabilityPrompt = "Closed on " + endTimeStr;
       isAvailable = false;
       break;
+    default:
+      break;
   }
   return (
     <>

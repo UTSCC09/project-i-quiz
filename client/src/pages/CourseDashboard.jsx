@@ -1,13 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import NavBar from "components/page_components/NavBar";
 import CourseCard from "components/page_components/CourseCard";
-import CoursesMock from "mock_data/CourseDashboard/CoursesMock.json";
-import QuizzesMock from "mock_data/CourseDashboard/QuizzesMock.json";
+import CourseArrMock from "mock_data/CourseDashboard/CourseArrMock.json";
+import QuizArrMock_available from "mock_data/CourseDashboard/QuizArrMock_available.json";
+import QuizArrMock_upcoming from "mock_data/CourseDashboard/QuizArrMock_upcoming.json";
 import QuizCard from "components/page_components/QuizCard";
 
-const courseData = CoursesMock;
-const quizData = QuizzesMock;
+const courseData = CourseArrMock;
+const quizData = QuizArrMock_available;
+const quizData2 = QuizArrMock_upcoming;
 
 export default function CourseDashboard() {
   return (
@@ -54,7 +55,7 @@ function QuizListSection() {
         <div className="text-slate-600 font-medium">Upcoming quizzes</div>
         <div className="mt-4 flex flex-col gap-4 lg:gap-6">
           {
-            quizData.quizList.map((quizObject, idx) => {
+            quizData2.quizList.map((quizObject, idx) => {
               return <QuizCard quizObject={quizObject} key={idx} />
             })
           }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
-import CoursesMock from "mock_data/CourseDashboard/CoursesMock.json";
+import CourseArrMock from "mock_data/CourseDashboard/CourseArrMock.json";
 import QuizArrMockAll from "mock_data/CoursePage/QuizArrMock_all.json";
 import QuizArrMockNew from "mock_data/CoursePage/QuizArrMock_new.json";
 import QuizArrMockPast from "mock_data/CoursePage/QuizArrMock_past.json";
@@ -9,7 +9,7 @@ import NavBar from "components/page_components/NavBar";
 import { useParams } from "react-router-dom";
 
 function getCourseInfo(courseId) {
-  return CoursesMock.courseList[0]
+  return CourseArrMock.courseList[0]
 }
 
 function getQuizData(filter) {
@@ -20,6 +20,8 @@ function getQuizData(filter) {
       return QuizArrMockAll.response;
     case "past":
       return QuizArrMockPast.response;
+    default:
+      return;
   }
 
 }
@@ -32,14 +34,13 @@ export default function CoursePage() {
   const courseName = courseInfo.courseName;
   const accentColor = courseInfo.accentColor;
 
-  const [quizFilter, setQuizFilter] = useState("new");
   const [quizList, setQuizList] = useState(getQuizData("new"));
 
   useEffect(() => {
   }, [quizList, setQuizList])
 
   function onChange() {
-    setQuizList(getQuizData(document.getElementById("select1").value))
+    setQuizList(getQuizData(document.getElementById("filterSelect").value))
   }
 
   return (
@@ -60,7 +61,7 @@ export default function CoursePage() {
             <div className="shadow-sm rounded-lg border">
               <select
                 name="quizFilter"
-                id="select1"
+                id="filterSelect"
                 className="w-36 outline-1 pl-3 h-8 rounded-lg border-gray-300 text-gray-700 text-sm border-r-[12px] border-r-transparent"
                 style={{ outlineColor: courseInfo.accentColor }}
                 defaultValue="new"
