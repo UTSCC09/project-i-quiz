@@ -13,8 +13,8 @@ export default function CourseDashboard() {
   return (
     <>
       <NavBar />
-      <div className="h-fit lg:h-screen w-screen bg-gray-100 py-36">
-        <main className="h-full px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row">
+      <div className="min-h-screen w-screen bg-gray-100">
+        <main className="h-fit px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-36">
           <div className="lg:w-[30%]">
             <QuizListSection />
           </div>
