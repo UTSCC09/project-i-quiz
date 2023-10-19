@@ -32,7 +32,7 @@ const QuestionsDemoPage = () => {
     <>
       <form>
         <div className="w-screen flex justify-center">
-          <div className="w-[80vw] lg:w-[48rem] flex flex-col items-center">
+          <div className="w-full px-8 md:w-[48rem] flex flex-col items-center">
             {
               mockQuizObject.questions.map((questionObj, idx) => {
                 return (
