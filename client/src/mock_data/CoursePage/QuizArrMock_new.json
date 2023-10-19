@@ -5,7 +5,8 @@
       "courseCode": "CSCC09",
       "startTime": "Oct 14, 2023 00:00:00",
       "endTime": "Oct 25, 2023 23:59:00",
-      "accentColor": "#2563eb"
+      "accentColor": "#2563eb",
+      "submitted": true
     },
     {
       "quizName": "Quiz 3",

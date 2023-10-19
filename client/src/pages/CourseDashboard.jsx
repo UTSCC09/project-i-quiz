@@ -16,10 +16,10 @@ export default function CourseDashboard() {
       <NavBar />
       <div className="min-h-screen w-screen bg-gray-100">
         <main className="h-fit px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-36">
-          <div className="lg:w-[30%]">
+          <div className="lg:w-[35%]">
             <QuizListSection />
           </div>
-          <div className="lg:w-[70%]">
+          <div className="lg:w-[65%]">
             <div className="text-slate-600 font-medium mb-6">My Courses</div>
             <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3.5%] gap-y-6 md:gap-y-8 h-fit lg:w1-fit">
               {

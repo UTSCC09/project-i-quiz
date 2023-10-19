@@ -5,7 +5,9 @@ import logo from "media/iquiz_logo.svg"
 export default function NavBar() {
   return (
     <header className="fixed h-28 w-full bg-white shadow-sm flex items-center px-8 md:px-24 justify-between z-50">
-      <Link to="/"><img src={logo} alt="iQuiz! Logo" className="h-7"></img></Link>
+      <Link to="/courses">
+        <img src={logo} alt="iQuiz! Logo" className="h-7"></img>
+      </Link>
       <div className="flex gap-2 md:gap-6">
         <NotificationButton />
         <SettingsButton />

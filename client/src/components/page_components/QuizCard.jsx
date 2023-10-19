@@ -1,6 +1,8 @@
 
 import React from "react";
 import Badge from "components/elements/Badge.jsx";
+import colors from "tailwindcss/colors";
+import { Link } from "react-router-dom";
 
 function getQuizState(quizObject) {
   const startTime = new Date(quizObject.startTime);
@@ -31,6 +33,7 @@ export default function QuizCard({ quizObject }) {
   const startTime = new Date(quizObject.endTime);
   const endTime = new Date(quizObject.endTime);
   const accentColor = quizObject.accentColor;
+  const submitted = quizObject.submitted;
 
   const quizState = getQuizState(quizObject);
 
@@ -57,8 +60,8 @@ export default function QuizCard({ quizObject }) {
   }
   return (
     <>
-      <div className="h-fit rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor, pointerEvents: isAvailable ? "auto" : "none", opacity: isAvailable ? 1 : 0.5 }}>
-        <div className="w-full py-4 md:py-0 h-fit md:h-24 bg-white group-hover:bg-gray-100 rounded-r border px-4 md:px-6 shrink-0 flex items-center transition">
+      <Link to="/quiz/0" className="h-fit rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor, pointerEvents: isAvailable ? "auto" : "none", opacity: isAvailable ? 1 : 0.5 }}>
+        <div className="w-full py-4 md:py-6 h-fit bg-white group-hover:bg-gray-100 rounded-r border px-4 md:px-6 shrink-0 flex items-center transition">
           <div className="flex-col justify-center items-start inline-flex">
             <div className="items-center gap-2.5 inline-flex">
               <div className="md:text-lg font-semibold">
@@ -68,13 +71,16 @@ export default function QuizCard({ quizObject }) {
                 <div className="w-2 h-2 shrink-0 rounded-full" style={{ backgroundColor: accentColor }}></div>
               }
               <Badge label={courseCode} accentColor={accentColor} />
+              {submitted &&
+                <Badge label={"submitted"} accentColor={colors.green[600]} />
+              }
             </div>
             <div className="text-gray-500 text-xs font-normal">
               {quizAvailabilityPrompt}
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 }
