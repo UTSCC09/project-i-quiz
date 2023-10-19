@@ -98,6 +98,7 @@ function SignUpWindow({ email }) {
     signUp(formData.get("firstName"), formData.get("lastName"), formData.get("email"), formData.get("password"));
 
     // TODO: handle session
+    // TODO: display error message when failed
   }
 
   return (
