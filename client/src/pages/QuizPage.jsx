@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import colors from 'tailwindcss/colors'
 import QuestionWrapper from "components/questions/QuestionWrapper";
-import MockQuizObject from "mock_data/QuizMock1.json"
+import QuizMock from "mock_data/QuizPage/QuizMock_1.json"
+import NavBar from "components/page_components/NavBar";
 
-const mockQuizObject = MockQuizObject;
-
-const QuestionsDemoPage = () => {
+const QuizPage = () => {
   useEffect(() => {
     document.body.style.backgroundColor = colors.gray[100];
   })
@@ -14,7 +13,7 @@ const QuestionsDemoPage = () => {
 
   console.log("Fetched saved aswers from LocalStorage:", savedAnswers);
 
-  mockQuizObject.questions.forEach((questionObj) => {
+  QuizMock.questions.forEach((questionObj) => {
     savedAnswers[questionObj.qid] = savedAnswers[questionObj.qid] ?? [];
   });
 
@@ -30,18 +29,19 @@ const QuestionsDemoPage = () => {
 
   return (
     <>
+      <NavBar />
       <form>
-        <div className="w-screen flex justify-center">
+        <div className="w-screen flex justify-center py-36">
           <div className="w-full px-8 md:w-[48rem] flex flex-col items-center">
             {
-              mockQuizObject.questions.map((questionObj, idx) => {
+              QuizMock.questions.map((questionObj, idx) => {
                 return (
                   <div
                     className="h-fit w-full m-5 flex flex-col border drop-shadow-sm bg-white shadow-gray-150 rounded-md py-12"
                     key={questionObj.qid}
                   >
                     <span className="font-bold text-sm uppercase ml-12 text-gray-500 mb-4">
-                      Question {idx + 1} / {mockQuizObject.questions.length}
+                      Question {idx + 1} / {QuizMock.questions.length}
                     </span>
                     <div className="border-b h-0 mb-6 mx-10"></div>
                     <div className="mx-12">
@@ -61,4 +61,4 @@ const QuestionsDemoPage = () => {
   );
 };
 
-export default QuestionsDemoPage;
+export default QuizPage;
