@@ -28,7 +28,7 @@ const protect = asyncHandler(async (req, res, next) => {
     }
   }
   else {
-    return res.status(401).json(formatMessage(false, "Error authenticating user"));
+    return res.status(401).json(formatMessage(false, "Not authorized, no token"));
   }
 });
 
