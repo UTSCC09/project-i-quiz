@@ -3,6 +3,7 @@ import { compare, genSalt, hash } from "bcrypt";
 import dotenv from "dotenv";
 import { createRequire } from "module";
 import User from "../models/User.js";
+import formatMessage from "../utils/utils.js";
 
 // Cannot export sign function from jsonwebtoken, work around
 const require = createRequire(import.meta.url);
@@ -22,13 +23,13 @@ const registerUser = asyncHandler(async (req, res) => {
   
   //Verify all fields exist.
   if (!firstName || !lastName || !email || !password){
-    return res.status(400).send("Missing fields");
+    return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
   //Checks if there is a pre-existing user.
   const existsUser = await User.findOne({ email });
   if (existsUser){
-    return res.status(400).send("Email is already registered");
+    return res.status(400).json(formatMessage(false, "Email is already registered"));
   }
 
   //Salting password.
@@ -46,12 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
       //Return user object
       if (user) {
-        return res.status(200).json({
-          "_id": user.id,
-          "firstName": user.firstName,
-          "lastName": user.lastName,
-          "email": user.email
-        });
+        return res.status(200).json(formatMessage(true, "Registered Successfully"));
       }
     });
   });
@@ -62,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
 //@desc   [DESCRIPTION OF WHAT ROUTE DOES]
 //@access Private
 const getUsers = asyncHandler(async (req, res) => {
-  return res.status(200).send("getUsers called after protect authMiddleware");
+  return res.status(200).json(formatMessage(true, "getUsers called after protect authMiddleware"));
 });
 
 //@route  POST api/users/login
@@ -70,24 +66,24 @@ const getUsers = asyncHandler(async (req, res) => {
 //@access Public
 const loginUser = asyncHandler(async (req, res) => {
   if (req.session.token){
-    return res.status(400).send("User already logged in");
+    return res.status(400).json(formatMessage(false, "User already logged in"));
   }
   const {email, password} = req.body;
 
   //Verify all fields exist.
   if (!email || !password){
-    return res.status(400).send("Missing fields");
+    return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
   //Verify valid user
   const user = await User.findOne({ email });
   if (!user){
-    return res.status(400).send("Email is not registered");
+    return res.status(400).json(formatMessage(false, "Email is not registered"));
   }
 
   compare(password, user.password, function(err, result){
     if (!result) {
-      return res.status(401).send("Incorrect password");
+      return res.status(401).json(formatMessage(false, "Incorrect password"));
     }
 
     //Store email & token in session
@@ -95,13 +91,7 @@ const loginUser = asyncHandler(async (req, res) => {
     req.session.email = user.email;
 
     //Return user object with token
-    return res.json({
-      "_id": user.id, 
-      "firstName": user.firstName,
-      "lastName": user.lastName,
-      "email": user.email,
-      "token": req.session.token
-    });
+    return res.json(formatMessage(true, "Login Successfully"));
   });
 
 
