@@ -72,7 +72,7 @@ export default function CoursePage() {
           }
         }}>
         <div className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
-          <div className="flex items-end justify-between mb-6 lg:mb-8">
+          <div className="flex items-end justify-between mb-6 md:mb-8">
             <div className="flex flex-col pr-4">
               <Badge label={courseSession} accentColor={accentColor} />
               <div className="flex items-center">
