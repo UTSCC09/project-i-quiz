@@ -80,7 +80,7 @@ export default function CourseDashboard() {
             />
           </div>
           <div ref={courseSectionRef} className="hidden flex flex-col gap-8 lg:flex lg:w-[65%]">
-            <Accordion sectionName={"My Courses"} content=
+            <Accordion sectionName={"Active Courses"} content=
               {
                 <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3.5%] gap-y-6 md:gap-y-8">{
                   getActiveCourses().map((courseObject, idx) => {
