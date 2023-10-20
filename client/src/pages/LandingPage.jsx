@@ -8,7 +8,7 @@ import SimpleCheckBox from "components/elements/SimpleCheckBox";
 const LandingPage = () => {
   return (
     <>
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <SignInWindow />
       </div>
     </>

@@ -10,7 +10,7 @@ export default function SignUpPage() {
 
   return (
     <>
-      <div className="h-screen w-screen flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
+      <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <SignUpWindow email={email} />
       </div>
     </>

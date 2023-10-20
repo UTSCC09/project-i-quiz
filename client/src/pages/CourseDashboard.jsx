@@ -25,7 +25,7 @@ export default function CourseDashboard() {
   return (
     <>
       <NavBar />
-      <div className="min-h-screen w-screen bg-gray-100">
+      <div className="min-h-screen w-full bg-gray-100">
         <main className="h-fit px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-32 sm:py-36">
           <div className="flex lg:hidden bg-gray-200 rounded-lg w-full justify-between">
             <label className="cursor-pointer w-[49%]">
@@ -60,7 +60,7 @@ export default function CourseDashboard() {
               }
             </div>
           </div>
-        </main >
+        </main>
       </div >
     </>
   )

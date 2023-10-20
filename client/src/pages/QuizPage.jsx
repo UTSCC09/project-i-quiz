@@ -26,7 +26,7 @@ const QuizPage = () => {
     <>
       <NavBar />
       <form>
-        <div className="w-screen flex justify-center py-36 bg-gray-100">
+        <div className="min-h-screen w-full flex justify-center py-36 bg-gray-100">
           <div className="w-full px-4 md:w-[48rem] flex flex-col items-center">
             {
               QuizMock.questions.map((questionObj, idx) => {
