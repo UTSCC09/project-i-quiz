@@ -76,11 +76,11 @@ export default function CoursePage() {
             <div className="flex flex-col pr-4">
               <Badge label={courseSession} accentColor={accentColor} />
               <div className="flex items-center">
-                <span className="text-gray-900 font-bold text-3xl lg:text-4xl">
+                <span className="text-gray-900 font-bold text-3xl md:text-4xl">
                   {courseCode}
                 </span>
               </div>
-              <span className="text-gray-500 text-xs ml-1 mt-0.5">{courseName}</span>
+              <span className="text-gray-500 text-xs md:text-sm ml-1 mt-0.5">{courseName}</span>
             </div>
             <Dropdown ref={dropdownRef} selection={selection} onSelectionChange={onSelectionChange} />
           </div>
