@@ -60,7 +60,7 @@ export default function QuizCard({ quizObject }) {
   }
   return (
     <>
-      <Link to="/quiz/0" className="h-fit rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor, pointerEvents: isAvailable ? "auto" : "none", opacity: isAvailable ? 1 : 0.5 }}>
+      <Link to="/quiz/0" className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer" style={{ borderLeftColor: accentColor, pointerEvents: isAvailable ? "auto" : "none", opacity: isAvailable ? 1 : 0.5 }}>
         <div className="w-full py-4 md:py-6 h-fit bg-white group-hover:bg-gray-100 rounded-r border px-4 md:px-6 shrink-0 flex items-center transition">
           <div className="flex-col justify-center items-start inline-flex">
             <div className="items-center gap-2.5 inline-flex">
