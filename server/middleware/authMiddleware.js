@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import { createRequire } from "module";
 import User from "../models/User.js";
+import formatMessage from "../utils/utils.js";
 
 const require = createRequire(import.meta.url);
 const jwt = require("jsonwebtoken");
@@ -23,11 +24,11 @@ const protect = asyncHandler(async (req, res, next) => {
 
     } catch (error) {
       console.log(error);
-      return res.status(401).send("Error authenticating user");
+      return res.status(401).json(formatMessage(false, "Error authenticating user"));
     }
   }
   else {
-    return res.status(401).send("Not authorized, no token");
+    return res.status(401).json(formatMessage(false, "Not authorized, no token"));
   }
 });
 
