@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import NavBar from "components/page_components/NavBar";
 import CourseCard from "components/page_components/CourseCard";
-import CourseDataMock_active from "mock_data/CourseDashboard/CourseDataMock_active.json";
-import CourseDataMock_archived from "mock_data/CourseDashboard/CourseDataMock_archived.json";
-import QuizDataMock_available from "mock_data/CourseDashboard/QuizDataMock_available.json";
-import QuizDataMock_upcoming from "mock_data/CourseDashboard/QuizDataMock_upcoming.json";
+import CourseDataMock_active from "mock_data/DashboardPage/CourseDataMock_active.json";
+import CourseDataMock_archived from "mock_data/DashboardPage/CourseDataMock_archived.json";
+import QuizDataMock_available from "mock_data/DashboardPage/QuizDataMock_available.json";
+import QuizDataMock_upcoming from "mock_data/DashboardPage/QuizDataMock_upcoming.json";
 import QuizCard from "components/page_components/QuizCard";
 import Accordion from "components/elements/Accordion";
 
@@ -24,7 +24,7 @@ function getUpcomingQuizzes() {
   return QuizDataMock_upcoming.quizList;
 }
 
-export default function CourseDashboard() {
+export default function DashboardPage() {
   const quizSectionRef = useRef(null);
   const courseSectionRef = useRef(null);
 

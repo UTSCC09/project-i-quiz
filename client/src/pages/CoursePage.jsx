@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion"
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
-import CourseArrMock from "mock_data/CourseDashboard/CourseDataMock_active.json";
+import CourseArrMock from "mock_data/DashboardPage/CourseDataMock_active.json";
 import QuizDataMock_all from "mock_data/CoursePage/QuizDataMock_all.json";
 import QuizDataMock_new from "mock_data/CoursePage/QuizDataMock_new.json";
 import QuizDataMock_past from "mock_data/CoursePage/QuizDataMock_past.json";
