@@ -45,7 +45,7 @@ const SignInWindow = () => {
     }
     else {
       // alert(`email: ${email}\npassword: ${password}`);
-      return navigate("/demo")
+      return navigate("/dashboard")
     }
   }
 
