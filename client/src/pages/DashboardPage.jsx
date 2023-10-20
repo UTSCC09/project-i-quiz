@@ -82,7 +82,7 @@ export default function DashboardPage() {
           <div ref={courseSectionRef} className="hidden flex flex-col gap-8 lg:flex lg:w-[65%]">
             <Accordion sectionName={"Active Courses"} content=
               {
-                <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3.5%] gap-y-6 md:gap-y-8">{
+                <div className="flex flex-wrap gap-x-[4%] gap-y-6 md:gap-y-8">{
                   getActiveCourses().map((courseObject, idx) => {
                     return <CourseCard courseObject={courseObject} key={idx} />
                   })}
@@ -91,7 +91,7 @@ export default function DashboardPage() {
             />
             <Accordion collapesed sectionName={"Archived Courses"} content=
               {
-                <div className="flex flex-wrap gap-x-[4%] 2xl:gap-x-[3.5%] gap-y-6 md:gap-y-8">{
+                <div className="flex flex-wrap gap-x-[4%] gap-y-6 md:gap-y-8">{
                   getArchivedCourses().map((courseObject, idx) => {
                     return <CourseCard courseObject={courseObject} key={idx} />
                   })}
