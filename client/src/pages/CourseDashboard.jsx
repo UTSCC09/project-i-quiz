@@ -3,20 +3,25 @@ import NavBar from "components/page_components/NavBar";
 import CourseCard from "components/page_components/CourseCard";
 import CourseDataMock_active from "mock_data/CourseDashboard/CourseDataMock_active.json";
 import CourseDataMock_archived from "mock_data/CourseDashboard/CourseDataMock_archived.json";
-import QuizArrMock_available from "mock_data/CourseDashboard/QuizArrMock_available.json";
-import QuizArrMock_upcoming from "mock_data/CourseDashboard/QuizArrMock_upcoming.json";
+import QuizDataMock_available from "mock_data/CourseDashboard/QuizDataMock_available.json";
+import QuizDataMock_upcoming from "mock_data/CourseDashboard/QuizDataMock_upcoming.json";
 import QuizCard from "components/page_components/QuizCard";
 import Accordion from "components/elements/Accordion";
 
-const courseData = CourseDataMock_active;
-const quizData = QuizArrMock_available;
-const quizData2 = QuizArrMock_upcoming;
 function getActiveCourses() {
   return CourseDataMock_active.courseList;
 }
 
 function getArchivedCourses() {
   return CourseDataMock_archived.courseList;
+}
+
+function getAvailableQuizzes() {
+  return QuizDataMock_available.quizList;
+}
+
+function getUpcomingQuizzes() {
+  return QuizDataMock_upcoming.quizList;
 }
 
 export default function CourseDashboard() {
@@ -58,7 +63,7 @@ export default function CourseDashboard() {
             <Accordion sectionName="Available Quizzes"
               content={
                 <div className="flex flex-col gap-4 lg:gap-6">{
-                  quizData.quizList.map((quizObject, idx) => {
+                  getAvailableQuizzes().map((quizObject, idx) => {
                     return <QuizCard quizObject={quizObject} key={idx} />
                   })}
                 </div>
@@ -67,7 +72,7 @@ export default function CourseDashboard() {
             <Accordion sectionName="Upcoming Quizzes"
               content={
                 <div className="flex flex-col gap-4 lg:gap-6">{
-                  quizData2.quizList.map((quizObject, idx) => {
+                  getUpcomingQuizzes().map((quizObject, idx) => {
                     return <QuizCard quizObject={quizObject} key={idx} />
                   })}
                 </div>

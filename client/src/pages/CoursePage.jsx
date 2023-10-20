@@ -4,9 +4,9 @@ import { AnimatePresence, motion } from "framer-motion"
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
 import CourseArrMock from "mock_data/CourseDashboard/CourseDataMock_active.json";
-import QuizArrMockAll from "mock_data/CoursePage/QuizArrMock_all.json";
-import QuizArrMockNew from "mock_data/CoursePage/QuizArrMock_new.json";
-import QuizArrMockPast from "mock_data/CoursePage/QuizArrMock_past.json";
+import QuizDataMock_all from "mock_data/CoursePage/QuizDataMock_all.json";
+import QuizDataMock_new from "mock_data/CoursePage/QuizDataMock_new.json";
+import QuizDataMock_past from "mock_data/CoursePage/QuizDataMock_past.json";
 import NavBar from "components/page_components/NavBar";
 import Dropdown from "components/elements/Dropdown";
 
@@ -17,11 +17,11 @@ function getCourseInfo(courseId) {
 function getQuizData(filter) {
   switch (filter) {
     case "New Quizzes":
-      return QuizArrMockNew.response;
+      return QuizDataMock_new.response;
     case "All Quizzes":
-      return QuizArrMockAll.response;
+      return QuizDataMock_all.response;
     case "Past Quizzes":
-      return QuizArrMockPast.response;
+      return QuizDataMock_past.response;
     default:
       return;
   }
