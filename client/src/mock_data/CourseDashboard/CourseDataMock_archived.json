@@ -1,0 +1,25 @@
+{
+  "courseList": [
+    {
+      "_id": "10",
+      "courseCode": "CSCA48",
+      "courseName": "Introduction to Computer Science",
+      "courseSession": "Winter 20",
+      "accentColor": "#90a4ae"
+    },
+    {
+      "_id": "11",
+      "courseCode": "MATA41",
+      "courseName": "Calculus",
+      "courseSession": "Fall 23",
+      "accentColor": "#90a4ae"
+    },
+    {
+      "_id": "12",
+      "courseCode": "MATA22",
+      "courseName": "Linear Algebra I",
+      "courseSession": "Fall 23",
+      "accentColor": "#90a4ae"
+    }
+  ]
+}

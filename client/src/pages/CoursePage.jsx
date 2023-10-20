@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion"
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
-import CourseArrMock from "mock_data/CourseDashboard/CourseArrMock.json";
+import CourseArrMock from "mock_data/CourseDashboard/CourseDataMock_active.json";
 import QuizArrMockAll from "mock_data/CoursePage/QuizArrMock_all.json";
 import QuizArrMockNew from "mock_data/CoursePage/QuizArrMock_new.json";
 import QuizArrMockPast from "mock_data/CoursePage/QuizArrMock_past.json";
