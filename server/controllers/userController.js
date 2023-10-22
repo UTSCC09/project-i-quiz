@@ -1,29 +1,26 @@
 import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
 import dotenv from "dotenv";
-import { createRequire } from "module";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
 
-// Cannot export sign function from jsonwebtoken, work around
-const require = createRequire(import.meta.url);
-const jwt = require("jsonwebtoken");
 const saltRounds = 10;
-
 dotenv.config();
 
-function generateToken(id) {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { "expiresIn": "30d" });
-}
 //@route  POST api/users
 //@desc   Registers a new iQuiz user
 //@access Public
 const registerUser = asyncHandler(async (req, res) => {
-  const {firstName, lastName, email, password} = req.body;
+  const { type, firstName, lastName, email, password} = req.body;
   
   //Verify all fields exist.
-  if (!firstName || !lastName || !email || !password){
+  if (!firstName || !lastName || !email || !password || !type){
     return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Check valid type
+  if (type !== "student" || type !== "instructor"){
+    return res.status(400).json(formatMessage(false, "Invalid type"));
   }
 
   //Checks if there is a pre-existing user.
@@ -39,6 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
       //Creating user
       const user = await User.create({
+        type: type,
         firstName: firstName,
         lastName: lastName,
         email: email,
@@ -65,7 +63,7 @@ const getUsers = asyncHandler(async (req, res) => {
 //@desc   Logs in user, given a valid email and password.
 //@access Public
 const loginUser = asyncHandler(async (req, res) => {
-  if (req.session.token){
+  if (req.session.email){
     return res.status(400).json(formatMessage(false, "User already logged in"));
   }
   const {email, password} = req.body;
@@ -86,8 +84,7 @@ const loginUser = asyncHandler(async (req, res) => {
       return res.status(401).json(formatMessage(false, "Incorrect password"));
     }
 
-    //Store email & token in session
-    req.session.token = generateToken(user.id);
+    //Store email in session
     req.session.email = user.email;
 
     //Return user object with token
@@ -101,8 +98,7 @@ const loginUser = asyncHandler(async (req, res) => {
 //@desc   Logs out user, if the user is logged in.
 //@access Public
 const logoutUser = asyncHandler(async (req, res) => {
-  console.log(req.session);
-  if (!req.session.token){
+  if (!req.session.email){
     return res.status(400).json(formatMessage(false, "User is not logged in"));
   }
 
