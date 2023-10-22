@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   registerUser,
   loginUser,
-  getUsers
+  getUsers,
+  logoutUser
 } from "../controllers/userController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -14,5 +15,8 @@ router.route("/")
 
 router.route("/login")
   .post(loginUser);
+
+router.route("/logout")
+  .post(logoutUser);
 
 export default router;

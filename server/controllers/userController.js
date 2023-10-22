@@ -97,8 +97,24 @@ const loginUser = asyncHandler(async (req, res) => {
 
 });
 
+//@route  POST api/users/logout
+//@desc   Logs out user, if the user is logged in.
+//@access Public
+const logoutUser = asyncHandler(async (req, res) => {
+  console.log(req.session);
+  if (!req.session.token){
+    return res.status(400).json(formatMessage(false, "User is not logged in"));
+  }
+
+  req.session.destroy(function(err){
+    if (err) return res.status(500).json(formatMessage(false, "Deleting session error"));
+    return res.json(formatMessage(true, "User has successfully logged out"));
+  });
+});
+
 export {
   registerUser,
   getUsers,
-  loginUser
+  loginUser,
+  logoutUser
 };
