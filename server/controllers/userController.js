@@ -14,7 +14,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const { type, firstName, lastName, email, password} = req.body;
   
   //Verify all fields exist.
-  if (!firstName || !lastName || !email || !password){
+  if (!firstName || !lastName || !email || !password || !type){
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
