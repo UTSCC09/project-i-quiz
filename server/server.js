@@ -39,9 +39,8 @@ app.use(session({
 
 // Debug
 // app.use(function(req, res, next){
-//   req.token = req.session.token ? req.session.token : null;
 //   req.email = req.session.email ? req.session.email : null;
-//   console.log("HTTP request", {"email" : req.email, "token": req.token}, req.method, req.url, req.body);
+//   console.log("HTTP request", {"email" : req.email}, req.method, req.url, req.body);
 //   next();
 // });
 

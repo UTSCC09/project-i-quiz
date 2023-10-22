@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
+  type : {
+    type: String,
+    enum: ['student', 'instructor'],
+    default: 'student'
+  },
   firstName: {
     type: String,
     required: [true, "Please provide a first name"]
