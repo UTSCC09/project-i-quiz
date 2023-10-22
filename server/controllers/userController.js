@@ -18,6 +18,11 @@ const registerUser = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
+  //Check valid type
+  if (type !== "student" || type !== "instructor"){
+    return res.status(400).json(formatMessage(false, "Invalid type"));
+  }
+
   //Checks if there is a pre-existing user.
   const existsUser = await User.findOne({ email });
   if (existsUser){
