@@ -1,0 +1,26 @@
+{
+  "response": [
+    {
+      "quizName": "Take-Home Test 1",
+      "courseCode": "CSCC09",
+      "startTime": "Oct 14, 2023 00:00:00",
+      "endTime": "Oct 25, 2023 23:59:00",
+      "accentColor": "#2563eb",
+      "submitted": true
+    },
+    {
+      "quizName": "Quiz 3",
+      "courseCode": "CSCC09",
+      "startTime": "Oct 30, 2023 9:00",
+      "endTime": "Oct 30, 2023 10:00:00",
+      "accentColor": "#2563eb"
+    },
+    {
+      "quizName": "Midterm",
+      "courseCode": "CSCC09",
+      "startTime": "Nov 14, 2023 00:00:00",
+      "endTime": "Nov 25, 2023 23:59:00",
+      "accentColor": "#2563eb"
+    }
+  ]
+}

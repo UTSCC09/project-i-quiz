@@ -64,7 +64,7 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
       id={id + "Label"}
       htmlFor={id}
       ref={innerLabelRef}
-      className="relative flex overflow-hidden rounded-md border px-4 pt-3 focus-within:ring focus-within:ring-blue-200 transition"
+      className="relative flex overflow-hidden rounded-md border px-4 pt-3 focus-within:ring focus-within:ring-blue-200 transition-all"
     >
       <input
         type={isPasswordVisible ? "text" : inputType}

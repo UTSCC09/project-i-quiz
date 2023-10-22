@@ -1,20 +1,14 @@
-import React, { useEffect } from "react";
-import colors from 'tailwindcss/colors'
+import React from "react";
 import QuestionWrapper from "components/questions/QuestionWrapper";
-import MockQuizObject from "mock_data/QuizMock1.json"
+import QuizMock from "mock_data/QuizPage/QuizMock_1.json"
+import NavBar from "components/page_components/NavBar";
 
-const mockQuizObject = MockQuizObject;
-
-const QuestionsDemoPage = () => {
-  useEffect(() => {
-    document.body.style.backgroundColor = colors.gray[100];
-  })
-
+const QuizPage = () => {
   let savedAnswers = JSON.parse(localStorage.getItem("savedAnswers")) ?? {};
 
   console.log("Fetched saved aswers from LocalStorage:", savedAnswers);
 
-  mockQuizObject.questions.forEach((questionObj) => {
+  QuizMock.questions.forEach((questionObj) => {
     savedAnswers[questionObj.qid] = savedAnswers[questionObj.qid] ?? [];
   });
 
@@ -30,21 +24,22 @@ const QuestionsDemoPage = () => {
 
   return (
     <>
+      <NavBar />
       <form>
-        <div className="w-screen flex justify-center">
-          <div className="w-[80vw] lg:w-[48rem] flex flex-col items-center">
+        <div className="min-h-screen w-full flex justify-center py-36 bg-gray-100">
+          <div className="w-full px-4 md:w-[48rem] flex flex-col items-center">
             {
-              mockQuizObject.questions.map((questionObj, idx) => {
+              QuizMock.questions.map((questionObj, idx) => {
                 return (
                   <div
-                    className="h-fit w-full m-5 flex flex-col border drop-shadow-sm bg-white shadow-gray-150 rounded-md py-12"
+                    className="h-fit w-full my-4 flex flex-col md:border drop-shadow-sm bg-white shadow-gray-150 rounded-md py-12"
                     key={questionObj.qid}
                   >
                     <span className="font-bold text-sm uppercase ml-12 text-gray-500 mb-4">
-                      Question {idx + 1} / {mockQuizObject.questions.length}
+                      Question {idx + 1} / {QuizMock.questions.length}
                     </span>
                     <div className="border-b h-0 mb-6 mx-10"></div>
-                    <div className="mx-12">
+                    <div className="mx-10">
                       <QuestionWrapper
                         questionObject={questionObj}
                         savedAnswer={savedAnswers[idx]}
@@ -61,4 +56,4 @@ const QuestionsDemoPage = () => {
   );
 };
 
-export default QuestionsDemoPage;
+export default QuizPage;

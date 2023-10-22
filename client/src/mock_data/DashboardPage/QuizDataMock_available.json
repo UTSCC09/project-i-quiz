@@ -1,0 +1,19 @@
+{
+  "quizList": [
+    {
+      "quizName": "Take-Home Test 1",
+      "courseCode": "CSCC09",
+      "startTime": "Oct 14, 2023 00:00:00",
+      "endTime": "Oct 25, 2023 23:59:00",
+      "accentColor": "#2563eb",
+      "submitted": true
+    },
+    {
+      "quizName": "Quiz 1",
+      "courseCode": "MATB24",
+      "startTime": "Oct 14, 2023 00:00:00",
+      "endTime": "Nov 1, 2023 23:59:00",
+      "accentColor": "#f43f5e"
+    }
+  ]
+}
