@@ -9,7 +9,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
   if (email) next();
   else {
-    return res.status(401).json(formatMessage(false, "Not authorized, no token"));
+    return res.status(401).json(formatMessage(false, "Not authorized"));
   }
 });
 
