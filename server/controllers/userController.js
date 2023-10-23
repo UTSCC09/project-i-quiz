@@ -1,11 +1,9 @@
 import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
-import dotenv from "dotenv";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
 
 const saltRounds = 10;
-dotenv.config();
 
 //@route  POST api/users
 //@desc   Registers a new iQuiz user
@@ -19,7 +17,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   //Check valid type
-  if (type !== "student" || type !== "instructor"){
+  if (type !== "student" && type !== "instructor"){
     return res.status(400).json(formatMessage(false, "Invalid type"));
   }
 
@@ -56,7 +54,8 @@ const registerUser = asyncHandler(async (req, res) => {
 //@desc   [DESCRIPTION OF WHAT ROUTE DOES]
 //@access Private
 const getUsers = asyncHandler(async (req, res) => {
-  return res.status(200).json(formatMessage(true, "getUsers called after protect authMiddleware"));
+  const users = await User.find({});
+  return res.status(200).json(formatMessage(true, "User retrieved successfully", users));
 });
 
 //@route  POST api/users/login
