@@ -3,6 +3,7 @@ import {
   createCourse,
   getMyInstructedCourses,
   getMyEnrolledCourses,
+  getAllCourses,
   enrollInCourse,
   dropCourse
 } from "../controllers/courseController.js";
@@ -12,6 +13,7 @@ const router = Router();
 
 router.route("/")
   .post(protect, createCourse)
+  .get(protect, getAllCourses);
 
 router.route("/instructed")
   .get(protect, getMyInstructedCourses);

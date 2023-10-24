@@ -72,8 +72,33 @@ const getMyInstructedCourses = asyncHandler(async (req, res) => {
 
   const instructedCourses = [];
   for (let i = 0; i < instructor.courses.length; i++) {
-    //Instructors should be able to see all the course info
-    instructedCourses.push(await Course.findById(instructor.courses[i]));
+    const course = await Course.findById(instructor.courses[i]);
+    const formattedSessions = [];
+
+    for (let j = 0; j < course.sessions.length; j++) {
+      const formattedStudents = [];
+
+      for (let k = 0; k < course.sessions[j].students.length; k++) {
+        const student = await User.findById(course.sessions[j].students[k]);
+        formattedStudents.push({
+          studentName: student.firstName + " " + student.lastName,
+          studentEmail: student.email
+        });
+      }
+
+      formattedSessions.push({
+        sessionNumber: course.sessions[j].sessionNumber,
+        enrollment: course.sessions[j].enrollment,
+        students: formattedStudents
+      });
+    }
+
+    instructedCourses.push({
+      courseCode: course.courseCode,
+      courseName: course.courseName,
+      instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
+      sessions: formattedSessions
+    });
   }
 
   //Retrieve courses
@@ -107,6 +132,32 @@ const getMyEnrolledCourses = asyncHandler(async (req, res) => {
 
   //Retrieve courses
   return res.status(200).json(formatMessage(true, "Courses retrieved successfully", enrolledCourses));
+});
+
+//@route  GET api/courses
+//@desc   Retrieve all courses
+//@access Private
+const getAllCourses = asyncHandler(async (req, res) => {
+  const courses = await Course.find({});
+  const formattedCourses = [];
+  for (let i = 0; i < courses.length; i++) {
+    const instructor = await User.findById(courses[i].instructor);
+    const formattedSessions = [];
+    for (let j = 0; j < courses[i].sessions.length; j++) {
+      formattedSessions.push({
+        sessionNumber: courses[i].sessions[j].sessionNumber,
+        enrollment: courses[i].sessions[j].enrollment
+      });
+    }
+    formattedCourses.push({
+      courseCode: courses[i].courseCode,
+      courseName: courses[i].courseName,
+      instructorName: instructor.firstName + " " + instructor.lastName,
+      instructorEmail: instructor.email,
+      sessions: formattedSessions      
+    });
+  }
+  return res.status(200).json(formatMessage(true, "Courses retrieved successfully", formattedCourses));
 });
 
 //@route  POST api/courses/enroll
@@ -166,14 +217,59 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 });
 
 //@route  POST api/courses/drop
-//@desc   [DESCRIPTION OF WHAT ROUTE DOES]
+//@desc   Remove student from the course
 //@access Private
-const dropCourse = asyncHandler(async (req, res) => {});
+const dropCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.body;
+
+  //Check if valid user
+  const student = await User.findOne({ email: req.session.email });
+  if (!student) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  }
+  else if (student.type !== "student") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  //Verify all fields exist
+  if (!courseId) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Check if valid course
+  const course = await Course.findById(courseId);
+  if (!course) {
+    return res.status(400).json(formatMessage(false, "Invalid course"));
+  }
+
+  //Check if student is enrolled in the specified course
+  if (student.courses.includes(courseId)) {
+    //Remove course from student's courses
+    student.courses = student.courses.filter(courseId => courseId.toString() !== course._id.toString());
+    await student.save();
+
+    //Remove student from the course
+    for (let i = 0; i < course.sessions.length; i++) {
+      if (course.sessions[i].students.includes(student._id)) {
+        course.sessions[i].students = course.sessions[i].students.filter(studentId => studentId.toString() !== student._id.toString());
+        course.sessions[i].enrollment--;
+        await course.save();
+        break;
+      }
+    }
+  }
+  else {
+    return res.status(400).json(formatMessage(false, "Student not enrolled in course"));
+  }
+
+  return res.status(200).json(formatMessage(true, "Student dropped successfully"));
+});
 
 export {
   createCourse,
   getMyInstructedCourses,
   getMyEnrolledCourses,
+  getAllCourses,
   enrollInCourse,
   dropCourse
 };
