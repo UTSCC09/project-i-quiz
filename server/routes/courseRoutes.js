@@ -1,8 +1,8 @@
 import { Router } from "express";
 import {
   createCourse,
-  getCoursesInstructedBy,
-  getCoursesEnrolledIn,
+  getMyInstructedCourses,
+  getMyEnrolledCourses,
   enrollInCourse,
   dropCourse
 } from "../controllers/courseController.js";
@@ -13,11 +13,11 @@ const router = Router();
 router.route("/")
   .post(protect, createCourse)
 
-router.route("/instructed/:instructorId")
-  .get(protect, getCoursesInstructedBy);
+router.route("/instructed")
+  .get(protect, getMyInstructedCourses);
 
 router.route("/enrolled")
-  .get(protect, getCoursesEnrolledIn);
+  .get(protect, getMyEnrolledCourses);
 
 router.route("/enroll")
   .post(protect, enrollInCourse);

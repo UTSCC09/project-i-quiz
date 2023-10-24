@@ -93,7 +93,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 });
 
-//@route  POST api/users/logout
+//@route  GET api/users/logout
 //@desc   Logs out user, if the user is logged in.
 //@access Public
 const logoutUser = asyncHandler(async (req, res) => {
