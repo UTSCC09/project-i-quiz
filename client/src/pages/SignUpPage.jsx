@@ -161,10 +161,10 @@ function SignUpForm({ email, userType }) {
         </h1>
         <span className="ml-0.5 text-sm text-gray-500">
           You are signing up a{userType === "instructor" && "n"} <span className="font-bold">{userType}</span> account.
-          <span className="underline cursor-pointer text-gray-700 ml-2"
+          <Link className="underline cursor-pointer text-gray-700 ml-2"
             onClick={() => {
               navigate(-1)
-            }}>Go back</span>
+            }}>Go back</Link>
         </span>
       </div>
       <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden">

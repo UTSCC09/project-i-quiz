@@ -47,7 +47,6 @@ const SignInWindow = () => {
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log(result)
         if (result.success) {
           navigate("/dashboard");
         }
