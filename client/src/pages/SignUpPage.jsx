@@ -34,28 +34,28 @@ function ChooseUserType() {
           <h1 className="self-start text-3xl font-bold">
             Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
           </h1>
-          <span className="text-sm text-gray-500">
-            Please choose your account type
+          <span className="ml-0.5 text-sm text-gray-500">
+            Please choose your account type...
           </span>
         </div>
         <div className="flex flex-col gap-4">
           <div
-            className="flex flex-col gap-1 cursor-pointer rounded-lg border border-gray-100 bg-white px-8 py-6 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500 peer-checked:font-medium peer-checked:bg-blue-10 transition-all"
+            className="flex flex-col gap-1 cursor-pointer rounded-lg border bg-white px-8 py-10 hover:border-blue-600 transition group"
             onClick={() => {
               navigate("", { state: { userType: "student" } })
             }}
           >
-            <span className="font-bold text-lg">Student</span>
-            <span className="text-xs text-gray-500">Join classes and take quizzes</span>
+            <span className="font-semibold text-lg text-black group-hover:text-blue-600 transition">Student</span>
+            <span className="text-xs text-gray-500 group-hover:text-blue-600 transition">Join classes and take quizzes</span>
           </div>
           <div
-            className="flex flex-col gap-1 cursor-pointer rounded-lg border border-gray-100 bg-white px-8 py-6 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500 peer-checked:font-medium peer-checked:bg-blue-10 transition-all"
+            className="flex flex-col gap-1 cursor-pointer rounded-lg border bg-white px-8 py-10 hover:border-blue-500 hover:text-blue-600 transition group"
             onClick={() => {
               navigate("", { state: { userType: "instructor" } })
             }}
           >
-            <span className="font-bold text-lg">Instructor</span>
-            <span className="text-xs text-gray-500">Create, distribute, and grade quizzes</span>
+            <span className="font-semibold text-lg text-black group-hover:text-blue-600 transition">Instructor</span>
+            <span className="text-xs text-gray-500 group-hover:text-blue-600 transition">Create, distribute, and grade quizzes</span>
           </div>
         </div>
       </div>
@@ -155,12 +155,12 @@ function SignUpWindow({ email, userType }) {
         <h1 className="self-start text-3xl font-bold">
           Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
         </h1>
-        <span className="text-sm text-gray-500">
+        <span className="ml-0.5 text-sm text-gray-500">
           Signing up a{userType === "instructor" && "n"} <span className="font-bold">{userType}</span> account.
           <span className="underline cursor-pointer text-gray-700 ml-2"
             onClick={() => {
-              navigate("", { state: { userType: getTheOtherUserType(userType) } })
-            }}>I'm a{userType === "student" && "n"} {getTheOtherUserType(userType)}</span>
+              navigate(-1)
+            }}>Go back</span>.
         </span>
       </div>
       <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden">
@@ -195,9 +195,4 @@ function SignUpWindow({ email, userType }) {
       </div>
     </form>
   );
-}
-
-function getTheOtherUserType(userType) {
-  if (userType === "student") return "instructor";
-  return "student";
 }
