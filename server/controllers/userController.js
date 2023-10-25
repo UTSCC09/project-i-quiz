@@ -19,7 +19,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   //Check valid type
-  if (type !== "student" || type !== "instructor"){
+  if (type !== "student" && type !== "instructor"){
     return res.status(400).json(formatMessage(false, "Invalid type"));
   }
 

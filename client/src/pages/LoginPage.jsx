@@ -47,6 +47,7 @@ const SignInWindow = () => {
     })
       .then((response) => response.json())
       .then((result) => {
+        console.log(result)
         if (result.success) {
           navigate("/dashboard");
         }
@@ -67,7 +68,7 @@ const SignInWindow = () => {
   return (
     <>
       <div
-        className="flex sm:items-center px-12 sm:px-14 py-20 lg:ml-[40vw] bg-white border border-gray-100 sm:rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[26rem] justify-center"
+        className="flex sm:items-center px-12 sm:px-20 py-28 lg:ml-[40vw] bg-white border border-gray-100 sm:rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[28rem] justify-center"
       >
         <div className="flex flex-col justify-start w-full">
           <div className="flex flex-col gap-2">
@@ -82,18 +83,18 @@ const SignInWindow = () => {
               <span>Or create a new account with us today!</span>
             </div>
           </div>
-          <form className="flex flex-col mt-4 " onSubmit={(e) => onAuthFormSubmitHandler(e)} noValidate>
+          <form className="flex flex-col mt-4" onSubmit={(e) => onAuthFormSubmitHandler(e)} noValidate>
             <div ref={errorMessageRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm w-full hidden">
               Incorrect login credentials
             </div>
-            <div className="flex flex-col gap-3 mt-4">
+            <div className="flex flex-col gap-4 mt-4">
               <SingleLineInput
                 id="emailInput" name="email" label="Email" inputType="email" autoComplete="username" onChange={() => setEmail(emailInputRef.current.getValue())} ref={emailInputRef} />
               <SingleLineInput
                 id="passwordInput" name="password" inputType="password" label="Password" autoComplete="password" ref={passwordInputRef} />
               <SimpleCheckBox id="checkboxRemember" name="checkboxRemember" label="Remember me" />
             </div>
-            <div className="mt-6 flex flex-col sm:flex-row sm:justify-between gap-3">
+            <div className="mt-8 flex flex-col sm:flex-row sm:justify-between gap-3">
               <button type="submit" className="btn-primary">Log in</button>
               <Link to="/signup" state={{ email }} className="btn-secondary">Sign up</Link>
             </div>
