@@ -160,7 +160,7 @@ function SignUpWindow({ email, userType }) {
           <span className="underline cursor-pointer text-gray-700 ml-2"
             onClick={() => {
               navigate(-1)
-            }}>Go back</span>.
+            }}>Go back</span>
         </span>
       </div>
       <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden">
@@ -190,7 +190,7 @@ function SignUpWindow({ email, userType }) {
         <button className="btn-primary">Create an account</button>
         <p className="mt-4 text-sm text-gray-500">
           Already have an account?{" "}
-          <Link to="/login" className="text-gray-700 underline">Log in</Link>.
+          <Link to="/login" className="text-gray-700 underline">Log in</Link>
         </p>
       </div>
     </form>
