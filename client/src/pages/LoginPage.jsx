@@ -5,7 +5,10 @@ import logo from "media/iquiz_logo.svg";
 import SingleLineInput from "components/elements/SingleLineInput";
 import SimpleCheckBox from "components/elements/SimpleCheckBox";
 
-const LandingPage = () => {
+// server base URL
+const baseUrl = process.env.REACT_APP_API_BASE_URL;
+
+const LoginPage = () => {
   return (
     <>
       <div className="h-screen w-full flex flex-col items-center justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
@@ -22,25 +25,6 @@ const SignInWindow = () => {
   const passwordInputRef = useRef();
   const errorMessageRef = useRef();
 
-  function login(email, password) {
-    const baseUrl = process.env.REACT_APP_API_BASE_URL;
-
-    fetch(new URL("/api/users/login", baseUrl), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }).then((response) => response.json())
-      .then((result) => {
-        if (result.hasOwnProperty("token")) {
-          return result.token;
-        }
-      });
-    return;
-  }
-
   function onAuthFormSubmitHandler(e) {
     e.preventDefault();
 
@@ -53,19 +37,31 @@ const SignInWindow = () => {
 
     // Login
     const formData = new FormData(e.target);
-    const loginToken = login(formData.get("email"), formData.get("password"))
+    const email = formData.get("email");
+    const password = formData.get("password");
 
-    // Handle login result
-    // TODO: handle session
-    if (loginToken) {
-      navigate("/dashboard")
-    }
-    else {
-      errorMessageRef.current.textContent = "Incorrect login credentials";
-      errorMessageRef.current.classList.remove("hidden");
-      emailInputRef.current.setValidationState(false);
-      passwordInputRef.current.setValidationState(false);
-    }
+    fetch(new URL("/api/users/login", baseUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          navigate("/dashboard");
+        }
+        else {
+          errorMessageRef.current.textContent = "Incorrect login credentials";
+          errorMessageRef.current.classList.remove("hidden");
+          emailInputRef.current.setValidationState(false);
+          passwordInputRef.current.setValidationState(false);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        errorMessageRef.current.textContent = "Could not connect to the server";
+        errorMessageRef.current.classList.remove("hidden");
+      });
   }
 
   return (
@@ -109,4 +105,4 @@ const SignInWindow = () => {
   );
 }
 
-export default LandingPage;
+export default LoginPage;
