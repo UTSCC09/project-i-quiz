@@ -43,24 +43,24 @@ function UserTypeSelectionForm() {
           </span>
         </div>
         <div className="flex flex-col gap-4">
-          <div
-            className="flex flex-col gap-1 cursor-pointer rounded-lg border bg-white px-8 py-10 hover:border-blue-600 transition group"
+          <button
+            className="flex flex-col gap-1 rounded-lg border bg-white px-8 py-10 hover:border-blue-600 transition group  focus:outline-none focus:ring focus:ring-blue-200"
             onClick={() => {
               navigate("", { state: { userType: "student" } })
             }}
           >
             <span className="font-semibold text-lg text-black group-hover:text-blue-600 transition">Student</span>
             <span className="text-xs text-gray-500 group-hover:text-blue-600 transition">Join classes and take quizzes</span>
-          </div>
-          <div
-            className="flex flex-col gap-1 cursor-pointer rounded-lg border bg-white px-8 py-10 hover:border-blue-500 hover:text-blue-600 transition group"
+          </button>
+          <button
+            className="flex flex-col gap-1 rounded-lg border bg-white px-8 py-10 hover:border-blue-500 hover:text-blue-600 transition group  focus:outline-none focus:ring focus:ring-blue-200"
             onClick={() => {
               navigate("", { state: { userType: "instructor" } })
             }}
           >
             <span className="font-semibold text-lg text-black group-hover:text-blue-600 transition">Instructor</span>
             <span className="text-xs text-gray-500 group-hover:text-blue-600 transition">Create, distribute, and grade quizzes</span>
-          </div>
+          </button>
         </div>
       </div>
     </>
