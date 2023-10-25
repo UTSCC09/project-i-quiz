@@ -7,6 +7,7 @@ import SignUpPage from "pages/SignUpPage";
 import NotFoundPage from "pages/NotFoundPage";
 import DashboardPage from "pages/DashboardPage";
 import CoursePage from "pages/CoursePage";
+import ProtectedRoute from "components/ProtectedRoute";
 
 const App = () => {  
   const { pathname } = useLocation();
@@ -22,9 +23,23 @@ const App = () => {
         <Route path="/" element={ <LoginPage /> } />
         <Route path="/login" element={ <LoginPage /> } />
         <Route path="/signup" element={ <SignUpPage /> } />
-        <Route path="/quiz/:quizId" element={ <QuizPage />} />
-        <Route path="/dashboard" element={ <DashboardPage />} />
-        <Route path="/courses/:courseId" element={ <CoursePage />} />
+
+        <Route path="/quiz/:quizId" element={ 
+          <ProtectedRoute>
+            <QuizPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard" element={ 
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/courses/:courseId" element={ 
+          <ProtectedRoute>
+            <CoursePage />
+          </ProtectedRoute>
+        } />
+
         <Route path="*" element={ <NotFoundPage />} />
       </Routes>
     </>
