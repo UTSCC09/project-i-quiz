@@ -12,30 +12,34 @@ export default function SignUpPage() {
   return (
     <>
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
-        <div id="container" className="bg-white h-full sm:h-fit sm:min-h-[40rem] w-full sm:w-fit shadow-lg flex items-center px-12 sm:px-28 mt-24 sm:mt-0 sm:place-self-center py-20 sm:rounded-md">
+        <div id="container" className="bg-white h-full sm:h-fit sm:min-h-[41rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 mt-24 sm:mt-0 sm:place-self-center py-16 sm:rounded-md pt-24">
           {
             userType ?
-              <SignUpWindow email={email} userType={userType} />
+              <SignUpForm email={email} userType={userType} />
               :
-              <ChooseUserType />
+              <UserTypeSelectionForm />
           }
+          <p className="mt-6 text-sm text-gray-500">
+            Already have an account?{" "}
+            <Link to="/login" className="text-gray-700 underline">Sign in</Link>
+          </p>
         </div>
       </div>
     </>
   )
 }
 
-function ChooseUserType() {
+function UserTypeSelectionForm() {
   const navigate = useNavigate();
   return (
     <>
-      <div className="w-96 flex flex-col">
+      <div className="w-full sm:w-96 flex flex-col sm:mt-8">
         <div className="mb-12 flex flex-col gap-2">
           <h1 className="self-start text-3xl font-bold">
             Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
           </h1>
           <span className="ml-0.5 text-sm text-gray-500">
-            Please choose your account type...
+            Please choose your account type
           </span>
         </div>
         <div className="flex flex-col gap-4">
@@ -63,7 +67,7 @@ function ChooseUserType() {
   )
 }
 
-function SignUpWindow({ email, userType }) {
+function SignUpForm({ email, userType }) {
   const navigate = useNavigate();
   const inputRefs = useRef([]);
   const alertRef = useRef();
@@ -156,7 +160,7 @@ function SignUpWindow({ email, userType }) {
           Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
         </h1>
         <span className="ml-0.5 text-sm text-gray-500">
-          Signing up a{userType === "instructor" && "n"} <span className="font-bold">{userType}</span> account.
+          You are signing up a{userType === "instructor" && "n"} <span className="font-bold">{userType}</span> account.
           <span className="underline cursor-pointer text-gray-700 ml-2"
             onClick={() => {
               navigate(-1)
@@ -188,10 +192,6 @@ function SignUpWindow({ email, userType }) {
 
       <div className="mt-4 col-span-full flex flex-col items-center">
         <button className="btn-primary">Create an account</button>
-        <p className="mt-4 text-sm text-gray-500">
-          Already have an account?{" "}
-          <Link to="/login" className="text-gray-700 underline">Log in</Link>
-        </p>
       </div>
     </form>
   );
