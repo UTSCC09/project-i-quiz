@@ -15,6 +15,10 @@ const CourseSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a course name"]
   },
+  semester: {
+    type: String,
+    required: [true, "Please provide a semester"]
+  },
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
