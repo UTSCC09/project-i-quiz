@@ -7,7 +7,7 @@ import formatMessage from "../utils/utils.js";
 //@desc   Allow instructor to create a course
 //@access Private
 const createCourse = asyncHandler(async (req, res) => {
-  const { courseCode, courseName, numOfSessions } = req.body;
+  const { courseCode, courseName, semester, numOfSessions } = req.body;
 
   //Check if valid user
   const instructor = await User.findOne({ email: req.session.email });
@@ -19,16 +19,19 @@ const createCourse = asyncHandler(async (req, res) => {
   }
 
   //Verify all fields exist
-  if (!courseCode || !courseName || !numOfSessions) {
+  if (!courseCode || !courseName || !semester || !numOfSessions) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
   //Check if there is a pre-existing course
   const existingCourse = await Course.findOne(
-    { $or: [
-      { courseCode: courseCode },
-      { courseName: courseName }
-    ] });
+    {$and: [
+      {$or: [
+        { courseCode: courseCode },
+        { courseName: courseName }
+      ]},
+      { semester: semester }
+    ]});
   if (existingCourse) {
     return res.status(400).json(formatMessage(false, "Course already exists"));
   }
@@ -47,6 +50,7 @@ const createCourse = asyncHandler(async (req, res) => {
   const course = await Course.create({
     courseCode: courseCode,
     courseName: courseName,
+    semester: semester,
     instructor: instructor._id,
     sessions: sessions
   });
@@ -96,6 +100,7 @@ const getMyInstructedCourses = asyncHandler(async (req, res) => {
     instructedCourses.push({
       courseCode: course.courseCode,
       courseName: course.courseName,
+      semester: course.semester,
       instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
       sessions: formattedSessions
     });
