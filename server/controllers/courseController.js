@@ -65,49 +65,25 @@ const createCourse = asyncHandler(async (req, res) => {
 //@desc   Retrieve all courses taught by signed in instructor
 //@access Private
 const getMyInstructedCourses = asyncHandler(async (req, res) => {
-  //Check if valid user
+  // Check if the user is a valid instructor
   const instructor = await User.findOne({ email: req.session.email });
   if (!instructor) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
-  }
-  else if (instructor.type !== "instructor") {
+  } else if (instructor.type !== "instructor") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
-  const instructedCourses = [];
-  for (let i = 0; i < instructor.courses.length; i++) {
-    const course = await Course.findById(instructor.courses[i]);
-    const formattedSessions = [];
+  // Fetch courses in parallel
+  const instructedCoursesPromises = instructor.courses.map(async (courseId) => {
+    const course = await Course.findById(courseId);
+    return fetchFormattedCourse(course, instructor);
+  });
 
-    for (let j = 0; j < course.sessions.length; j++) {
-      const formattedStudents = [];
+  const instructedCourses = await Promise.all(instructedCoursesPromises);
 
-      for (let k = 0; k < course.sessions[j].students.length; k++) {
-        const student = await User.findById(course.sessions[j].students[k]);
-        formattedStudents.push({
-          studentName: student.firstName + " " + student.lastName,
-          studentEmail: student.email
-        });
-      }
-
-      formattedSessions.push({
-        sessionNumber: course.sessions[j].sessionNumber,
-        enrollment: course.sessions[j].enrollment,
-        students: formattedStudents
-      });
-    }
-
-    instructedCourses.push({
-      courseCode: course.courseCode,
-      courseName: course.courseName,
-      semester: course.semester,
-      instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
-      sessions: formattedSessions
-    });
-  }
-
-  //Retrieve courses
-  return res.status(200).json(formatMessage(true, "Courses retrieved successfully", instructedCourses));
+  return res
+    .status(200)
+    .json(formatMessage(true, "Courses retrieved successfully", instructedCourses));
 });
 
 //@route  GET api/courses/enrolled
@@ -269,6 +245,37 @@ const dropCourse = asyncHandler(async (req, res) => {
 
   return res.status(200).json(formatMessage(true, "Student dropped successfully"));
 });
+
+// ------------------------------ Helper functions ------------------------------
+async function fetchFormattedCourse(course, instructor) {
+  const formattedSessionsPromises = course.sessions.map(async (session) => {
+    const formattedStudentsPromises = session.students.map(async (studentId) => {
+      const student = await User.findById(studentId);
+      return {
+        studentName: student.firstName + " " + student.lastName,
+        studentEmail: student.email,
+      };
+    });
+
+    const formattedStudents = await Promise.all(formattedStudentsPromises);
+
+    return {
+      sessionNumber: session.sessionNumber,
+      enrollment: session.enrollment,
+      students: formattedStudents,
+    };
+  });
+
+  const formattedSessions = await Promise.all(formattedSessionsPromises);
+
+  return {
+    courseCode: course.courseCode,
+    courseName: course.courseName,
+    semester: course.semester,
+    instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
+    sessions: formattedSessions,
+  };
+}
 
 export {
   createCourse,
