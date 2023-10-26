@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
 const SessionSchema = new mongoose.Schema({
-  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+  sessionNumber: { type: Number, required: true },
+  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  enrollment: { type: Number, default: 0 }
 });
 
 const CourseSchema = new mongoose.Schema({
@@ -13,7 +15,15 @@ const CourseSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a course name"]
   },
-  instructor: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  semester: {
+    type: String,
+    required: [true, "Please provide a semester"]
+  },
+  instructor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "Please provide an instructor"]
+  },
   sessions: [SessionSchema]
 });
 

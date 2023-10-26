@@ -1,9 +1,11 @@
 import { Router } from "express";
 import {
   createCourse,
+  getMyInstructedCourses,
+  getMyEnrolledCourses,
+  getAllCourses,
   enrollInCourse,
-  dropCourse,
-  getCourses
+  dropCourse
 } from "../controllers/courseController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -11,7 +13,13 @@ const router = Router();
 
 router.route("/")
   .post(protect, createCourse)
-  .get(protect, getCourses);
+  .get(protect, getAllCourses);
+
+router.route("/instructed")
+  .get(protect, getMyInstructedCourses);
+
+router.route("/enrolled")
+  .get(protect, getMyEnrolledCourses);
 
 router.route("/enroll")
   .post(protect, enrollInCourse);
