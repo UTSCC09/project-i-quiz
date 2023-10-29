@@ -1,23 +1,24 @@
 import mongoose from "mongoose";
 
-const GradeSchema = new mongoose.Schema({
-  image: {
-    type: String,
-    required: [true, "Please provide an image"]
+const QuestionResponseSchema = new mongoose.Schema({
+  question: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "Please provide a question"]
   },
-  prompt: {
-    type: String,
-    required: [true, "Please provide a prompt"]
-  },
-  choices: {
+  response: {
     type: [String],
-    required: [true, "Pleasse provide choices"]
-  },
-  answers: {
-    type: [Number],
-    required: [true, "Please provide answers"]
+    required: [true, "Please provide a response"]
   }
 });
 
-const Grade = mongoose.model("Grade", GradeSchema);
-export default Grade;
+const QuizResponseSchema = new mongoose.Schema({
+  quiz: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Quiz",
+    required: [true, "Please provide a quiz"]
+  },
+  questionResponses: [QuestionResponseSchema],
+});
+
+const QuizResponse = mongoose.model("Grade", QuizResponseSchema);
+export default QuizResponse;
