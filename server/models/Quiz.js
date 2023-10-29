@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const QuestionSchema = new mongoose.Schema({
+  question: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "Please provide a question"]
+  },
+  type : {
+    type: String,
+    enum: ["MCQ", "MSQ", "CLO", "OEQ"]
+  },
+});
+
 const QuizSchema = new mongoose.Schema({
   quizName: {
     type: String,
@@ -18,7 +29,7 @@ const QuizSchema = new mongoose.Schema({
     ref: "Course",
     required: [true, "Please provide a course"]
   },
-  questions: [{ type: mongoose.Schema.Types.ObjectId }]
+  questions: [QuestionSchema]
 });
 
 const Quiz = mongoose.model("Quiz", QuizSchema);
