@@ -98,8 +98,7 @@ function SignUpForm({ email, userType }) {
 
     // Validate password format
     // (at least 8 characters and contain at least one letter and one number)
-    // [Credit]: RegEx from https://stackoverflow.com/a/21456918
-    if (!inputRefs.current[3].getValue().match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
+    if (!inputRefs.current[3].getValue().match(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/)) {
       flag = false;
       inputRefs.current[3].setValidationState(false);
       alertRef.current.textContent = "Passwords must be at least 8 characters and contain at least one letter and one number";
