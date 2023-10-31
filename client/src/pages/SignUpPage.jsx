@@ -36,7 +36,10 @@ function UserTypeSelectionForm() {
       <div className="w-full sm:w-96 flex flex-col sm:mt-8">
         <div className="mb-12 flex flex-col gap-2">
           <h1 className="self-start text-3xl font-bold">
-            Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
+            Welcome to
+            <Link to="/">
+              <img src={iquizLogo} alt="iquiz! logo" className="ml-2.5 h-6 sm:h-6 mb-0.5 inline self-baseline" />
+            </Link>
           </h1>
           <span className="ml-0.5 text-sm text-gray-500">
             Please choose your account type
@@ -156,7 +159,10 @@ function SignUpForm({ email, userType }) {
     <form onSubmit={onSubmit} className="sm:mt-8 grid grid-cols-6 gap-4 sm:w-96" autoComplete="off" noValidate>
       <div className="col-span-6 mb-4 flex flex-col gap-2">
         <h1 className="self-start text-3xl font-bold">
-          Welcome to <img alt="iquiz! logo" src={iquizLogo} className="h-6 sm:h-6 mx-1 mb-0.5 inline self-baseline"></img>
+          Welcome to
+          <Link to="/">
+            <img alt="iquiz! logo" src={iquizLogo} className="ml-2.5 h-6 sm:h-6 mb-0.5 inline self-baseline" />
+          </Link>
         </h1>
         <span className="ml-0.5 text-sm text-gray-500">
           You are signing up a{userType === "instructor" && "n"} <span className="font-bold">{userType}</span> account.

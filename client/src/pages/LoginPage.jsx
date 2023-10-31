@@ -74,7 +74,9 @@ const SignInWindow = () => {
             <div className="text-2xl font-bold">
               <span>
                 Sign in to begin <br />your{" "}
-                <img src={logo} alt="iQuiz! Logo" className="h-5 mx-1 mb-1 inline self-baseline"></img>
+                <Link to="/">
+                  <img src={logo} alt="iQuiz! Logo" className="h-5 mx-1 mb-1 inline self-baseline" />
+                </Link>
                 {" "}experience
               </span>
             </div>
