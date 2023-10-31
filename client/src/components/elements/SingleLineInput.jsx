@@ -6,6 +6,7 @@ const checkIconVariants = {
   checked: { opacity: 1, pathLength: 1, transition: { duration: 0.1 } }
 };
 
+// [Credit]: Input with animated label from https://www.hyperui.dev/
 function SingleLineInput({ id, name, label, onChange, inputType = "text", autoComplete, acceptSpace = false, defaultValue = "", maxLength = 256 }, ref) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -82,7 +83,7 @@ function SingleLineInput({ id, name, label, onChange, inputType = "text", autoCo
         className="peer h-8 w-full border-none bg-transparent p-0 placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
       />
       <span
-        className="absolute start-4 top-3 -translate-y-1/2 text-xs text-gray-500 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
+        className="absolute start-4 top-3 -translate-y-1/2 text-xs text-gray-500 transition-all peer-autofill:top-3 peer-autofill:text-xs peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-3 peer-focus:text-xs"
       >
         {label}
       </span>
