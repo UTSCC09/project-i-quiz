@@ -7,7 +7,7 @@ import formatMessage from "../utils/utils.js";
 //@desc   Allow instructor to create a course
 //@access Private
 const createCourse = asyncHandler(async (req, res) => {
-  const { courseCode, courseName, courseSemester, numOfSessions } = req.body;
+  const { courseCode, courseName, courseSemester, numOfSessions, accentColor } = req.body;
 
   //Check if valid user
   const instructor = await User.findOne({ email: req.session.email });
@@ -55,7 +55,7 @@ const createCourse = asyncHandler(async (req, res) => {
     sessions: sessions
   });
   if (course) {
-    instructor.courses.push(course._id);
+    instructor.courses.push({courseId: course._id, accentColor: accentColor});
     await instructor.save();
     return res.status(200).json(formatMessage(true, "Course created successfully"));
   }
@@ -77,9 +77,9 @@ const getMyInstructedCourses = asyncHandler(async (req, res) => {
   }
 
   // Fetch courses in parallel
-  const instructedCoursesPromises = instructor.courses.map(async (courseId) => {
-    const course = await Course.findById(courseId);
-    return fetchFormattedCourse(course, instructor);
+  const instructedCoursesPromises = instructor.courses.map(async (course) => {
+    const courseObject = await Course.findById(course.courseId);
+    return fetchFormattedCourse(courseObject, course.accentColor, instructor);
   });
 
   const instructedCourses = await Promise.all(instructedCoursesPromises);
@@ -103,15 +103,17 @@ const getMyEnrolledCourses = asyncHandler(async (req, res) => {
   }
 
   const enrolledCourses = [];
+
   for (let i = 0; i < student.courses.length; i++) {
-    const course = await Course.findById(student.courses[i]);
+    const course = await Course.findById(student.courses[i].courseId);
     const instructor = await User.findById(course.instructor);
     //Students should only be able to see the some fields
     enrolledCourses.push({
       courseCode: course.courseCode,
       courseName: course.courseName,
       courseSemester: course.courseSemester,
-      instructor: instructor.firstName + " " + instructor.lastName
+      instructor: instructor.firstName + " " + instructor.lastName,
+      accentColor: student.courses[i].accentColor
     });
   }
 
@@ -149,7 +151,7 @@ const getAllCourses = asyncHandler(async (req, res) => {
 //@desc   Add student to their desired course session
 //@access Private
 const enrollInCourse = asyncHandler(async (req, res) => {
-  const { courseId, sessionNumber } = req.body;
+  const { courseId, sessionNumber, accentColor } = req.body;
 
   //Check if valid user
   const student = await User.findOne({ email: req.session.email});
@@ -172,7 +174,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   }
 
   //Check if student is already enrolled in the specified course
-  if (student.courses.includes(courseId)) {
+  if (student.courses.findIndex(course => course.courseId == courseId) !== -1) {
     //Check if student is already enrolled in the specified session
     if (course.sessions[sessionNumber - 1].students.includes(student._id)) {
       return res.status(400).json(formatMessage(false, "Student already enrolled in course"));
@@ -189,16 +191,15 @@ const enrollInCourse = asyncHandler(async (req, res) => {
     }
   }
   else {
-    student.courses.push(courseId);
+    student.courses.push({courseId: courseId, accentColor: accentColor});
     await student.save();
+    //Enroll student
+    course.sessions[sessionNumber - 1].students.push(student._id);
+    course.sessions[sessionNumber - 1].enrollment++;
+    await course.save();
+  
+    return res.status(200).json(formatMessage(true, "Student enrolled successfully"));
   }
-
-  //Enroll student
-  course.sessions[sessionNumber - 1].students.push(student._id);
-  course.sessions[sessionNumber - 1].enrollment++;
-  await course.save();
-
-  return res.status(200).json(formatMessage(true, "Student enrolled successfully"));
 });
 
 //@route  POST api/courses/drop
@@ -207,7 +208,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 const dropCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.body;
 
-  //Check if valid user
+  // Check if valid user
   const student = await User.findOne({ email: req.session.email });
   if (!student) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
@@ -216,42 +217,71 @@ const dropCourse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
-  //Verify all fields exist
+  // Verify all fields exist
   if (!courseId) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
-  //Check if valid course
+  // Check if valid course
   const course = await Course.findById(courseId);
   if (!course) {
     return res.status(400).json(formatMessage(false, "Invalid course"));
   }
 
-  //Check if student is enrolled in the specified course
-  if (student.courses.includes(courseId)) {
-    //Remove course from student's courses
-    student.courses = student.courses.filter(courseId => courseId.toString() !== course._id.toString());
-    await student.save();
-
-    //Remove student from the course
-    for (let i = 0; i < course.sessions.length; i++) {
-      if (course.sessions[i].students.includes(student._id)) {
-        course.sessions[i].students = course.sessions[i].students.filter(studentId => studentId.toString() !== student._id.toString());
-        course.sessions[i].enrollment--;
-        await course.save();
-        break;
-      }
-    }
+  // Remove course from student enrolled course list
+  const courseIndex = student.courses.findIndex(course => course.courseId === courseId);
+  if (courseIndex === -1) {
+    return res.status(400).json(formatMessage(false, "Student not enrolled in the course"));
   }
-  else {
-    return res.status(400).json(formatMessage(false, "Student not enrolled in course"));
+  student.courses.splice(courseIndex, 1);
+  await student.save();
+
+  // Remove student from the course
+  for (let i = 0; i < course.sessions.length; i++) {
+    if (course.sessions[i].students.includes(student._id)) {
+      course.sessions[i].students = course.sessions[i].students.filter(studentId => studentId.toString() !== student._id.toString());
+      course.sessions[i].enrollment--;
+      await course.save();
+      break;
+    }
   }
 
   return res.status(200).json(formatMessage(true, "Student dropped successfully"));
 });
 
-// ------------------------------ Promise functions --------------------------------
-async function fetchFormattedCourse(course, instructor) {
+//@route  POST api/courses/accentColor
+//@desc   Set accent color for a specific course
+//@access Private
+const setAccentColor = asyncHandler(async (req, res) => {
+  const { courseId, accentColor } = req.body;
+
+  // Check if valid user
+  const user = await User.findOne({ email: req.session.email });
+
+  // Verify all fields exist
+  if (!courseId || !accentColor) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  // Check if valid course
+  const course = await Course.findById(courseId);
+  if (!course) {
+    return res.status(400).json(formatMessage(false, "Invalid courseId"));
+  }
+
+  // Remove course from student enrolled course list
+  const courseIndex = user.courses.findIndex(course => course.courseId.toString() === courseId);
+  console.log(user.courses)
+  if (courseIndex === -1) {
+    return res.status(400).json(formatMessage(false, "The user has not enrolled in or instructed the course"));
+  }
+  user.courses[courseId] = {courseId: courseId, accentColor: accentColor};
+  await user.save();
+  return res.status(200).json(formatMessage(true, "Accent color set successfully"));
+});
+
+// ------------------------------ Helper functions ------------------------------
+async function fetchFormattedCourse(course, accentColor, instructor) {
   const formattedSessionsPromises = course.sessions.map(async (session) => {
     const formattedStudentsPromises = session.students.map(async (studentId) => {
       const student = await User.findById(studentId);
@@ -267,6 +297,7 @@ async function fetchFormattedCourse(course, instructor) {
       sessionNumber: session.sessionNumber,
       enrollment: session.enrollment,
       students: formattedStudents,
+      accentColor: accentColor,
     };
   });
 
@@ -289,5 +320,6 @@ export {
   getMyEnrolledCourses,
   getAllCourses,
   enrollInCourse,
-  dropCourse
+  dropCourse,
+  setAccentColor
 };
