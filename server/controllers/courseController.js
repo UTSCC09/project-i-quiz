@@ -7,7 +7,7 @@ import formatMessage from "../utils/utils.js";
 //@desc   Allow instructor to create a course
 //@access Private
 const createCourse = asyncHandler(async (req, res) => {
-  const { courseCode, courseName, semester, numOfSessions } = req.body;
+  const { courseCode, courseName, courseSemester, numOfSessions } = req.body;
 
   //Check if valid user
   const instructor = await User.findOne({ email: req.session.email });
@@ -19,7 +19,7 @@ const createCourse = asyncHandler(async (req, res) => {
   }
 
   //Verify all fields exist
-  if (!courseCode || !courseName || !semester || !numOfSessions) {
+  if (!courseCode || !courseName || !courseSemester || !numOfSessions) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -30,7 +30,7 @@ const createCourse = asyncHandler(async (req, res) => {
         { courseCode: courseCode },
         { courseName: courseName }
       ]},
-      { semester: semester }
+      { courseSemester: courseSemester }
     ]});
   if (existingCourse) {
     return res.status(400).json(formatMessage(false, "Course already exists"));
@@ -50,7 +50,7 @@ const createCourse = asyncHandler(async (req, res) => {
   const course = await Course.create({
     courseCode: courseCode,
     courseName: courseName,
-    semester: semester,
+    courseSemester: courseSemester,
     instructor: instructor._id,
     sessions: sessions
   });
@@ -110,7 +110,7 @@ const getMyEnrolledCourses = asyncHandler(async (req, res) => {
     enrolledCourses.push({
       courseCode: course.courseCode,
       courseName: course.courseName,
-      semester: course.semester,
+      courseSemester: course.courseSemester,
       instructor: instructor.firstName + " " + instructor.lastName
     });
   }
@@ -276,7 +276,7 @@ async function fetchFormattedCourse(course, instructor) {
     _id: course._id,
     courseCode: course.courseCode,
     courseName: course.courseName,
-    semester: course.semester,
+    courseSemester: course.courseSemester,
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
     quizzes: course.quizzes
