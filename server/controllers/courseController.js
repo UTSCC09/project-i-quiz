@@ -23,7 +23,7 @@ const createCourse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
-  //Check if there is a pre-existing course
+  //Check if there is a pre-existing course in the instructor's course list
   const existingCourse = await Course.findOne(
     {$and: [
       {$or: [
@@ -31,8 +31,9 @@ const createCourse = asyncHandler(async (req, res) => {
         { courseName: courseName }
       ]},
       { courseSemester: courseSemester }
-    ]});
-  if (existingCourse) {
+    ]}
+  );
+  if (existingCourse && instructor.courses.findIndex(course => course.courseId.equals(existingCourse._id)) !== -1) {
     return res.status(400).json(formatMessage(false, "Course already exists"));
   }
 
