@@ -1,16 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import NavBar from "components/page_components/NavBar";
 import CourseCard from "components/page_components/CourseCard";
-import CourseDataMock_active from "mock_data/DashboardPage/CourseDataMock_active.json";
 import CourseDataMock_archived from "mock_data/DashboardPage/CourseDataMock_archived.json";
 import QuizDataMock_available from "mock_data/DashboardPage/QuizDataMock_available.json";
 import QuizDataMock_upcoming from "mock_data/DashboardPage/QuizDataMock_upcoming.json";
 import QuizCard from "components/page_components/QuizCard";
 import Accordion from "components/elements/Accordion";
 
-function getActiveCourses() {
-  return CourseDataMock_active.courseList;
-}
 
 function getArchivedCourses() {
   return CourseDataMock_archived.courseList;
@@ -28,12 +24,35 @@ export default function DashboardPage() {
   const quizSectionRef = useRef(null);
   const courseSectionRef = useRef(null);
 
+  const [activeCourseList, activeCourseListSet] = useState([]);
   const [selectedTab, _setSelectedTab] = useState("quizzes");
+
   function setSelectedTab(selection) {
     _setSelectedTab(selection);
     quizSectionRef.current.classList.toggle("hidden");
     courseSectionRef.current.classList.toggle("hidden");
   }
+
+  useEffect(() => {
+    // Fetch enrolled courses
+    fetch("/api/courses/enrolled", {
+      method: "GET",
+      withCredentials: true,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((result) => {
+        if (!result.success) {
+          console.error(result.message);
+          return;
+        }
+        activeCourseListSet(result.payload);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }, [activeCourseListSet])
 
   return (
     <>
@@ -83,7 +102,7 @@ export default function DashboardPage() {
             <Accordion sectionName={"Active Courses"} content=
               {
                 <div className="flex flex-wrap gap-x-[4%] gap-y-6 md:gap-y-8">{
-                  getActiveCourses().map((courseObject, idx) => {
+                  activeCourseList.map((courseObject, idx) => {
                     return <CourseCard courseObject={courseObject} key={idx} />
                   })}
                 </div>
