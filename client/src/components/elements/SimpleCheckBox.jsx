@@ -24,6 +24,7 @@ export default function SimpleCheckBox({ id, name, label }) {
           className="border-blue-gray-200 relative h-4 w-4 cursor-pointer appearance-none rounded-md border transition-all duration-100 checked:border-blue-500 checked:bg-blue-500"
         />
         <div className="absolute pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white">
+          {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
           <motion.svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
