@@ -63,7 +63,7 @@ const getUsers = asyncHandler(async (req, res) => {
 //@desc   Logs in user, given a valid email and password.
 //@access Public
 const loginUser = asyncHandler(async (req, res) => {
-  if (req.session.email){
+  if (req.session.user){
     return res.status(400).json(formatMessage(false, "User already logged in"));
   }
   const {email, password} = req.body;
