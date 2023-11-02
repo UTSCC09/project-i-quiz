@@ -5,9 +5,6 @@ import logo from "media/iquiz_logo.svg";
 import SingleLineInput from "components/elements/SingleLineInput";
 import SimpleCheckBox from "components/elements/SimpleCheckBox";
 
-// server base URL
-const baseUrl = process.env.REACT_APP_API_BASE_URL;
-
 const LoginPage = () => {
   return (
     <>
@@ -40,9 +37,10 @@ const SignInWindow = () => {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    fetch(new URL("/api/users/login", baseUrl), {
+    fetch("/api/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      withCredentials: true,
       body: JSON.stringify({ email, password })
     })
       .then((response) => response.json())
