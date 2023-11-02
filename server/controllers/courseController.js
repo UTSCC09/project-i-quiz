@@ -199,8 +199,40 @@ const enrollInCourse = asyncHandler(async (req, res) => {
     course.sessions[sessionNumber - 1].enrollment++;
     await course.save();
   
-    return res.status(200).json(formatMessage(true, "Student enrolled successfully"));
+    return res.status(200).json(formatMessage(true, "Student enrolled successfully", { courseCode: course.courseCode }));
   }
+});
+
+//@route  GET api/courses/enrollInfo/:accessCode
+//@desc   Get courseId and [sessionNumber] given accessCode
+//@access Private
+const getCourseEnrollInfo = asyncHandler(async (req, res) => {
+  const { accessCode } = req.params;
+
+  //Check if valid user
+  const student = await User.findOne({ email: req.session.email });
+  if (!student) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  }
+  else if (student.type !== "student") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  //Check if valid course and session
+  const course = await Course.findOne({ accessCode: accessCode });
+  if (!course) {
+    return res.status(400).json(formatMessage(false, "Invalid course access code"));
+  }
+
+  //Check if student is already enrolled in the specified course
+  if (student.courses.findIndex(studentCourse => studentCourse.courseId.equals(course._id)) !== -1) {
+    return res.status(400).json(formatMessage(false, `You have already enrolled in ${course.courseCode} ${course.courseSemester}`));
+  }
+  return res.status(200).json({
+    success: true,
+    courseId: course._id,
+    sessions: course.sessions.map((session) => session.sessionNumber)
+  });
 });
 
 //@route  POST api/courses/drop
@@ -230,7 +262,7 @@ const dropCourse = asyncHandler(async (req, res) => {
   }
 
   // Remove course from student enrolled course list
-  const courseIndex = student.courses.findIndex(course => course.courseId === courseId);
+  const courseIndex = student.courses.findIndex(course => course.courseId.toString() === courseId);
   if (courseIndex === -1) {
     return res.status(400).json(formatMessage(false, "Student not enrolled in the course"));
   }
@@ -327,5 +359,6 @@ export {
   getAllCourses,
   enrollInCourse,
   dropCourse,
-  setAccentColor
+  setAccentColor,
+  getCourseEnrollInfo
 };

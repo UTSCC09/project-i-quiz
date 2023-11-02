@@ -24,6 +24,9 @@ const CourseSchema = new mongoose.Schema({
     ref: "User",
     required: [true, "Please provide an instructor"]
   },
+  accessCode: {
+    type: String,
+  },
   sessions: [SessionSchema],
   quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }]
 });

@@ -6,11 +6,15 @@ import {
   getAllCourses,
   enrollInCourse,
   dropCourse,
-  setAccentColor
+  setAccentColor,
+  getCourseEnrollInfo
 } from "../controllers/courseController.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = Router();
+
+router.route("/enrollInfo/:accessCode")
+  .get(protect, getCourseEnrollInfo);
 
 router.route("/")
   .post(protect, createCourse)
