@@ -6,6 +6,7 @@ import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
 import Toast from "components/elements/Toast";
 import { AnimatePresence, motion } from "framer-motion";
+import CourseDropModal from "./CourseDropModal";
 
 async function setAccentColor(courseId, accentColor) {
   return fetch("/api/courses/accentColor", {
@@ -22,13 +23,14 @@ async function setAccentColor(courseId, accentColor) {
     })
 }
 
-export default function CourseCard({ courseObject, notificationNum = 0 }) {
+export default function CourseCard({ courseObject, notificationNum = 0, toastMessageSet }) {
   const [showDropDown, showDropDownSet] = useState(false);
   const [showSetColorModal, showSetColorModalSet] = useState(false);
+  const [showDropCourseModal, showDropCourseModalSet] = useState(false);
   const [accentColor, accentColorSet] = useState(courseObject.accentColor ?? colors.blue[600]);
   const [colorPicked, colorPickedSet] = useState(accentColor);
-  const [toastMessage, toastMessageSet] = useState();
   const alertRef = useRef();
+  const courseCardRef = useRef();
 
   const courseId = courseObject.courseId;
   const courseCode = courseObject.courseCode;
@@ -36,8 +38,12 @@ export default function CourseCard({ courseObject, notificationNum = 0 }) {
   const courseSemester = courseObject.courseSemester;
 
   return (
-    <div className="w-full md:w-[48%] lg:w-[48%]">
-      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
+    <div ref={courseCardRef} className="w-full md:w-[48%] lg:w-[48%]">
+      <CourseDropModal showDropCourseModal={showDropCourseModal} showDropCourseModalSet={showDropCourseModalSet} courseCode={courseCode} courseSemester={courseSemester} courseId={courseId} onSuccess={() => {
+        showDropCourseModalSet(false);
+        courseCardRef.current.style.display = "none";
+        toastMessageSet(courseCode + " has been removed from your course list");
+      }} />
       <Modal modalShow={showSetColorModal} modalShowSet={showSetColorModalSet} content={
         <div className="flex flex-col w-96 gap-6">
           <h1 className="text-2xl font-bold">Fresh color, fresh start</h1><div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"></div>
@@ -88,21 +94,23 @@ export default function CourseCard({ courseObject, notificationNum = 0 }) {
         <AnimatePresence>
           {showDropDown &&
             <motion.div
-              initial={{ opacity: 0, y: "-10%" }}
+              initial={{ opacity: 0, y: "-5%" }}
               animate={{ opacity: 1, y: "0" }}
-              exit={{ opacity: 0, y: "-10%" }}
+              exit={{ opacity: 0, y: "-5%" }}
               className="flex z-30 flex-col bg-white rounded-md shadow-lg shadow-gray-200 absolute mt-28 md:mt-8 mr-2 text-slate-600 text-sm border divide-y">
               <span className="py-2 px-4 hover:bg-gray-100 transition select-none" onClick={() => {
                 showSetColorModalSet(true);
                 showDropDownSet(false);
               }}>Edit color</span>
-              <span className="py-2 px-4 hover:bg-gray-100 transition select-none">Drop course</span>
+              <span className="py-2 px-4 hover:bg-gray-100 transition select-none" onClick={() => {
+                showDropCourseModalSet(true);
+                showDropDownSet(false);
+              }}>Drop course</span>
             </motion.div>
           }
         </AnimatePresence>
         {showDropDown && <div className="fixed z-20 left-0 top-0 w-screen h-screen b1g-black bg-opacity-10 cursor-default" onClick={() => showDropDownSet(false)}></div>}
       </div>
     </div>
-
   )
 }

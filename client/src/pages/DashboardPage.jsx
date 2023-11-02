@@ -75,8 +75,12 @@ export default function DashboardPage() {
         enrollModalShowSet={enrollModalShowSet}
         onSuccess={(courseCode) => {
           enrollModalShowSet(false);
-          fetchEnrolledCourses().then((payload) => activeCourseListSet(payload))
-          toastMessageSet(courseCode + " has been added to your course list");
+          fetchEnrolledCourses().then((payload) => {
+            activeCourseListSet(payload);
+            setTimeout(() => {
+              toastMessageSet(courseCode + " has been added to your course list");
+            }, 200);
+          });
         }} />
       <NavBar additionalButtons={
         <button className="btn-primary py-0 text-sm w-28 h-10 shrink-0" onClick={() => enrollModalShowSet(true)}>Add course</button>
@@ -127,7 +131,7 @@ export default function DashboardPage() {
               {
                 <div className="flex flex-wrap gap-x-[4%] gap-y-6 md:gap-y-8">{
                   activeCourseList.map((courseObject, idx) => {
-                    return <CourseCard courseObject={courseObject} key={idx} />
+                    return <CourseCard courseObject={courseObject} toastMessageSet={toastMessageSet} key={idx} />
                   })}
                 </div>
               }

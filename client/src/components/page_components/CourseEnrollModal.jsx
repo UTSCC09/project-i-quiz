@@ -93,6 +93,7 @@ export default function CourseEnrollModal({ enrollModalShow, enrollModalShowSet,
               <button className="btn-primary" onClick={() => {
                 enrollInCourse(enrollInfo.courseId, colorPicked, sessionPicked).then((payload) => {
                   onSuccess(payload.courseCode);
+                  stepSet(0);
                 })
               }}>Enroll</button>
             </div>}
