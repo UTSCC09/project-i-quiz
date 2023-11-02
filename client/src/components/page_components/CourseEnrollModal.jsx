@@ -26,13 +26,13 @@ export default function CourseEnrollModal({ enrollModalShow, enrollModalShowSet,
   const courseAccessCodeInputRef = useRef();
   const alertRef = useRef();
   const [step, stepSet] = useState(0);
-  const [colorPicked, colorPickedSet] = useState(colors.blue[500]);
+  const [colorPicked, colorPickedSet] = useState();
   const [sessionPicked, sessionPickedSet] = useState();
   const [enrollInfo, enrollInfoSet] = useState();
 
   return (
     <>
-      <Modal modalShow={enrollModalShow} modalShowSet={enrollModalShowSet} onClose={() => stepSet(0)} content={
+      <Modal modalShow={enrollModalShow} modalShowSet={enrollModalShowSet} onClose={() => { stepSet(0); sessionPickedSet(0); colorPickedSet(0) }} content={
         <div className="w-96">
           {step === 0 &&
             <div className="flex flex-col gap-6">
@@ -70,30 +70,35 @@ export default function CourseEnrollModal({ enrollModalShow, enrollModalShowSet,
               <h1 className="text-2xl font-bold">Choose your session</h1>
               <div className="text-gray-600 flex flex-col gap-2">
                 <span>Choose the session that you are enrolled in.</span>
-                <span>If you are unsure about this, <u><b>confirm with your course instructor</b></u> before you proceed.</span>
+                <span>If you are unsure about this, please <u><b>confirm with your course instructor</b></u> before you proceed.</span>
               </div>
               <div className="flex flex-wrap gap-6 w-full my-4">
                 {enrollInfo.sessions.map((session, idx) => {
                   return <div onClick={() => sessionPickedSet(session)} key={idx}>
                     <input type="radio" value={session} checked={sessionPicked === session} name="sessionPicker" className="hidden peer" readOnly />
                     {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
-                    <span className="cursor-pointer hover:opacity-80 px-4 py-2 transition-all rounded border font-bold text-gray-600  peer-checked:border-blue-600 peer-checked:text-blue-600">{session}</span>
+                    <span className="cursor-pointer hover:opacity-50 px-4 py-2 transition-all rounded border font-bold text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600">{session}</span>
                   </div>
                 })}
               </div>
-              <button className="btn-primary" onClick={() => {
+              <button className="btn-primary" style={{ opacity: sessionPicked ? 1 : 0.4, pointerEvents: sessionPicked ? "auto" : "none" }} onClick={() => {
                 stepSet(step + 1);
               }}>Enroll</button>
             </div>}
           {step === 2 &&
             <div className="flex flex-col gap-6">
-              <h1 className="text-2xl font-bold">Add a new course</h1>
-              <span className="text-gray-600">Choose a color for your newly added course</span>
+              <h1 className="text-2xl font-bold">Choose a color</h1>
+              <div className="flex flex-col gap-4 text-gray-600">
+                <span>Pick an accent color for your newly added course.</span>
+                <span>Don't worry, you will be able to change it at anytime.</span>
+              </div>
               <ColorPicker colorPicked={colorPicked} colorPickedSet={colorPickedSet} />
-              <button className="btn-primary" onClick={() => {
+              <button className="btn-primary" style={{ opacity: colorPicked ? 1 : 0.4, pointerEvents: colorPicked ? "auto" : "none" }} onClick={() => {
                 enrollInCourse(enrollInfo.courseId, colorPicked, sessionPicked).then((payload) => {
                   onSuccess(payload.courseCode);
                   stepSet(0);
+                  sessionPickedSet(null);
+                  colorPickedSet(null);
                 })
               }}>Enroll</button>
             </div>}

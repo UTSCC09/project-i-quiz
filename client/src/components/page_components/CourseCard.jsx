@@ -44,7 +44,7 @@ export default function CourseCard({ courseObject, notificationNum = 0, toastMes
         courseCardRef.current.style.display = "none";
         toastMessageSet(courseCode + " has been removed from your course list");
       }} />
-      <Modal modalShow={showSetColorModal} modalShowSet={showSetColorModalSet} content={
+      <Modal modalShow={showSetColorModal} modalShowSet={showSetColorModalSet} onClose={() => colorPickedSet(accentColor)} content={
         <div className="flex flex-col w-96 gap-6">
           <h1 className="text-2xl font-bold">Fresh color, fresh start</h1><div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"></div>
           <span className="w-96 text-gray-600">Pick a new accent color for <b>{courseCode} {courseSemester}</b></span>
@@ -97,12 +97,12 @@ export default function CourseCard({ courseObject, notificationNum = 0, toastMes
               initial={{ opacity: 0, y: "-5%" }}
               animate={{ opacity: 1, y: "0" }}
               exit={{ opacity: 0, y: "-5%" }}
-              className="flex z-30 flex-col bg-white rounded-md shadow-lg shadow-gray-200 absolute mt-28 md:mt-8 mr-2 text-slate-600 text-sm border divide-y">
-              <span className="py-2 px-4 hover:bg-gray-100 transition select-none" onClick={() => {
+              className="flex z-30 flex-col bg-white rounded-md shadow-lg shadow-gray-200 absolute mt-28 md:mt-8 mr-2 text-slate-600 text-sm border divide-y select-none">
+              <span className="py-2 px-4 hover:bg-gray-100 transition" onClick={() => {
                 showSetColorModalSet(true);
                 showDropDownSet(false);
               }}>Edit color</span>
-              <span className="py-2 px-4 hover:bg-gray-100 transition select-none" onClick={() => {
+              <span className="py-2 px-4 hover:bg-gray-100 transition text-red-600" onClick={() => {
                 showDropCourseModalSet(true);
                 showDropDownSet(false);
               }}>Drop course</span>
