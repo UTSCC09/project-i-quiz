@@ -31,11 +31,11 @@ export default function Modal({ modalShow, modalShowSet, content }) {
   return (
     <>
       <AnimatePresence>{modalShow &&
-        <motion.div className="fixed z-50 w-full h-full bg-black bg-opacity-10 flex items-center justify-center" variants={darkenedScreenVariants} animate={"show"} initial={"hide"} exit={"hide"}> </motion.div>}
+        <motion.div className="fixed z-50 w-screen h-screen bg-black bg-opacity-10 flex items-center justify-center" variants={darkenedScreenVariants} animate={"show"} initial={"hide"} exit={"hide"}> </motion.div>}
       </AnimatePresence>
       <AnimatePresence>
         {modalShow &&
-          <motion.div className="fixed z-50 w-full h-full flex items-center justify-center" variants={modalVariants} animate={"show"} initial={"hide"} exit={"hide"}>
+          <motion.div className="fixed z-50 w-screen h-screen flex items-center justify-center" variants={modalVariants} animate={"show"} initial={"hide"} exit={"hide"}>
             <div className="relative w-fit h-fit bg-white rounded-lg shadow-lg flex flex-col">
               <button className="m-4 absolute right-0 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all" onClick={() => modalShowSet(false)}>
                 {/* [Credit]: svg from https://heroicons.dev */}
