@@ -20,7 +20,7 @@ export default function Toast({ toastMessage, toastMessageSet, timeout = 5000 })
   }, timeout);
   return (
     <>
-      <div className="fixed z-20 h-screen w-screen pointer-events-none flex items-end justify-center">
+      <div className="fixed left-0 top-0 z-20 h-screen w-screen pointer-events-none flex items-end justify-center">
         <AnimatePresence> {toastMessage &&
           <motion.div variants={variants} animate={"show"} initial={"hide"} exit={"hide"}>
             <div className="relative flex justify-between py-4 bg-white rounded-lg h-fit shadow-lg shadow-gray-200 border text-sm text-slate-600 items-center pointer-events-auto mb-12">
