@@ -40,7 +40,7 @@ const SignInWindow = () => {
     fetch("/api/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      withCredentials: true,
+      credentials: "include",
       body: JSON.stringify({ email, password })
     })
       .then((response) => response.json())
@@ -49,7 +49,7 @@ const SignInWindow = () => {
           navigate("/dashboard");
         }
         else {
-          errorMessageRef.current.textContent = "Incorrect login credentials";
+          errorMessageRef.current.textContent = result.message;
           errorMessageRef.current.classList.remove("hidden");
           emailInputRef.current.setValidationState(false);
           passwordInputRef.current.setValidationState(false);
