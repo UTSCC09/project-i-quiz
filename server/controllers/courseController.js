@@ -272,13 +272,18 @@ const setAccentColor = asyncHandler(async (req, res) => {
 
   // Remove course from student enrolled course list
   const courseIndex = user.courses.findIndex(course => course.courseId.toString() === courseId);
-  console.log(user.courses)
+
   if (courseIndex === -1) {
     return res.status(400).json(formatMessage(false, "The user has not enrolled in or instructed the course"));
   }
-  user.courses[courseId] = {courseId: courseId, accentColor: accentColor};
-  await user.save();
-  return res.status(200).json(formatMessage(true, "Accent color set successfully"));
+  const updatedUser = await User.updateOne({_id: user._id, "courses.courseId": courseId }, { $set: { "courses.$.accentColor": accentColor }});
+  if (updatedUser) {
+    await user.save();
+    return res.status(200).json(formatMessage(true, "Accent color set successfully", updatedUser));
+  }
+  else {
+    return res.status(500).json(formatMessage(false, "Could not update the color", updatedUser));
+  }
 });
 
 // ------------------------------ Helper functions ------------------------------
