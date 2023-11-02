@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import formatMessage from "../utils/utils.js";
 import validator from "validator";
+import { parse, serialize } from "cookie";
 
 dotenv.config();
 
@@ -14,11 +15,14 @@ const checkId = function(req, res, next) {
   next();
 };
 
+// https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token
 const protect = asyncHandler(async (req, res, next) => {
-  if (req.session == null || req.session.email == null || req.session.csrfToken != req.body.csrfToken){
+  let cookies = parse(req.headers.cookie || "");
+  console.log(cookies);
+  if (req.session == null || req.session.email == null || cookies == null || req.session.csrfToken != cookies.sessionId){
     return res.status(401).json(formatMessage(false, "Not authorized"));
   }
-  
+
   if (req.body.content != null){
     req.body.content = sanitizeContent(req.body.content);
   }

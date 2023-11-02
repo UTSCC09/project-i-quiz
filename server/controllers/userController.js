@@ -99,7 +99,7 @@ const loginUser = asyncHandler(async (req, res) => {
     //Setting cookie
     res.setHeader(
       "Set-Cookie",
-      serialize("sessionId", user._id, {
+      serialize("sessionId", csrfToken, {
         path: "/",
         maxAge: 60 * 60 * 24 * 7, // 1 week in number of seconds
         httpOnly: false,
@@ -107,8 +107,8 @@ const loginUser = asyncHandler(async (req, res) => {
       })
     );
 
-    //Return user object with token
-    return res.json(formatMessage(true, "Login Successfully", csrfToken));
+    //Return user object 
+    return res.json(formatMessage(true, "Login Successfully"));
   });
 
 
