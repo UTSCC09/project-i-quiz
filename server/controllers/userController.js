@@ -84,22 +84,15 @@ const loginUser = asyncHandler(async (req, res) => {
       return res.status(401).json(formatMessage(false, "Incorrect password"));
     }
 
-    // Creating csrfToken
-    // Ex. "6872cb84-1948-49f7-b347-55501a429c24"
-    let csrfToken = crypto.randomUUID();
-
-    //Store email and csrfToken in session
-    req.session.sessionId = user._id;
-    req.session.email = email;
-    req.session.csrfToken = csrfToken;
+    //Store email
+    req.session.user = email;
     req.session.cookie.httpOnly = true;
-    //req.session.cookie.secure = true; //https only
     req.session.cookie.sameSite = true;
 
     //Setting cookie
     res.setHeader(
       "Set-Cookie",
-      serialize("sessionId", csrfToken, {
+      serialize("user", email, {
         path: "/",
         maxAge: 60 * 60, // 1 hr in number of seconds
         httpOnly: false,
@@ -124,11 +117,13 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   res.setHeader(
     "Set-Cookie",
-    serialize("sessionId", "", {
+    serialize("user", "", {
       path: "/",
       maxAge: 60 * 60, // 1 hr in number of seconds
     })
   );
+
+  res.clearCookie('connect.sid');
 
   req.session.destroy(function(err){
     if (err) return res.status(500).json(formatMessage(false, "Deleting session error"));
