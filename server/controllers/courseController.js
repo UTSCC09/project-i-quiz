@@ -94,29 +94,7 @@ const getMyInstructedCourses = asyncHandler(async (req, res) => {
 //@desc   Retrieve all courses signed in student is enrolled in
 //@access Private
 const getMyEnrolledCourses = asyncHandler(async (req, res) => {
-  //Check if valid user
-  const student = await User.findOne({ email: req.session.email });
-  if (!student) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  }
-  else if (student.type !== "student") {
-    return res.status(400).json(formatMessage(false, "Invalid user type"));
-  }
-
-  const enrolledCourses = [];
-
-  for (let i = 0; i < student.courses.length; i++) {
-    const course = await Course.findById(student.courses[i].courseId);
-    const instructor = await User.findById(course.instructor);
-    //Students should only be able to see the some fields
-    enrolledCourses.push({
-      courseCode: course.courseCode,
-      courseName: course.courseName,
-      courseSemester: course.courseSemester,
-      instructor: instructor.firstName + " " + instructor.lastName,
-      accentColor: student.courses[i].accentColor
-    });
-  }
+  const enrolledCourses = await getEnrolledCourses(req.session.email);
 
   //Retrieve courses
   return res.status(200).json(formatMessage(true, "Courses retrieved successfully", enrolledCourses));
@@ -146,6 +124,24 @@ const getAllCourses = asyncHandler(async (req, res) => {
     });
   }
   return res.status(200).json(formatMessage(true, "Courses retrieved successfully", formattedCourses));
+});
+
+
+//@route  GET api/courses/enrolled/:courseId
+//@desc   Retrieve all courses
+//@access Private
+const getEnrolledCourse = asyncHandler(async (req, res) => {
+  console.log(req.params)
+  const courseId = req.params.courseId;
+  const enrolledCourses = await getEnrolledCourses(req.session.email);
+
+  const course = enrolledCourses.find((course) => course.courseId.toString() === courseId);
+  console.log(courseId, course)
+  if (!course) {
+    return res.status(400).json(formatMessage(false, "Student not enrolled in the course"));
+  }
+
+  return res.status(200).json(formatMessage(true, "Course retrieved successfully", course));
 });
 
 //@route  POST api/courses/enroll
@@ -319,6 +315,34 @@ const setAccentColor = asyncHandler(async (req, res) => {
 });
 
 // ------------------------------ Helper functions ------------------------------
+
+async function getEnrolledCourses(studentEmail){
+  const student = await User.findOne({ email: studentEmail });
+  if (!student) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  }
+  else if (student.type !== "student") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  const enrolledCourses = [];
+
+  for (let i = 0; i < student.courses.length; i++) {
+    const course = await Course.findById(student.courses[i].courseId);
+    const instructor = await User.findById(course.instructor);
+    //Students should only be able to see the course code, course name, and instructor name
+    enrolledCourses.push({
+      courseId: course._id,
+      courseCode: course.courseCode,
+      courseName: course.courseName,
+      courseSemester: course.courseSemester,
+      instructor: instructor.firstName + " " + instructor.lastName,
+      accentColor: student.courses[i].accentColor
+    });
+  }
+  return enrolledCourses;
+}
+
 async function fetchFormattedCourse(course, accentColor, instructor) {
   const formattedSessionsPromises = course.sessions.map(async (session) => {
     const formattedStudentsPromises = session.students.map(async (studentId) => {
@@ -360,5 +384,6 @@ export {
   enrollInCourse,
   dropCourse,
   setAccentColor,
-  getCourseEnrollInfo
+  getCourseEnrollInfo,
+  getEnrolledCourse
 };

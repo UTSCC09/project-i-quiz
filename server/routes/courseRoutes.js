@@ -7,7 +7,8 @@ import {
   enrollInCourse,
   dropCourse,
   setAccentColor,
-  getCourseEnrollInfo
+  getCourseEnrollInfo,
+  getEnrolledCourse
 } from "../controllers/courseController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -34,5 +35,8 @@ router.route("/drop")
 
 router.route("/accentColor")
   .post(protect, setAccentColor);
+
+  router.route("/enrolled/:courseId")
+  .get(protect, getEnrolledCourse);
 
 export default router;
