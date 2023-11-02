@@ -5,16 +5,8 @@ import validator from "validator";
 
 dotenv.config();
 
-const protect = asyncHandler(async (req, res, next) => {
-  if (req.session == null || req.session.email == null || req.session.csrfToken != req.body.csrfToken){
-    return res.status(401).json(formatMessage(false, "Not authorized"));
-  }
-  next();
-});
-
-const sanitizeContent = function(req, res, next) {
-  req.body.content = validator.escape(req.body.content);
-  next();
+const sanitizeContent = function(content) {
+  return validator.escape(content);
 }
 
 const checkId = function(req, res, next) {
@@ -22,4 +14,15 @@ const checkId = function(req, res, next) {
   next();
 };
 
+const protect = asyncHandler(async (req, res, next) => {
+  if (req.session == null || req.session.email == null || req.session.csrfToken != req.body.csrfToken){
+    return res.status(401).json(formatMessage(false, "Not authorized"));
+  }
+  
+  if (req.body.content != null){
+    req.body.content = sanitizeContent(req.body.content);
+  }
+
+  next();
+});
 export default protect;
