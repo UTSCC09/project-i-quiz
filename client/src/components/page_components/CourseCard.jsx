@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import colors from "tailwindcss/colors";
 
 export default function CourseCard({ courseObject, notificationNum = 0 }) {
-  const courseId = courseObject._id;
+  const courseId = courseObject.courseId;
   const courseCode = courseObject.courseCode;
   const courseName = courseObject.courseName;
   const courseSemester = courseObject.courseSemester;
