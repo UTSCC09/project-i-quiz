@@ -3,8 +3,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import SingleLineInput from "components/elements/SingleLineInput";
 import iquizLogo from "media/iquiz_logo.svg";
 
-const baseUrl = process.env.REACT_APP_API_BASE_URL;
-
 export default function SignUpPage() {
   const location = useLocation();
   const { email, userType } = location.state ?? "";
@@ -127,9 +125,10 @@ function SignUpForm({ email, userType }) {
     // Call Sign Up API
     const formData = new FormData(e.target);
 
-    fetch(new URL("/api/users", baseUrl), {
+    fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      withCredentials: true,
       body: JSON.stringify({
         firstName: formData.get("firstName"),
         lastName: formData.get("lastName"),
