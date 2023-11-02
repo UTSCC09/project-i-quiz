@@ -108,7 +108,6 @@ const loginUser = asyncHandler(async (req, res) => {
       })
     );
 
-    //Return user object 
     return res.json(formatMessage(true, "Login Successfully"));
   });
 

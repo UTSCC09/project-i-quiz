@@ -15,7 +15,6 @@ const checkId = function(id) {
   return true;
 };
 
-// https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token
 const protect = asyncHandler(async (req, res, next) => {
   let cookies = parse(req.headers.cookie || "");
 
