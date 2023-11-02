@@ -16,7 +16,7 @@ const variants = {
 };
 export default function Toast({ toastMessage, toastMessageSet, timeout = 5000 }) {
   setTimeout(() => {
-    toastMessageSet("");
+    toastMessageSet(null);
   }, timeout);
   return (
     <>
