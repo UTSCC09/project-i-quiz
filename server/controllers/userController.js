@@ -93,7 +93,7 @@ const loginUser = asyncHandler(async (req, res) => {
     req.session.email = email;
     req.session.csrfToken = csrfToken;
     req.session.cookie.httpOnly = true;
-    //req.session.cookie.secure = true; https only
+    //req.session.cookie.secure = true; //https only
     req.session.cookie.sameSite = true;
 
     //Setting cookie
@@ -103,6 +103,7 @@ const loginUser = asyncHandler(async (req, res) => {
         path: "/",
         maxAge: 60 * 60, // 1 hr in number of seconds
         httpOnly: false,
+        secure: true,
         sameSite: true,
       })
     );
