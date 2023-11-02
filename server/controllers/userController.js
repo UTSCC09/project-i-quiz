@@ -101,7 +101,7 @@ const loginUser = asyncHandler(async (req, res) => {
       "Set-Cookie",
       serialize("sessionId", csrfToken, {
         path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 1 week in number of seconds
+        maxAge: 60 * 60, // 1 hr in number of seconds
         httpOnly: false,
         sameSite: true,
       })
@@ -126,7 +126,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     "Set-Cookie",
     serialize("sessionId", "", {
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 1 week in number of seconds
+      maxAge: 60 * 60, // 1 hr in number of seconds
     })
   );
 
