@@ -111,7 +111,7 @@ const loginUser = asyncHandler(async (req, res) => {
 //@desc   Logs out user, if the user is logged in.
 //@access Public
 const logoutUser = asyncHandler(async (req, res) => {
-  if (!req.session.email){
+  if (!req.session.user){
     return res.status(400).json(formatMessage(false, "User is not logged in"));
   }
 
