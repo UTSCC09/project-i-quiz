@@ -27,9 +27,11 @@ const protect = asyncHandler(async (req, res, next) => {
     req.body.content = sanitizeContent(req.body.content);
   }
 
-  if (req.params.id != null && checkId(req.params.id)){
-    next();
+  if (req.params.id != null && !checkId(req.params.id)){
+    return res.status(400).json(formatMessage(false, "Bad id"));
   }
+  
+  next();
 
 });
 export default protect;
