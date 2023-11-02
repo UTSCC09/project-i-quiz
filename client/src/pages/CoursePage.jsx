@@ -54,7 +54,7 @@ export default function CoursePage() {
         console.error(result.message);
       }
     })
-  }, [courseInfoSet])
+  }, [courseInfoSet, courseId])
 
   function onSelectionChange(selection) {
     setSelection(selection);
