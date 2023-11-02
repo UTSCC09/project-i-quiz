@@ -5,6 +5,7 @@ import colors from "tailwindcss/colors";
 import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
 import Toast from "components/elements/Toast";
+import { AnimatePresence, motion } from "framer-motion";
 
 async function setAccentColor(courseId, accentColor) {
   return fetch("/api/courses/accentColor", {
@@ -58,8 +59,8 @@ export default function CourseCard({ courseObject, notificationNum = 0 }) {
           }}>Save</button>
         </div>
       } />
-      <div className="relative rounded-md w-full border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer group h-fit flex items-center" style={{ borderLeftColor: accentColor }}>
-        <Link to={"/courses/" + courseId} className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 group-hover:bg-gray-100 transition-all w-full">
+      <div className="relative rounded-md w-full border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer h-fit flex items-center justify-end" style={{ borderLeftColor: accentColor }}>
+        <Link to={"/courses/" + courseId} className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 hover:bg-gray-100 transition-all w-full">
           <div className="flex flex-col md:mb-6 w-full pr-4">
             <Badge label={courseSemester} accentColor={accentColor} />
             <div className="flex items-center">
@@ -75,7 +76,7 @@ export default function CourseCard({ courseObject, notificationNum = 0 }) {
             </div>
           }
         </Link>
-        <button className="text-slate-600 absolute md:top-4 right-0 mx-2 p-1 rounded-full hover:bg-gray-200" onClick={() => {
+        <button className="text-slate-600 absolute md:top-4 right-0 mx-2 p-1 rounded-full hover:bg-gray-100 transition" onClick={() => {
           showDropDownSet(!showDropDown);
         }
         }>
@@ -84,14 +85,22 @@ export default function CourseCard({ courseObject, notificationNum = 0 }) {
             <path clipRule="evenodd" fillRule="evenodd" d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
           </svg>
         </button>
-        {showDropDown &&
-          <div className="flex flex-col bg-white rounded-md shadow-lg shadow-gray-200 absolute right-0 top-12 text-slate-600 text-sm border divide-y">
-            <span className="py-2 px-4 hover:bg-gray-100" onClick={() => {
-              showModalSet(true);
-            }}>Edit color</span>
-            <span className="py-2 px-4">Drop</span>
-          </div>
-        }
+        <AnimatePresence>
+          {showDropDown &&
+            <motion.div
+              initial={{ opacity: 0, y: "-10%" }}
+              animate={{ opacity: 1, y: "0" }}
+              exit={{ opacity: 0, y: "-10%" }}
+              className="flex z-30 flex-col bg-white rounded-md shadow-lg shadow-gray-200 absolute mt-28 md:mt-8 mr-2 text-slate-600 text-sm border divide-y">
+              <span className="py-2 px-4 hover:bg-gray-100 transition select-none" onClick={() => {
+                showModalSet(true);
+                showDropDownSet(false);
+              }}>Edit color</span>
+              <span className="py-2 px-4 hover:bg-gray-100 transition select-none">Drop course</span>
+            </motion.div>
+          }
+        </AnimatePresence>
+        {showDropDown && <div className="fixed z-20 left-0 top-0 w-screen h-screen b1g-black bg-opacity-10 cursor-default" onClick={() => showDropDownSet(false)}></div>}
       </div>
     </div>
 
