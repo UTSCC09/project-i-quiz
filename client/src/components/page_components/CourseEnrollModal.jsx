@@ -2,16 +2,8 @@
 import React, { useRef, useState } from "react";
 import SingleLineInput from "components/elements/SingleLineInput";
 import colors from "tailwindcss/colors";
-import { motion } from "framer-motion";
 import Modal from "components/elements/Modal";
-
-const checkIconVariants = {
-  unchecked: { pathLength: 0, opacity: 0, transition: { duration: 0.1 } },
-  checked: { pathLength: 1, opacity: 1, transition: { duration: 0.2 } }
-};
-
-const colorList = [colors.pink[500], colors.rose[500], colors.red[500], colors.orange[500], colors.amber[500], colors.yellow[500], colors.lime[500], colors.green[500], colors.emerald[500], colors.teal[500], colors.cyan[500], colors.blue[500], colors.blue[600], colors.indigo[500], colors.violet[500], colors.purple[500]]
-
+import ColorPicker from "./ColorPicker";
 
 async function enrollInCourse(courseId, accentColor, sessionNumber) {
   return fetch("/api/courses/enroll", {
@@ -40,8 +32,8 @@ export default function CourseEnrollModal({ enrollModalShow, enrollModalShowSet,
 
   return (
     <>
-      <Modal modalShow={enrollModalShow} modalShowSet={enrollModalShowSet} content={
-        <div className="px-24 py-16">
+      <Modal modalShow={enrollModalShow} modalShowSet={enrollModalShowSet} onClose={() => stepSet(0)} content={
+        <div className="w-96">
           {step === 0 &&
             <div className="flex flex-col gap-6">
               <h1 className="text-2xl font-bold">Add a new course</h1>
@@ -88,40 +80,16 @@ export default function CourseEnrollModal({ enrollModalShow, enrollModalShowSet,
                     <span className="cursor-pointer hover:opacity-80 px-4 py-2 transition-all rounded border font-bold text-gray-600  peer-checked:border-blue-600 peer-checked:text-blue-600">{session}</span>
                   </div>
                 })}
-              </div >
+              </div>
               <button className="btn-primary" onClick={() => {
                 stepSet(step + 1);
               }}>Enroll</button>
             </div>}
           {step === 2 &&
-            <div className="flex flex-col gap-6 w-96">
+            <div className="flex flex-col gap-6">
               <h1 className="text-2xl font-bold">Add a new course</h1>
               <span className="text-gray-600">Choose a color for your newly added course</span>
-              <div className="flex flex-wrap gap-[13.7px] w-full my-4">
-                {colorList.map((color, idx) => {
-                  return <div onClick={() => colorPickedSet(color)} key={idx}>
-                    <div className="h-9 w-9 rounded-full cursor-pointer hover:border-4 border-black border-opacity-10 transition-all flex justify-center items-center" style={{ backgroundColor: color }}>
-                      {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
-                      <motion.svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="4"
-                        stroke="currentColor"
-                        className="h-4 opacity-30"
-                        animate={colorPicked == color ? "checked" : "unchecked"}
-                      >
-                        <motion.path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M4.5 12.75l6 6 9-13.5"
-                          variants={checkIconVariants}
-                        />
-                      </motion.svg>
-                    </div>
-                  </div>
-                })}
-              </div >
+              <ColorPicker colorPicked={colorPicked} colorPickedSet={colorPickedSet} />
               <button className="btn-primary" onClick={() => {
                 enrollInCourse(enrollInfo.courseId, colorPicked, sessionPicked).then((payload) => {
                   onSuccess(payload.courseCode);
