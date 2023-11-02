@@ -18,7 +18,7 @@ const checkId = function(req, res, next) {
 // https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token
 const protect = asyncHandler(async (req, res, next) => {
   let cookies = parse(req.headers.cookie || "");
-  console.log(cookies);
+  
   if (req.session == null || req.session.email == null || cookies == null || req.session.csrfToken != cookies.sessionId){
     return res.status(401).json(formatMessage(false, "Not authorized"));
   }
