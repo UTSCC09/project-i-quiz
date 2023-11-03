@@ -51,15 +51,18 @@ app.use(session({
 }));
 
 // Debug
-// app.use(function (req, res, next) {
-//   let cookies = parse(req.headers.cookie || "");
-//   console.log(req.session);
-//   console.log(req.session.email);
-//   console.log(cookies);
-//   req.email = req.session.email ? req.session.email : null;
-//   console.log("HTTP request", req.email, req.method, req.url, req.body);
-//   next();
-// });
+app.use(function (req, res, next) {
+  let cookies = parse(req.headers.cookie || "");
+  if (cookies && cookies.user == null && req.session.user){
+    req.session.user = null;
+  }
+  req.user = null;
+  if (req.session){
+    req.user = req.session.user;
+  }
+  //console.log("HTTP request", req.user , req.method, req.url, req.body);
+  next();
+});
 
 // Routes
 app.use("/api/users", userRoutes);
