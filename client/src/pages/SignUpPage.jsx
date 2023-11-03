@@ -1,13 +1,14 @@
 import React, { useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import SingleLineInput from "components/elements/SingleLineInput";
 import iquizLogo from "media/iquiz_logo.svg";
+import getUserCookie from "utils/getUserCookie";
 
 export default function SignUpPage() {
   const location = useLocation();
   const { email, userType } = location.state ?? "";
 
-  return (
+  return (!getUserCookie() ?
     <>
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <div id="container" className="bg-white h-full sm:h-fit sm:min-h-[41rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 mt-24 sm:mt-0 sm:place-self-center py-16 sm:rounded-md pt-24">
@@ -23,7 +24,7 @@ export default function SignUpPage() {
           </p>
         </div>
       </div>
-    </>
+    </> : <Navigate to="/" />
   )
 }
 

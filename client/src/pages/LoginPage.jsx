@@ -1,17 +1,20 @@
 import React, { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import "styles/components.css";
 import logo from "media/iquiz_logo.svg";
 import SingleLineInput from "components/elements/SingleLineInput";
 import SimpleCheckBox from "components/elements/SimpleCheckBox";
+import getUserCookie from "utils/getUserCookie";
 
 const LoginPage = () => {
-  return (
+  return (!getUserCookie() ?
     <>
       <div className="h-screen w-full flex flex-col items-center justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <SignInWindow />
       </div>
     </>
+    :
+    <Navigate to="/" />
   );
 }
 
