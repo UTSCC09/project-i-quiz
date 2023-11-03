@@ -50,7 +50,7 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-// Debug
+// Cookie.user checking
 app.use(function (req, res, next) {
   let cookies = parse(req.headers.cookie || "");
   if (cookies && cookies.user == null && req.session.user){
