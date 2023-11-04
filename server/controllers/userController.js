@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
+import sendEmailConfirmation from "../utils/emailVerification.js";
 import { parse, serialize } from "cookie";
 import crypto from "crypto";
 
@@ -39,11 +40,13 @@ const registerUser = asyncHandler(async (req, res) => {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        password: hashedPassword
+        password: hashedPassword,
+        confirmationCode: crypto.randomUUID().slice(0, 8)
       });
 
       //Return user object
       if (user) {
+        sendEmailConfirmation(user);
         return res.status(200).json(formatMessage(true, "Registered Successfully"));
       }
     });
@@ -131,9 +134,42 @@ const logoutUser = asyncHandler(async (req, res) => {
   });
 });
 
+//@route  POST api/users/verify/:userID/:confirmationCode
+//@desc   Takes a confirmation code and verifys user if same confirmationCode stored in db.
+//@access Public
+const verifyUser = asyncHandler(async (req, res) => {
+  console.log(req.params);
+  const {userId, confirmationCode} = req.params;
+
+  if (!userId|| !confirmationCode){
+    return res.status(400).json(formatMessage(false, "Missing arguments"));
+  }
+  
+  const user = await User.findOne({_id: userId});
+  if (!user){
+    return res.status(400).json(formatMessage(false, "User is not registered"));
+  }
+
+  if (user.verified == true){
+    return res.status(400).json(formatMessage(false, "User is already verified"));
+  }
+
+  if (user.confirmationCode == confirmationCode){
+    user.verified = true;
+    const updateUser = await User.updateOne({_id: userId}, user);
+
+    if (updateUser.modifiedCount == 1){
+      return res.json(formatMessage(true, "User has been verified!"));
+    }
+    return res.json(formatMessage(false, "Failed to update Users database"));
+  }
+  return res.json(formatMessage(false, "Invalid confirmation code"));
+});
+
 export {
   registerUser,
   getUsers,
   loginUser,
-  logoutUser
+  logoutUser,
+  verifyUser
 };
