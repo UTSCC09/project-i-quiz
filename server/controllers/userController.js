@@ -164,9 +164,9 @@ const verifyUser = asyncHandler(async (req, res) => {
     if (updateUser.modifiedCount == 1){
       return res.json(formatMessage(true, "User has been verified!"));
     }
-    return res.json(formatMessage(false, "Failed to update Users database"));
+    return res.status(500).json(formatMessage(false, "Failed to update Users database"));
   }
-  return res.json(formatMessage(false, "Invalid confirmation code"));
+  return res.status(400).json(formatMessage(false, "Invalid confirmation code"));
 });
 
 export {
