@@ -16,6 +16,6 @@ const mailOptions = {
   from: process.env.AUTH_EMAIL
 };
 
-const backendUrl = "http://localhost:" + process.env.PORT + "/";
+const backendUrl = process.env.SERVER_BASE_URL + "/";
 
 export { transporter, mailOptions, backendUrl };
