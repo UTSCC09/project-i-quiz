@@ -10,7 +10,7 @@ const createCourse = asyncHandler(async (req, res) => {
   const { courseCode, courseName, semester, numOfSessions } = req.body;
 
   //Check if valid user
-  const instructor = await User.findOne({ email: req.session.email });
+  const instructor = await User.findOne({ email: req.session.user });
   if (!instructor) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
   }
@@ -66,7 +66,7 @@ const createCourse = asyncHandler(async (req, res) => {
 //@access Private
 const getMyInstructedCourses = asyncHandler(async (req, res) => {
   // Check if the user is a valid instructor
-  const instructor = await User.findOne({ email: req.session.email });
+  const instructor = await User.findOne({ email: req.session.user });
   if (!instructor) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
   } else if (instructor.type !== "instructor") {
@@ -91,7 +91,7 @@ const getMyInstructedCourses = asyncHandler(async (req, res) => {
 //@access Private
 const getMyEnrolledCourses = asyncHandler(async (req, res) => {
   //Check if valid user
-  const student = await User.findOne({ email: req.session.email });
+  const student = await User.findOne({ email: req.session.user });
   if (!student) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
   }
@@ -148,7 +148,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   const { courseId, sessionNumber } = req.body;
 
   //Check if valid user
-  const student = await User.findOne({ email: req.session.email });
+  const student = await User.findOne({ email: req.session.user});
   if (!student) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
   }
@@ -204,7 +204,7 @@ const dropCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.body;
 
   //Check if valid user
-  const student = await User.findOne({ email: req.session.email });
+  const student = await User.findOne({ email: req.session.user });
   if (!student) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
   }
