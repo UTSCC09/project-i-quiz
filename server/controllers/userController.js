@@ -138,7 +138,6 @@ const logoutUser = asyncHandler(async (req, res) => {
 //@desc   Takes a confirmation code and verifys user if same confirmationCode stored in db.
 //@access Public
 const verifyUser = asyncHandler(async (req, res) => {
-  console.log(req.params);
   const {userId, confirmationCode} = req.params;
 
   if (!userId|| !confirmationCode){
