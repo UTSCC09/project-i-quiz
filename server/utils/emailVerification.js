@@ -24,9 +24,9 @@ const sendEmailConfirmation = function(user){
 
     transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-        console.log("Failed to send email", error);
+        console.log("Failed to send confirmation email", error);
     } else {
-        console.log("Email sent successfully!");
+        console.log("Confirmation email sent to: " + user.email + " successfully!");
     }
     });
 }
