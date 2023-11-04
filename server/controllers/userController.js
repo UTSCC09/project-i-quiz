@@ -145,6 +145,10 @@ const verifyUser = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing arguments"));
   }
   
+  if (!mongoose.isValidObjectId(userId)) {
+    return res.status(400).json(formatMessage(false, "Bad user id"));
+  }
+  
   const user = await User.findOne({_id: userId});
   if (!user){
     return res.status(400).json(formatMessage(false, "User is not registered"));
