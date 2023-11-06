@@ -7,6 +7,7 @@ import session from "express-session";
 import errorHandler from "./middleware/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
+import quizRoutes from "./routes/quizRoutes.js";
 
 // Get environment variables
 dotenv.config();
@@ -59,6 +60,7 @@ app.use(session({
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/quizzes", quizRoutes);
 
 // Assign port
 const PORT = process.env.PORT || 8080;

@@ -59,6 +59,9 @@ const createCourse = asyncHandler(async (req, res) => {
     await instructor.save();
     return res.status(200).json(formatMessage(true, "Course created successfully"));
   }
+  else {
+    return res.status(400).json(formatMessage(false, "Course creation failed"));
+  }
 });
 
 //@route  GET api/courses/instructed
@@ -246,7 +249,7 @@ const dropCourse = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Student dropped successfully"));
 });
 
-// ------------------------------ Helper functions ------------------------------
+// ------------------------------ Promise functions --------------------------------
 async function fetchFormattedCourse(course, instructor) {
   const formattedSessionsPromises = course.sessions.map(async (session) => {
     const formattedStudentsPromises = session.students.map(async (studentId) => {
@@ -269,6 +272,7 @@ async function fetchFormattedCourse(course, instructor) {
   const formattedSessions = await Promise.all(formattedSessionsPromises);
 
   return {
+    _id: course._id,
     courseCode: course.courseCode,
     courseName: course.courseName,
     semester: course.semester,
