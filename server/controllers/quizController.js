@@ -5,6 +5,7 @@ import MSQ from "../models/MSQ.js";
 import CLO from "../models/CLO.js";
 import OEQ from "../models/OEQ.js";
 import User from "../models/User.js";
+import Course from "../models/Course.js";
 
 import formatMessage from "../utils/utils.js";
 
@@ -24,12 +25,23 @@ const createQuiz = asyncHandler(async (req, res) => {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Invalid id"));
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
   }
 
   //Verify all fields exist
   if (!quizName || !startTime || !endTime || !course || !questions) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Verify valid course
+  let courseToAddTo;
+  try {
+    courseToAddTo = await Course.findById(course);
+    if (!courseToAddTo) {
+      return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding course"));
   }
 
   //Convert startTime and endTime to Date objects
@@ -52,7 +64,7 @@ const createQuiz = asyncHandler(async (req, res) => {
       return res.status(400).json(formatMessage(false, "Quiz already exists"));
     }
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Invalid course id"));
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
   }
 
   //Quiz questions
@@ -106,6 +118,8 @@ const createQuiz = asyncHandler(async (req, res) => {
     questions: quizQuestions
   });
   if (quiz) {
+    courseToAddTo.quizzes.push(quiz._id);
+    await courseToAddTo.save();
     return res.status(200).json(formatMessage(true, "Quiz created successfully"));
   }
   else {
@@ -113,8 +127,148 @@ const createQuiz = asyncHandler(async (req, res) => {
   }
 });
 
-// ------------------------------ Promise functions --------------------------------
+//@route  GET api/quizzes/:quizId
+//@desc   Allow instructor get a specific quiz
+//@access Private
+const getQuiz = asyncHandler(async (req, res) => {
+  //Check if valid user
+  try {
+    const instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+    else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  try {
+    const quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+    return res.status(200).json(formatMessage(true, "Quiz found", quiz));
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+});
+
+//@route  GET api/quizzes/course/instructed/:courseId
+//@desc   Allow instructor get all quizzes for a course they teach
+//@access Private
+const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+    else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  //Check if valid course
+  let course;
+  try {
+    course = await Course.findById(req.params.courseId);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding course"));
+  }
+
+  //Check if instructor teaches course
+  if (course.instructor.toString() !== instructor._id.toString()) {
+    return res.status(403).json(formatMessage(false, "Instructor does not teach course"));
+  }
+
+  //Get quizzes for course
+  try {
+    console.log(req.params.courseId);
+    const quizzes = await Quiz.find({ course: req.params.courseId });
+    if (!quizzes) {
+      return res.status(400).json(formatMessage(false, "Invalid course"));
+    }
+    return res.status(200).json(formatMessage(true, "Quizzes found", quizzes));
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quizzes for course"));
+  }
+});
+
+//@route  GET api/quizzes/course/enrolled/:courseId
+//@desc   Allow student to get all quizzes for a course they are enrolled in
+//@access Private
+const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let student;
+  try {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+    else if (student.type !== "student") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  //Check if valid course
+  let course;
+  try {
+    course = await Course.findById(req.params.courseId);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding course"));
+  }
+
+  //Check if student is enrolled in course
+  if (!student.courses.includes(req.params.courseId)) {
+    return res.status(403).json(formatMessage(false, "Student not enrolled in course"));
+  }
+
+  const formattedQuizzes = [];
+  //Get quizzes for course
+  for (let i = 0; i < course.quizzes.length; i++) {
+    try {
+      const quiz = await Quiz.findById(course.quizzes[i]);
+      console.log("quiz: ", quiz);
+      if (!quiz) {
+        return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+      }
+      const currentDateTime = new Date();
+      let currentQuizStatus = "";
+      if (currentDateTime < quiz.startTime ) { currentQuizStatus = "Upcoming"; }
+      else if (currentDateTime > quiz.endTime) { currentQuizStatus = "Past"; }
+      else { currentQuizStatus = "Active"; }
+      console.log("About to push");
+      formattedQuizzes.push({
+        quizId: quiz._id,
+        quizName: quiz.quizName,
+        status: currentQuizStatus,
+        releaseDate: quiz.startTime,
+        dueDate: quiz.endTime
+      });
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, "Mongoose error finding quizzes for course"));
+    }
+  }
+
+  return res.status(200).json(formatMessage(true, "Quizzes found", formattedQuizzes));
+});
 
 export {
-  createQuiz
+  createQuiz,
+  getQuiz,
+  getQuizzesForInstructedCourse,
+  getQuizzesForEnrolledCourse
 };

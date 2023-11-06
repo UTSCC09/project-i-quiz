@@ -106,10 +106,11 @@ const getMyEnrolledCourses = asyncHandler(async (req, res) => {
   for (let i = 0; i < student.courses.length; i++) {
     const course = await Course.findById(student.courses[i]);
     const instructor = await User.findById(course.instructor);
-    //Students should only be able to see the course code, course name, and instructor name
+    //Students should only be able to see the some fields
     enrolledCourses.push({
       courseCode: course.courseCode,
       courseName: course.courseName,
+      semester: course.semester,
       instructor: instructor.firstName + " " + instructor.lastName
     });
   }
@@ -278,6 +279,7 @@ async function fetchFormattedCourse(course, instructor) {
     semester: course.semester,
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
+    quizzes: course.quizzes
   };
 }
 
