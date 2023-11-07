@@ -503,11 +503,112 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  POST api/quizzes/question
+//@desc   Allow instructor to add a question to a quiz
+//@access Private
+const addQuizQuestion = asyncHandler(async (req, res) => {
+  const { quizId, questions } = req.body;
+
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+    else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  //Verify all fields exist
+  if (!quizId || !questions) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  let quiz;
+  try {
+    quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  let course;
+  try {
+    course = await Course.findById(quiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id in quiz"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz course"));
+  }
+
+  //Check if instructor teaches course
+  if (course.instructor.toString() !== instructor._id.toString()) {
+    return res.status(403).json(formatMessage(false, "Instructor does not teach course"));
+  }
+
+  //Create questions
+  for (let i = 0; i < questions.length; i++) {
+    let createdQuestion;
+    try {
+      switch(questions[i].type) {
+        case "MCQ":
+          const validMCQChoices = questions[i].question.choices.every((choice) => choice.id && choice.content);
+          if (!validMCQChoices) {
+            return res.status(400).json(formatMessage(false, "Invalid choices in MCQ question"));
+          }
+          createdQuestion = await MCQ.create(questions[i].question);
+          break;
+        case "MSQ":
+          const validMSQChoices = questions[i].question.choices.every((choice) => choice.id && choice.content);
+          if (!validMSQChoices) {
+            return res.status(400).json(formatMessage(false, "Invalid choices in MSQ question"));
+          }
+          createdQuestion = await MSQ.create(questions[i].question);
+          break;
+        case "CLO":
+          createdQuestion = await CLO.create(questions[i].question);
+          break;
+        case "OEQ":
+          createdQuestion = await OEQ.create(questions[i].question);
+          break;
+        default:
+          return res.status(400).json(formatMessage(false, "Invalid question type"));
+      }
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, "Mongoose error creating question"));
+    }
+
+    if (!createdQuestion) {
+      return res.status(400).json(formatMessage(false, "Question creation failed"));
+    }
+    else {
+      try {
+        quiz.questions.push({
+          question: createdQuestion._id,
+          type: questions[i].type
+        });
+      } catch (error) {
+        return res.status(400).json(formatMessage(false, error.message));
+      }
+    }
+  }
+  await quiz.save();
+  return res.status(200).json(formatMessage(true, "Questions added successfully"));
+});
+
 export {
   createQuiz,
   getQuiz,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
   basicUpdateQuiz,
-  updateQuizQuestion
+  updateQuizQuestion,
+  addQuizQuestion
 };
