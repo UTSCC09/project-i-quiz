@@ -141,7 +141,7 @@ function SignUpForm({ email, userType }) {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/dashboard");
+          navigate("/home");
         }
         else {
           alertRef.current.textContent = result.message;

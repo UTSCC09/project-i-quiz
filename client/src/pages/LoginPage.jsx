@@ -49,7 +49,7 @@ const SignInWindow = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/dashboard");
+          navigate("/home");
         }
         else {
           errorMessageRef.current.textContent = result.message;
