@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import Modal from "components/elements/Modal";
 import SingleLineInput from "components/elements/SingleLineInput";
 
@@ -41,7 +41,7 @@ export default function CourseDropModal({ showDropCourseModal, showDropCourseMod
             const enteredSemester = semesterInputRef.current.getValue()
             if (enteredCourseCode !== courseCode) courseCodeInputRef.current.setValidationState(false);
             if (enteredSemester !== courseSemester) semesterInputRef.current.setValidationState(false);
-            if (enteredCourseCode == courseCode && enteredSemester == courseSemester) {
+            if (enteredCourseCode === courseCode && enteredSemester === courseSemester) {
               dropCourse(courseId).then((result) => {
                 if (result.success) {
                   onSuccess();

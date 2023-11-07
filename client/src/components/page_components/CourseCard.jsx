@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import colors from "tailwindcss/colors";
 import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
-import Toast from "components/elements/Toast";
 import { AnimatePresence, motion } from "framer-motion";
 import CourseDropModal from "./CourseDropModal";
 

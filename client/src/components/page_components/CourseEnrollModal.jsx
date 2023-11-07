@@ -1,7 +1,5 @@
-
 import React, { useRef, useState } from "react";
 import SingleLineInput from "components/elements/SingleLineInput";
-import colors from "tailwindcss/colors";
 import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
 

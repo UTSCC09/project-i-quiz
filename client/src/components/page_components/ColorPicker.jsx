@@ -23,7 +23,7 @@ export default function ColorPicker({ colorPicked, colorPickedSet }) {
               strokeWidth="4"
               stroke="currentColor"
               className="h-4 opacity-30"
-              animate={colorPicked == color ? "checked" : "unchecked"}
+              animate={colorPicked === color ? "checked" : "unchecked"}
             >
               <motion.path
                 strokeLinecap="round"
