@@ -31,11 +31,11 @@ export default function CourseEnrollModal({ enrollModalShow, enrollModalShowSet,
   return (
     <>
       <Modal modalShow={enrollModalShow} modalShowSet={enrollModalShowSet} onClose={() => { stepSet(0); sessionPickedSet(0); colorPickedSet(0) }} content={
-        <div className="w-96">
+        <div className="sm:w-96">
           {step === 0 &&
             <div className="flex flex-col gap-6">
               <h1 className="text-2xl font-bold">Add a new course</h1>
-              <span className="w-96 text-gray-600">Please enter the access code provided by your course instructor.</span>
+              <span className="text-gray-600">Please enter the access code provided by your course instructor.</span>
               <form className="gap-6 flex flex-col" onSubmit={(e) => e.preventDefault()}>
                 <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"></div>
                 <SingleLineInput ref={courseAccessCodeInputRef} label="Course Access Code" />

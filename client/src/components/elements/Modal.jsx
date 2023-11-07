@@ -36,7 +36,7 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
       <AnimatePresence>
         {modalShow &&
           <motion.div className="fixed left-0 top-0 z-50 w-screen h-screen flex items-center justify-center" variants={modalVariants} animate={"show"} initial={"hide"} exit={"hide"}>
-            <div className="relative w-fit h-fit bg-white rounded-lg shadow-lg flex flex-col px-24 py-16">
+            <div className="relative w-full sm:w-fit h-full sm:h-fit bg-white sm:rounded-lg mt-24 sm:mt-0 shadow-lg flex flex-col px-12 sm:px-24 py-16 items-center">
               <button className="m-4 absolute right-0 top-0 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all" onClick={() => {
                 modalShowSet(false);
                 if (onClose) onClose();

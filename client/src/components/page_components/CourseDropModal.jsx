@@ -21,15 +21,14 @@ export default function CourseDropModal({ showDropCourseModal, showDropCourseMod
   const semesterInputRef = useRef();
   return (
     <Modal modalShow={showDropCourseModal} modalShowSet={showDropCourseModalSet} content={
-      <div className="flex flex-col w-96 gap-6">
+      <div className="flex flex-col sm:w-96 gap-6">
         <h1 className="text-2xl font-bold">Dropping a course</h1>
         <div ref={alertRef} className="rounded border-l-4 text-red-700 border-red-600 bg-red-50 p-4 text-sm col-span-6 hidden"></div>
         <div className="flex flex-col gap-4 text-gray-600">
           <span>Are you sure you want to drop <b>{courseCode} {courseSemester}</b>? </span>
           <span>By dropping a course on iQuiz, you will <b>lose access</b> to any quizzes from the course, including your own <b>quiz history</b>. </span>
-          <span>Please proceed only if you have officially withdrawn from the course at your school.</span>
           <span>To confirm, enter the course code and the semester of the course that you wish to drop.</span>
-          <span className="text-red-600"><b>Warning:</b> This action can <b>NOT</b> be undone</span>
+          <span className="mt-2 text-red-600"><b>Warning:</b> This action can <b>NOT</b> be undone</span>
         </div>
         <div className="flex gap-4">
           <SingleLineInput ref={courseCodeInputRef} label="Course code" />
