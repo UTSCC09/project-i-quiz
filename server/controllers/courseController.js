@@ -126,7 +126,6 @@ const getAllCourses = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Courses retrieved successfully", formattedCourses));
 });
 
-
 //@route  GET api/courses/enrolled/:courseId
 //@desc   Retrieve all courses
 //@access Private
@@ -199,7 +198,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   }
 });
 
-//@route  GET api/courses/enrollInfo/:accessCode
+//@route  GET api/courses/enroll_info/:accessCode
 //@desc   Get courseId and [sessionNumber] given accessCode
 //@access Private
 const getCourseEnrollInfo = asyncHandler(async (req, res) => {
@@ -278,7 +277,7 @@ const dropCourse = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Student dropped successfully"));
 });
 
-//@route  POST api/courses/accentColor
+//@route  POST api/courses/accent_color
 //@desc   Set accent color for a specific course
 //@access Private
 const setAccentColor = asyncHandler(async (req, res) => {

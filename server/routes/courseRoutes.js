@@ -14,7 +14,7 @@ import protect from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.route("/enrollInfo/:accessCode")
+router.route("/enroll_info/:accessCode")
   .get(protect, getCourseEnrollInfo);
 
 router.route("/")
@@ -33,10 +33,10 @@ router.route("/enroll")
 router.route("/drop")
   .post(protect, dropCourse);
 
-router.route("/accentColor")
+router.route("/accent_color")
   .post(protect, setAccentColor);
 
-  router.route("/enrolled/:courseId")
+router.route("/enrolled/:courseId")
   .get(protect, getEnrolledCourse);
 
 export default router;
