@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import CourseDropModal from "./CourseDropModal";
 
 async function setAccentColor(courseId, accentColor) {
-  return fetch("/api/courses/accentColor", {
+  return fetch("/api/courses/accent_color", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,

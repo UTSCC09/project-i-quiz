@@ -44,7 +44,7 @@ export default function CourseEnrollModal({ enrollModalShow, enrollModalShowSet,
                   if (!courseAccessCodeInputRef.current.validate("required")) {
                     return;
                   }
-                  fetch("/api/courses/enrollInfo/" + courseAccessCodeInputRef.current.getValue(), {
+                  fetch("/api/courses/enroll_info/" + courseAccessCodeInputRef.current.getValue(), {
                     method: "GET",
                     withCredentials: true
                   })
