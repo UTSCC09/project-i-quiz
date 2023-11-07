@@ -8,7 +8,7 @@ export default function NavBar({ additionalButtons }) {
       <Link to="/">
         <img src={logo} alt="iQuiz! Logo" className="ml-2 h-6 sm:h-7" />
       </Link>
-      <div className="flex gap-2 md:gap-6">
+      <div className="flex items-center gap-2 md:gap-6">
         {additionalButtons}
         <NotificationButton />
         <SettingsButton />

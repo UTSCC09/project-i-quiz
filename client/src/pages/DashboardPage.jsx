@@ -83,7 +83,7 @@ export default function DashboardPage() {
           });
         }} />
       <NavBar additionalButtons={
-        <button className="btn-primary py-0 text-sm w-28 h-10 shrink-0" onClick={() => enrollModalShowSet(true)}>Add course</button>
+        <button className="btn-outline py-0 text-sm w-28 h-8 sm:h-10 shrink-0" onClick={() => enrollModalShowSet(true)}>Add course</button>
       } />
       <div className="min-h-screen w-full bg-gray-100">
         <main className="h-full px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-32 sm:py-36">
