@@ -337,7 +337,7 @@ const setAccentColor = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Invalid courseId"));
   }
 
-  // Remove course from student enrolled course list
+  // Check if the student is enrolled in the course
   const courseIndex = user.courses.findIndex(course => course.courseId.toString() === courseId);
 
   if (courseIndex === -1) {
@@ -383,13 +383,18 @@ async function getEnrolledCourses(studentEmail){
 }
 
 async function fetchFormattedCourse(course, accentColor, instructor) {
+  if (!course) {
+    return {};
+  }
   const formattedSessionsPromises = course.sessions.map(async (session) => {
     const formattedStudentsPromises = session.students.map(async (studentId) => {
       const student = await User.findById(studentId);
-      return {
-        studentName: student.firstName + " " + student.lastName,
-        studentEmail: student.email,
-      };
+      if (student) {
+        return {
+          studentName: student.firstName + " " + student.lastName,
+          studentEmail: student.email,
+        };
+      }
     });
 
     const formattedStudents = await Promise.all(formattedStudentsPromises);
