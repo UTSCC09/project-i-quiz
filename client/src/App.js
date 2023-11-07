@@ -20,9 +20,12 @@ const App = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={ <LoginPage /> } />
-        <Route path="/login" element={ <LoginPage /> } />
-        <Route path="/signup" element={ <SignUpPage /> } />
+        {/* -- Protected Routes -- */}
+        <Route path="/" element={ 
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        } />
 
         <Route path="/quiz/:quizId" element={ 
           <ProtectedRoute>
@@ -40,6 +43,9 @@ const App = () => {
           </ProtectedRoute>
         } />
 
+        {/* -- Public Routes -- */}
+        <Route path="/login" element={ <LoginPage /> } />
+        <Route path="/signup" element={ <SignUpPage /> } />
         <Route path="*" element={ <NotFoundPage />} />
       </Routes>
     </>

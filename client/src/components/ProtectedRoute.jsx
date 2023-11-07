@@ -1,10 +1,8 @@
 import { Navigate } from "react-router-dom";
+import getUserCookie from "utils/getUserCookie";
 
 export default function ProtectedRoute(props) {
-  // TODO: Token-based authentication?
-  const authenticated = true;
-
-  if (!authenticated) {
+  if (!getUserCookie) {
     return <Navigate to="/login" />
   }
 
