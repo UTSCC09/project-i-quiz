@@ -53,12 +53,12 @@ app.use(session({
 // Cookie.user checking
 app.use(function (req, res, next) {
   let cookies = parse(req.headers.cookie || "");
-  if (cookies && cookies.user == null && req.session.user){
-    req.session.user = null;
+  if (cookies && cookies.user == null && req.session.email{
+    req.session.email = null;
   }
   req.user = null;
   if (req.session){
-    req.user = req.session.user;
+    req.user = req.session.email;
   }
   //console.log("HTTP request", req.user , req.method, req.url, req.body);
   next();

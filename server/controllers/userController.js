@@ -63,7 +63,7 @@ const getUsers = asyncHandler(async (req, res) => {
 //@desc   Logs in user, given a valid email and password.
 //@access Public
 const loginUser = asyncHandler(async (req, res) => {
-  if (req.session.user){
+  if (req.session.email{
     return res.status(400).json(formatMessage(false, "User already logged in"));
   }
   const {email, password} = req.body;
@@ -85,7 +85,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     //Store email
-    req.session.user = email;
+    req.session.email = email;
     req.session.cookie.httpOnly = true;
     req.session.cookie.sameSite = true;
 
@@ -111,7 +111,7 @@ const loginUser = asyncHandler(async (req, res) => {
 //@desc   Logs out user, if the user is logged in.
 //@access Public
 const logoutUser = asyncHandler(async (req, res) => {
-  if (!req.session.user){
+  if (!req.session.email){
     return res.status(400).json(formatMessage(false, "User is not logged in"));
   }
 
