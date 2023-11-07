@@ -73,29 +73,33 @@ const createQuiz = asyncHandler(async (req, res) => {
   //Create questions
   for (let i = 0; i < questions.length; i++) {
     let createdQuestion;
-    switch(questions[i].type) {
-      case "MCQ":
-        const validMCQChoices = questions[i].question.choices.every((choice) => choice.id && choice.content);
-        if (!validMCQChoices) {
-          return res.status(400).json(formatMessage(false, "Invalid choices in MCQ question"));
-        }
-        createdQuestion = await MCQ.create(questions[i].question);
-        break;
-      case "MSQ":
-        const validMSQChoices = questions[i].question.choices.every((choice) => choice.id && choice.content);
-        if (!validMSQChoices) {
-          return res.status(400).json(formatMessage(false, "Invalid choices in MSQ question"));
-        }
-        createdQuestion = await MSQ.create(questions[i].question);
-        break;
-      case "CLO":
-        createdQuestion = await CLO.create(questions[i].question);
-        break;
-      case "OEQ":
-        createdQuestion = await OEQ.create(questions[i].question);
-        break;
-      default:
-        return res.status(400).json(formatMessage(false, "Invalid question type"));
+    try {
+      switch(questions[i].type) {
+        case "MCQ":
+          const validMCQChoices = questions[i].question.choices.every((choice) => choice.id && choice.content);
+          if (!validMCQChoices) {
+            return res.status(400).json(formatMessage(false, "Invalid choices in MCQ question"));
+          }
+          createdQuestion = await MCQ.create(questions[i].question);
+          break;
+        case "MSQ":
+          const validMSQChoices = questions[i].question.choices.every((choice) => choice.id && choice.content);
+          if (!validMSQChoices) {
+            return res.status(400).json(formatMessage(false, "Invalid choices in MSQ question"));
+          }
+          createdQuestion = await MSQ.create(questions[i].question);
+          break;
+        case "CLO":
+          createdQuestion = await CLO.create(questions[i].question);
+          break;
+        case "OEQ":
+          createdQuestion = await OEQ.create(questions[i].question);
+          break;
+        default:
+          return res.status(400).json(formatMessage(false, "Invalid question type"));
+      }
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, "Mongoose error creating question"));
     }
 
     if (!createdQuestion) {
@@ -284,7 +288,7 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Quizzes found", formattedQuizzes));
 });
 
-//@route  PUT api/quizzes
+//@route  PATCH api/quizzes
 //@desc   Allow instructor to update a quiz (not all fields)
 //@access Private
 const basicUpdateQuiz = asyncHandler(async (req, res) => {
@@ -366,10 +370,144 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
 });
 
+//@route  PATCH api/quizzes/question
+//@desc   Allow instructor to edit or remove a question from a quiz
+//@access Private
+const updateQuizQuestion = asyncHandler(async (req, res) => {
+  const { quizId, action, question } = req.body;
+
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+    else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  //Verify all fields exist
+  if (!quizId || !question || !action || (action !== "edit" && action !== "remove")) {
+    return res.status(400).json(formatMessage(false, "Missing/invalid fields"));
+  }
+
+  //Verify valid question
+  if (action === "edit") {
+    if (!question._id || !question.type || !question.question) {
+      return res.status(400).json(formatMessage(false, "Missing fields in question"));
+    }
+  }
+  else { //assume action === "remove", since we checked that earlier
+    if (!question._id || !question.type) {
+      return res.status(400).json(formatMessage(false, "Missing fields in question"));
+    }
+  }
+
+  let quiz;
+  try {
+    quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  let course;
+  try {
+    course = await Course.findById(quiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id in quiz"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz course"));
+  }
+
+  //Check if instructor teaches course
+  if (course.instructor.toString() !== instructor._id.toString()) {
+    return res.status(403).json(formatMessage(false, "Instructor does not teach course"));
+  }
+
+  //Check if question exists in quiz
+  const questionIndex = quiz.questions.findIndex(
+    (currQuestion) => (
+      currQuestion.question.toString() === question._id && currQuestion.type === question.type
+    )
+  );
+  if (questionIndex === -1) {
+    return res.status(400).json(formatMessage(false, "Question not found in quiz"));
+  }
+
+  //Edit or remove question
+  if (action === "remove") {
+    try {
+      switch(question.type) {
+        case "MCQ":
+          await MCQ.findByIdAndDelete(question._id);
+          break;
+        case "MSQ":
+          await MSQ.findByIdAndDelete(question._id);
+          break;
+        case "CLO":
+          await CLO.findByIdAndDelete(question._id);
+          break;
+        case "OEQ":
+          await OEQ.findByIdAndDelete(question._id);
+          break;
+        default:
+          return res.status(400).json(formatMessage(false, "Invalid question type"));
+      }
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, "Mongoose error editing question"));
+    }
+    quiz.questions.splice(questionIndex, 1);
+    await quiz.save();
+    return res.status(200).json(formatMessage(true, "Question removed successfully"));
+  }
+  else { //assume action === "edit", since we checked that earlier
+    try {
+      switch(question.type) {
+        case "MCQ":
+          const validMCQChoices = question.question.choices.every((choice) => choice.id && choice.content);
+          if (!validMCQChoices) {
+            return res.status(400).json(formatMessage(false, "Invalid choices in MCQ question"));
+          }
+          console.log("ABOUT TO find by id and update");
+          await MCQ.findByIdAndUpdate(question._id, question.question);
+          console.log("DONE finding by id and updating");
+          break;
+        case "MSQ":
+          const validMSQChoices = question.question.choices.every((choice) => choice.id && choice.content);
+          if (!validMSQChoices) {
+            return res.status(400).json(formatMessage(false, "Invalid choices in MSQ question"));
+          }
+          await MSQ.findByIdAndUpdate(question._id, question.question);
+          break;
+        case "CLO":
+          await CLO.findByIdAndUpdate(question._id, question.question);
+          break;
+        case "OEQ":
+          await OEQ.findByIdAndUpdate(question._id, question.question);
+          break;
+        default:
+          return res.status(400).json(formatMessage(false, "Invalid question type"));
+      }
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, error.message));
+    }
+    return res.status(200).json(formatMessage(true, "Question edited successfully"));
+  }
+});
+
 export {
   createQuiz,
   getQuiz,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
-  basicUpdateQuiz
+  basicUpdateQuiz,
+  updateQuizQuestion
 };
