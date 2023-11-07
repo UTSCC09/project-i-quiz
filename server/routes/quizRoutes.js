@@ -3,14 +3,16 @@ import {
   createQuiz,
   getQuiz,
   getQuizzesForInstructedCourse,
-  getQuizzesForEnrolledCourse
+  getQuizzesForEnrolledCourse,
+  basicUpdateQuiz
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = Router();
 
 router.route("/")
-  .post(protect, createQuiz);
+  .post(protect, createQuiz)
+  .put(protect, basicUpdateQuiz);
 
 router.route("/:quizId")
   .get(protect, getQuiz)
