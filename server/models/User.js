@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema({
   type : {
     type: String,
-    enum: ['student', 'instructor'],
-    default: 'student'
+    enum: ["student", "instructor"],
+    default: "student"
   },
   firstName: {
     type: String,
