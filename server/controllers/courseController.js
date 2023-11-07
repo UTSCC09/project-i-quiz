@@ -7,7 +7,7 @@ import formatMessage from "../utils/utils.js";
 //@desc   Allow instructor to create a course
 //@access Private
 const createCourse = asyncHandler(async (req, res) => {
-  const { courseCode, courseName, courseSemester, numOfSessions, accentColor } = req.body;
+  const { courseCode, courseName, courseSemester, numOfSessions, accessCode, accentColor } = req.body;
 
   //Check if valid user
   const instructor = await User.findOne({ email: req.session.email });
@@ -53,7 +53,8 @@ const createCourse = asyncHandler(async (req, res) => {
     courseName: courseName,
     courseSemester: courseSemester,
     instructor: instructor._id,
-    sessions: sessions
+    sessions: sessions,
+    accessCode: accessCode
   });
   if (course) {
     instructor.courses.push({courseId: course._id, accentColor: accentColor});
@@ -62,6 +63,45 @@ const createCourse = asyncHandler(async (req, res) => {
   }
   else {
     return res.status(400).json(formatMessage(false, "Course creation failed"));
+  }
+});
+
+//@route  POST api/courses/access_code
+//@desc   Allow instructor to update access code for a course
+//@access Private
+const setAccessCode = asyncHandler(async (req, res) => {
+  const { courseId, accessCode } = req.body;
+
+  // Check if valid user
+  const instructor = await User.findOne({ email: req.session.email });
+  if (!instructor) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  }
+  else if (instructor.type !== "instructor") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  // Verify all fields exist
+  if (!courseId || !accessCode) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  const courseObject = await Course.findById(courseId);
+
+  // Check if valid course
+  if (!courseObject) {
+    return res.status(400).json(formatMessage(false, "Invalid courseId"));
+  }
+
+  // Check if the user is the course instructor
+  if (!courseObject.instructor.equals(instructor._id)) {
+    return res.status(400).json(formatMessage(false, "Access denied"));
+  }
+
+  const updatedCourse = await Course.updateOne({ _id: courseId }, { $set: { "accessCode": accessCode }});
+  if (updatedCourse) {
+    await courseObject.save();
+    return res.status(200).json(formatMessage(true, "Access code updated successfully", accessCode));
   }
 });
 
@@ -135,7 +175,7 @@ const getEnrolledCourse = asyncHandler(async (req, res) => {
   const enrolledCourses = await getEnrolledCourses(req.session.email);
 
   const course = enrolledCourses.find((course) => course.courseId.toString() === courseId);
-  console.log(courseId, course)
+
   if (!course) {
     return res.status(400).json(formatMessage(false, "Student not enrolled in the course"));
   }
@@ -377,6 +417,7 @@ async function fetchFormattedCourse(course, accentColor, instructor) {
 
 export {
   createCourse,
+  setAccessCode,
   getMyInstructedCourses,
   getMyEnrolledCourses,
   getAllCourses,
