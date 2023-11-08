@@ -73,6 +73,10 @@ const getUsers = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   if (req.session.user) {
     return res.status(400).json(formatMessage(false, "User already logged in"));
+  if (req.session.email) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "User already logged in"));
   }
   const { email, password } = req.body;
 
@@ -107,21 +111,25 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     //Store email
-    req.session.user = email;
+    req.session.email = email;
     req.session.cookie.httpOnly = true;
     req.session.cookie.sameSite = true;
 
     //Setting cookie
-    res.setHeader(
-      "Set-Cookie",
-      serialize("user", email, {
-        path: "/",
-        maxAge: 60 * 60, // 1 hr in number of seconds
-        httpOnly: false,
-        secure: true,
-        sameSite: true,
-      })
-    );
+    res.cookie("user", email, {
+      path: "/",
+      maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
+      httpOnly: false,
+      secure: true,
+      sameSite: true,
+    });
+    res.cookie("user_type", user.type, {
+      path: "/",
+      maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
+      httpOnly: false,
+      secure: true,
+      sameSite: true,
+    });
 
     return res.json(formatMessage(true, "Login Successfully"));
   });
@@ -131,20 +139,14 @@ const loginUser = asyncHandler(async (req, res) => {
 //@desc   Logs out user, if the user is logged in.
 //@access Public
 const logoutUser = asyncHandler(async (req, res) => {
-  if (!req.session.user) {
+  res.clearCookie("connect.sid");
+  res.clearCookie("user");
+  res.clearCookie("user_type");
+
+  if (!req.session.email) {
     return res.status(400).json(formatMessage(false, "User is not logged in"));
   }
-
-  res.setHeader(
-    "Set-Cookie",
-    serialize("user", "", {
-      path: "/",
-      maxAge: 60 * 60, // 1 hr in number of seconds
-    })
-  );
-
-  res.clearCookie("connect.sid");
-
+  
   req.session.destroy(function (err) {
     if (err)
       return res
@@ -153,6 +155,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     return res.json(formatMessage(true, "User has successfully logged out"));
   });
 });
+
 
 //@route  POST api/users/verify/:userID/:emailConfirmationCode
 //@desc   Takes a confirmation code and verifys user if same emailConfirmationCode stored in db.
