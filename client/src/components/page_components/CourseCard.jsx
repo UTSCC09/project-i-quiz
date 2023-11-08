@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import Badge from "components/elements/Badge";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import DropdownMenu from "components/elements/DropdownMenu";
 
 export default function CourseCard({
   courseObject,
@@ -10,7 +10,7 @@ export default function CourseCard({
   accentColorModalShowSet,
   courseDropModalShowSet,
 }) {
-  const [showDropDown, showDropDownSet] = useState(false);
+  const [dropdownShow, dropdownShowSet] = useState(false);
   const courseCardRef = useRef();
 
   const courseId = courseObject.courseId;
@@ -46,64 +46,49 @@ export default function CourseCard({
             </div>
           )}
         </Link>
-        <button
-          className="text-slate-600 absolute md:top-4 right-0 mx-2 p-1 rounded-full hover:bg-gray-100 transition"
-          onClick={() => {
-            showDropDownSet(!showDropDown);
-          }}
-        >
-          {/* [Credit]: svg from https://heroicons.dev */}
-          <svg
-            className="h-5"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
+        <div className="absolute md:top-4 right-0">
+          <button
+            className="mx-2 p-1 text-slate-600 rounded-full hover:bg-gray-100 transition"
+            onClick={() => {
+              dropdownShowSet(!dropdownShow);
+            }}
           >
-            <path
-              clipRule="evenodd"
-              fillRule="evenodd"
-              d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
-            />
-          </svg>
-        </button>
-        <AnimatePresence>
-          {showDropDown && (
-            <motion.div
-              initial={{ opacity: 0, y: "-5%" }}
-              animate={{ opacity: 1, y: "0" }}
-              exit={{ opacity: 0, y: "-5%" }}
-              className="flex z-30 flex-col bg-white rounded-md shadow-lg shadow-gray-200 absolute mt-28 md:mt-8 mr-2 text-slate-600 text-sm border divide-y select-none"
+            {/* [Credit]: svg from https://heroicons.dev */}
+            <svg
+              className="h-5"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
-              <span
-                className="py-2 px-4 hover:bg-gray-100 transition"
-                onClick={() => {
+              <path
+                clipRule="evenodd"
+                fillRule="evenodd"
+                d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
+              />
+            </svg>
+          </button>
+          <DropdownMenu
+            options={[
+              {
+                label: "Edit color",
+                onClick: () => {
                   targetCourseObjectSet(courseObject);
                   accentColorModalShowSet(true);
-                  showDropDownSet(false);
-                }}
-              >
-                Edit color
-              </span>
-              <span
-                className="py-2 px-4 hover:bg-gray-100 transition text-red-600"
-                onClick={() => {
+                },
+              },
+              {
+                label: <div className="text-red-600">Drop course</div>,
+                onClick: () => {
                   targetCourseObjectSet(courseObject);
                   courseDropModalShowSet(true);
-                  showDropDownSet(false);
-                }}
-              >
-                Drop course
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        {showDropDown && (
-          <div
-            className="fixed z-20 left-0 top-0 w-screen h-screen b1g-black bg-opacity-10 cursor-default"
-            onClick={() => showDropDownSet(false)}
-          ></div>
-        )}
+                },
+              },
+            ]}
+            dropdownShow={dropdownShow}
+            dropdownShowSet={dropdownShowSet}
+          />
+        </div>
       </div>
     </div>
   );
