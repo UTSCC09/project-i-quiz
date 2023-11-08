@@ -43,7 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
         lastName: lastName,
         email: email,
         password: hashedPassword,
-        confirmationCode: crypto.randomUUID().slice(0, 8),
+        emailConfirmationCode: crypto.randomUUID().slice(0, 8),
       });
 
       //Return user object
@@ -154,13 +154,13 @@ const logoutUser = asyncHandler(async (req, res) => {
   });
 });
 
-//@route  POST api/users/verify/:userID/:confirmationCode
-//@desc   Takes a confirmation code and verifys user if same confirmationCode stored in db.
+//@route  POST api/users/verify/:userID/:emailConfirmationCode
+//@desc   Takes a confirmation code and verifys user if same emailConfirmationCode stored in db.
 //@access Public
 const verifyUser = asyncHandler(async (req, res) => {
-  const { userId, confirmationCode } = req.params;
+  const { userId, emailConfirmationCode } = req.params;
 
-  if (!userId || !confirmationCode) {
+  if (!userId || !emailConfirmationCode) {
     return res.status(400).json(formatMessage(false, "Missing arguments"));
   }
 
@@ -179,7 +179,7 @@ const verifyUser = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "User is already verified"));
   }
 
-  if (user.confirmationCode == confirmationCode) {
+  if (user.emailConfirmationCode == emailConfirmationCode) {
     user.verified = true;
     const updateUser = await User.updateOne({ _id: userId }, user);
 
