@@ -3,7 +3,8 @@ import {
   registerUser,
   loginUser,
   getUsers,
-  logoutUser
+  logoutUser,
+  verifyUser
 } from "../controllers/userController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -18,5 +19,8 @@ router.route("/login")
 
 router.route("/logout")
   .get(logoutUser);
+
+router.route("/verify/:userId/:emailConfirmationCode")
+  .get(verifyUser);
 
 export default router;

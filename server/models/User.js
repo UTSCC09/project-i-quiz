@@ -22,7 +22,15 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a password"]
   },
-  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }]
+  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+  emailConfirmationCode: {
+    type: String,
+    required: true
+  },
+  verified: {
+    type: Boolean,
+    default: false
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
