@@ -255,7 +255,7 @@ const dropCourse = asyncHandler(async (req, res) => {
 //@desc   Archive or unarchive course (flips boolean value).
 //@access Private
 const archiveCourse = asyncHandler(async (req, res) => {
-  const { courseId, archived } = req.body;
+  const { courseId } = req.body;
 
   if (courseId == null || typeof(archived) != "boolean") {
     return res.status(400).json(formatMessage(false, "Missing fields"));
@@ -286,7 +286,7 @@ const archiveCourse = asyncHandler(async (req, res) => {
   }
 
   await course.save();
-  
+
   return res.json(formatMessage(true, "Successfuly archived or unarchived course"));
 
 });
