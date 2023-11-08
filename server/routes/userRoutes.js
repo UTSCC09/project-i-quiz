@@ -20,7 +20,7 @@ router.route("/login")
 router.route("/logout")
   .get(logoutUser);
 
-router.route("/verify/:userId/:emailConfirmationCode")
+router.route("/verify/:userId/:emailVerificationCode")
   .get(verifyUser);
 
 export default router;

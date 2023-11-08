@@ -1,18 +1,23 @@
-import { transporter, mailOptions, backendUrl } from "./mailTransporter.js";
+import { transporter, defaultMailOptions, backendUrl } from "./mailTransporter.js";
 
-const sendEmailConfirmation = function(user){
-    mailOptions.to = user.email;
-    mailOptions.subject = "iQuiz Account Verification";
-    mailOptions.html = `<p>Verify your iQuiz account below by clicking on the link!</p>
-    <p><a href=${backendUrl + "api/users/verify/" + user._id + "/" + user.emailConfirmationCode}>Click here.</p>`;
+const sendEmailVerification = function(user){
+  const mailOptions = {
+    ...defaultMailOptions,
+    to: user.email,
+    subject: "iQuiz Account Verification",
+    html: `
+      <p>Verify your iQuiz account below by clicking on the link!</p>
+      <p><a href=${backendUrl + "api/users/verify/" + user._id + "/" + user.emailVerificationCode}>Click here.</p>
+    `
+  };
 
-    transporter.sendMail(mailOptions, (error, info) => {
+  transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-        console.log("Failed to send confirmation email", error);
+      console.log("Failed to send verification email", error);
     } else {
-        console.log("Confirmation email sent to: " + user.email + " successfully!");
+      console.log("Verification email sent to: " + user.email + " successfully!");
     }
-    });
+  });
 }
 
-export default sendEmailConfirmation;
+export default sendEmailVerification;

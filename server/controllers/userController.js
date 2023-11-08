@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
-import sendEmailConfirmation from "../utils/emailVerification.js";
+import sendEmailVerification from "../utils/emailVerification.js";
 import { parse, serialize } from "cookie";
 import crypto from "crypto";
 
@@ -43,12 +43,12 @@ const registerUser = asyncHandler(async (req, res) => {
         lastName: lastName,
         email: email,
         password: hashedPassword,
-        emailConfirmationCode: crypto.randomUUID().slice(0, 8),
+        emailVerificationCode: crypto.randomUUID().slice(0, 8),
       });
 
       //Return user object
       if (user) {
-        sendEmailConfirmation(user);
+        sendEmailVerification(user);
         return res
           .status(200)
           .json(formatMessage(true, "Registered Successfully"));
@@ -73,6 +73,8 @@ const getUsers = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   if (req.session.user) {
     return res.status(400).json(formatMessage(false, "User already logged in"));
+  }
+
   if (req.session.email) {
     return res
       .status(400)
@@ -157,13 +159,13 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 
-//@route  POST api/users/verify/:userID/:emailConfirmationCode
-//@desc   Takes a confirmation code and verifys user if same emailConfirmationCode stored in db.
+//@route  POST api/users/verify/:userID/:emailVerificationCode
+//@desc   Takes a verification code and verifys user's email address if the same emailVerificationCode stored in db.
 //@access Public
 const verifyUser = asyncHandler(async (req, res) => {
-  const { userId, emailConfirmationCode } = req.params;
+  const { userId, emailVerificationCode } = req.params;
 
-  if (!userId || !emailConfirmationCode) {
+  if (!userId || !emailVerificationCode) {
     return res.status(400).json(formatMessage(false, "Missing arguments"));
   }
 
@@ -182,7 +184,7 @@ const verifyUser = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "User is already verified"));
   }
 
-  if (user.emailConfirmationCode == emailConfirmationCode) {
+  if (user.emailVerificationCode == emailVerificationCode) {
     user.verified = true;
     const updateUser = await User.updateOne({ _id: userId }, user);
 
@@ -195,7 +197,7 @@ const verifyUser = asyncHandler(async (req, res) => {
   }
   return res
     .status(400)
-    .json(formatMessage(false, "Invalid confirmation code"));
+    .json(formatMessage(false, "Invalid verification code"));
 });
 
 export { registerUser, getUsers, loginUser, logoutUser, verifyUser };

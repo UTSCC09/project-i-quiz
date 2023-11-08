@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please provide a password"]
   },
   courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
-  emailConfirmationCode: {
+  emailVerificationCode: {
     type: String,
     required: true
   },
