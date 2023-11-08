@@ -73,6 +73,8 @@ const getUsers = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   if (req.session.user) {
     return res.status(400).json(formatMessage(false, "User already logged in"));
+  }
+
   if (req.session.email) {
     return res
       .status(400)
