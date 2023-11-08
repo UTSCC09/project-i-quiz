@@ -481,17 +481,17 @@ async function fetchFormattedCourse(course, accentColor, instructor) {
       sessionNumber: session.sessionNumber,
       enrollment: session.enrollment,
       students: formattedStudents,
-      accentColor: accentColor,
     };
   });
 
   const formattedSessions = await Promise.all(formattedSessionsPromises);
 
   return {
-    _id: course._id,
+    courseId: course._id,
     courseCode: course.courseCode,
     courseName: course.courseName,
     courseSemester: course.courseSemester,
+    accentColor: accentColor,
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
     quizzes: course.quizzes
