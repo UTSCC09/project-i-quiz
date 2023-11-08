@@ -89,6 +89,7 @@ const loginUser = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Email is not registered"));
   }
 
+  //Checks if user's account is verified
   if (!user.verified) {
     return res
       .status(400)
