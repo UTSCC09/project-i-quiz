@@ -134,8 +134,7 @@ export default function DashboardPage() {
               .then(() => {
                 accentColorModalShowSet(false);
                 toastMessageSet(
-                  "New accent color has been set for " +
-                    targetCourseObject.courseCode
+                  `New accent color has been set for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester}`
                 );
               });
           }}
@@ -158,8 +157,7 @@ export default function DashboardPage() {
               .then(() => {
                 courseDropModalShowSet(false);
                 toastMessageSet(
-                  "New accent color has been set for " +
-                    targetCourseObject.courseCode
+                  `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been removed from your course list`
                 );
               });
           }}
