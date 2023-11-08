@@ -24,7 +24,11 @@ const CourseSchema = new mongoose.Schema({
     ref: "User",
     required: [true, "Please provide an instructor"]
   },
-  sessions: [SessionSchema]
+  sessions: [SessionSchema],
+  archived: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Course = mongoose.model("Course", CourseSchema);
