@@ -19,17 +19,17 @@ const checkId = (id) => {
 const protect = asyncHandler(async (req, res, next) => {
   let cookies = parse(req.headers.cookie || "");
 
-  if (req.session == null || cookies == null || req.session.email != cookies.user) {
+  if (!req.session || !cookies || req.session.email !== cookies.user) {
     return res.status(401).json(formatMessage(false, "Not authorized"));
   }
 
-  if (req.body.content != null) {
+  if (req.body.content) {
     req.body.content = sanitizeContent(req.body.content);
   }
 
-  if (req.params.id != null && !checkId(req.params.id) ||
-      req.body.userId != null && !checkId(req.body.userId) ||
-      req.body.courseId != null && !checkId(req.body.courseId)) {
+  if (req.params.id && !checkId(req.params.id) ||
+      req.body.userId && !checkId(req.body.userId) ||
+      req.body.courseId && !checkId(req.body.courseId)) {
     return res.status(400).json(formatMessage(false, "Not a valid id"));
   }
 
