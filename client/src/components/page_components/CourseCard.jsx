@@ -1,108 +1,26 @@
 import React, { useRef, useState } from "react";
 import Badge from "components/elements/Badge";
 import { Link } from "react-router-dom";
-import colors from "tailwindcss/colors";
-import Modal from "components/elements/Modal";
-import ColorPicker from "./ColorPicker";
 import { AnimatePresence, motion } from "framer-motion";
-import CourseDropModal from "./CourseDropModal";
-
-async function setAccentColor(courseId, accentColor) {
-  return fetch("/api/courses/accent_color", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-    body: JSON.stringify({
-      courseId,
-      accentColor,
-    }),
-  })
-    .then((response) => response.json())
-    .then((result) => {
-      return result;
-    });
-}
 
 export default function CourseCard({
   courseObject,
   notificationNum = 0,
-  toastMessageSet,
+  targetCourseObjectSet,
+  accentColorModalShowSet,
+  courseDropModalShowSet,
 }) {
   const [showDropDown, showDropDownSet] = useState(false);
-  const [showSetColorModal, showSetColorModalSet] = useState(false);
-  const [showDropCourseModal, showDropCourseModalSet] = useState(false);
-  const [accentColor, accentColorSet] = useState(
-    courseObject.accentColor ?? colors.blue[600]
-  );
-  const [colorPicked, colorPickedSet] = useState(accentColor);
-  const alertRef = useRef();
   const courseCardRef = useRef();
 
   const courseId = courseObject.courseId;
   const courseCode = courseObject.courseCode;
   const courseName = courseObject.courseName;
   const courseSemester = courseObject.courseSemester;
+  const accentColor = courseObject.accentColor;
 
   return (
     <div ref={courseCardRef} className="w-full md:w-[48%] lg:w-[48%]">
-      <CourseDropModal
-        showDropCourseModal={showDropCourseModal}
-        showDropCourseModalSet={showDropCourseModalSet}
-        courseCode={courseCode}
-        courseSemester={courseSemester}
-        courseId={courseId}
-        onSuccess={() => {
-          showDropCourseModalSet(false);
-          courseCardRef.current.style.display = "none";
-          toastMessageSet(
-            courseCode + " has been removed from your course list"
-          );
-        }}
-      />
-      <Modal
-        modalShow={showSetColorModal}
-        modalShowSet={showSetColorModalSet}
-        onClose={() => colorPickedSet(accentColor)}
-        content={
-          <div className="flex flex-col w-96 gap-6">
-            <h1 className="text-2xl font-bold">Fresh color, fresh start</h1>
-            <div
-              ref={alertRef}
-              className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-            ></div>
-            <span className="w-96 text-gray-600">
-              Pick a new accent color for{" "}
-              <b>
-                {courseCode} {courseSemester}
-              </b>
-            </span>
-            <ColorPicker
-              colorPicked={colorPicked}
-              colorPickedSet={colorPickedSet}
-            />
-            <button
-              className="btn-primary"
-              onClick={() => {
-                setAccentColor(courseId, colorPicked).then((result) => {
-                  if (result.success) {
-                    showSetColorModalSet(false);
-                    accentColorSet(colorPicked);
-                    showDropDownSet(false);
-                    toastMessageSet(
-                      "New accent color has been saved for " + courseCode
-                    );
-                  } else {
-                    alertRef.current.textContent = result.message;
-                    alertRef.current.classList.remove("hidden");
-                  }
-                });
-              }}
-            >
-              Save
-            </button>
-          </div>
-        }
-      />
       <div
         className="relative rounded-md w-full border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer h-fit flex items-center justify-end"
         style={{ borderLeftColor: accentColor }}
@@ -160,7 +78,8 @@ export default function CourseCard({
               <span
                 className="py-2 px-4 hover:bg-gray-100 transition"
                 onClick={() => {
-                  showSetColorModalSet(true);
+                  targetCourseObjectSet(courseObject);
+                  accentColorModalShowSet(true);
                   showDropDownSet(false);
                 }}
               >
@@ -169,7 +88,8 @@ export default function CourseCard({
               <span
                 className="py-2 px-4 hover:bg-gray-100 transition text-red-600"
                 onClick={() => {
-                  showDropCourseModalSet(true);
+                  targetCourseObjectSet(courseObject);
+                  courseDropModalShowSet(true);
                   showDropDownSet(false);
                 }}
               >

@@ -8,6 +8,8 @@ import QuizCard from "components/page_components/QuizCard";
 import Accordion from "components/elements/Accordion";
 import Toast from "components/elements/Toast";
 import CourseEnrollModal from "components/page_components/CourseEnrollModal";
+import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
+import CourseDropModal from "components/page_components/CourseDropModal";
 
 /* -- API function calls -- */
 
@@ -21,6 +23,35 @@ function getAvailableQuizzes() {
 
 function getUpcomingQuizzes() {
   return QuizDataMock_upcoming.quizList;
+}
+
+async function updateAccentColor(courseId, accentColor) {
+  return fetch("/api/courses/accent_color", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify({
+      courseId,
+      accentColor,
+    }),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    });
+}
+
+async function dropCourse(courseId) {
+  return fetch("/api/courses/drop", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify({ courseId }),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    });
 }
 
 // Fetch enrolled courses
@@ -56,6 +87,9 @@ export default function DashboardPage() {
   const [activeCourseList, activeCourseListSet] = useState([]);
   const [selectedTab, _setSelectedTab] = useState("quizzes");
   const [enrollModalShow, enrollModalShowSet] = useState(false);
+  const [accentColorModalShow, accentColorModalShowSet] = useState(false);
+  const [courseDropModalShow, courseDropModalShowSet] = useState(false);
+  const [targetCourseObject, targetCourseObjectSet] = useState();
   const [toastMessage, toastMessageSet] = useState();
 
   function setSelectedTab(selection) {
@@ -88,6 +122,49 @@ export default function DashboardPage() {
           });
         }}
       />
+      {targetCourseObject && (
+        <CourseAccentColorModal
+          courseObject={targetCourseObject}
+          updateAccentColor={updateAccentColor}
+          onSuccess={() => {
+            fetchEnrolledCourses()
+              .then((payload) => {
+                activeCourseListSet(payload);
+              })
+              .then(() => {
+                accentColorModalShowSet(false);
+                toastMessageSet(
+                  "New accent color has been set for " +
+                    targetCourseObject.courseCode
+                );
+              });
+          }}
+          modalShow={accentColorModalShow}
+          modalShowSet={accentColorModalShowSet}
+        />
+      )}
+
+      {targetCourseObject && (
+        <CourseDropModal
+          modalShow={courseDropModalShow}
+          modalShowSet={courseDropModalShowSet}
+          courseObject={targetCourseObject}
+          dropCourse={dropCourse}
+          onSuccess={() => {
+            fetchEnrolledCourses()
+              .then((payload) => {
+                activeCourseListSet(payload);
+              })
+              .then(() => {
+                courseDropModalShowSet(false);
+                toastMessageSet(
+                  "New accent color has been set for " +
+                    targetCourseObject.courseCode
+                );
+              });
+          }}
+        />
+      )}
       <NavBar
         additionalButtons={
           <button
@@ -164,7 +241,9 @@ export default function DashboardPage() {
                     return (
                       <CourseCard
                         courseObject={courseObject}
-                        toastMessageSet={toastMessageSet}
+                        targetCourseObjectSet={targetCourseObjectSet}
+                        accentColorModalShowSet={accentColorModalShowSet}
+                        courseDropModalShowSet={courseDropModalShowSet}
                         key={idx}
                       />
                     );
