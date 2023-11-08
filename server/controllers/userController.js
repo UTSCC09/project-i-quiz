@@ -2,8 +2,6 @@ import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
-import { parse, serialize } from "cookie";
-import crypto from "crypto";
 
 const saltRounds = 10;
 
@@ -99,16 +97,20 @@ const loginUser = asyncHandler(async (req, res) => {
     req.session.cookie.sameSite = true;
 
     //Setting cookie
-    res.setHeader(
-      "Set-Cookie",
-      serialize("user", email, {
-        path: "/",
-        maxAge: 60 * 60, // 1 hr in number of seconds
-        httpOnly: false,
-        secure: true,
-        sameSite: true,
-      })
-    );
+    res.cookie("user", email, {
+      path: "/",
+      maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
+      httpOnly: false,
+      secure: true,
+      sameSite: true,
+    });
+    res.cookie("user_type", user.type, {
+      path: "/",
+      maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
+      httpOnly: false,
+      secure: true,
+      sameSite: true,
+    });
 
     return res.json(formatMessage(true, "Login Successfully"));
   });
@@ -118,19 +120,13 @@ const loginUser = asyncHandler(async (req, res) => {
 //@desc   Logs out user, if the user is logged in.
 //@access Public
 const logoutUser = asyncHandler(async (req, res) => {
+  res.clearCookie("connect.sid");
+  res.clearCookie("user");
+  res.clearCookie("user_type");
+
   if (!req.session.email) {
     return res.status(400).json(formatMessage(false, "User is not logged in"));
   }
-
-  res.setHeader(
-    "Set-Cookie",
-    serialize("user", "", {
-      path: "/",
-      maxAge: 60 * 60, // 1 hr in number of seconds
-    })
-  );
-
-  res.clearCookie("connect.sid");
 
   req.session.destroy(function (err) {
     if (err)
@@ -141,9 +137,4 @@ const logoutUser = asyncHandler(async (req, res) => {
   });
 });
 
-export {
-  registerUser,
-  getUsers,
-  loginUser,
-  logoutUser
-};
+export { registerUser, getUsers, loginUser, logoutUser };
