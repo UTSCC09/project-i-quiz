@@ -62,7 +62,7 @@ const createCourse = asyncHandler(async (req, res) => {
 });
 
 //@route  GET api/courses/instructed
-//@desc   Retrieve all courses taught by signed in instructor
+//@desc   Retrieve all courses taught by signed in instructor that aren't archived
 //@access Private
 const getMyInstructedCourses = asyncHandler(async (req, res) => {
   // Check if the user is a valid instructor
@@ -75,7 +75,7 @@ const getMyInstructedCourses = asyncHandler(async (req, res) => {
 
   // Fetch courses in parallel
   const instructedCoursesPromises = instructor.courses.map(async (courseId) => {
-    const course = await Course.findById(courseId);
+    const course = await Course.find({ _id: courseId, archived: false });
     return fetchFormattedCourse(course, instructor);
   });
 
@@ -101,7 +101,7 @@ const getMyEnrolledCourses = asyncHandler(async (req, res) => {
 
   const enrolledCourses = [];
   for (let i = 0; i < student.courses.length; i++) {
-    const course = await Course.findById(student.courses[i]);
+    const course = await Course.find({ _id: student.courses[i], archived: false });
     const instructor = await User.findById(course.instructor);
     //Students should only be able to see the course code, course name, and instructor name
     enrolledCourses.push({
@@ -116,7 +116,7 @@ const getMyEnrolledCourses = asyncHandler(async (req, res) => {
 });
 
 //@route  GET api/courses
-//@desc   Retrieve all courses
+//@desc   Retrieve all courses (archived and unarchived).
 //@access Private
 const getAllCourses = asyncHandler(async (req, res) => {
   const courses = await Course.find({});
@@ -163,8 +163,8 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 
   //Check if valid course and session
   const course = await Course.findById(courseId);
-  if (!course || !course.sessions[sessionNumber - 1]) {
-    return res.status(400).json(formatMessage(false, "Invalid course or session"));
+  if (!course || !course.sessions[sessionNumber - 1] || course.archived) {
+    return res.status(400).json(formatMessage(false, "Invalid course, session or archived course."));
   }
 
   //Check if student is already enrolled in the specified course
@@ -223,6 +223,10 @@ const dropCourse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Invalid course"));
   }
 
+  if (course.archived) {
+    return res.status(400).json(formatMessage(false, "Cannot drop archived course"));
+  }
+
   //Check if student is enrolled in the specified course
   if (student.courses.includes(courseId)) {
     //Remove course from student's courses
@@ -245,6 +249,48 @@ const dropCourse = asyncHandler(async (req, res) => {
 
   return res.status(200).json(formatMessage(true, "Student dropped successfully"));
 });
+
+
+//@route  POST api/courses/archive
+//@desc   Archive or unarchive course (flips boolean value).
+//@access Private
+const archiveCourse = asyncHandler(async (req, res) => {
+  const { courseId, archived } = req.body;
+
+  if (courseId == null || typeof(archived) != "boolean") {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  const instructor = await User.findOne({ email: req.session.email });
+
+  if (!instructor || instructor.type != "instructor") {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  }
+
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    return res.status(400).json(formatMessage(false, "Invalid courseId"));
+  }
+
+  if (!course.instructor != instructor) {
+    return res.status(400).json(formatMessage(false, 
+      "Cannot archive, not the course instructor"));
+  }
+
+  if (course.archived) {
+    course.archived = false;
+  }
+  else {
+    course.archived = true;
+  }
+
+  await course.save();
+  
+  return res.json(formatMessage(true, "Successfuly archived or unarchived course"));
+
+});
+
 
 // ------------------------------ Helper functions ------------------------------
 async function fetchFormattedCourse(course, instructor) {
@@ -283,5 +329,6 @@ export {
   getMyEnrolledCourses,
   getAllCourses,
   enrollInCourse,
-  dropCourse
+  dropCourse,
+  archiveCourse,
 };
