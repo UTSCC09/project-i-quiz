@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import SingleLineInput from "components/elements/SingleLineInput";
 import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
+import Badge from "components/elements/Badge";
 
 async function enrollInCourse(courseId, accentColor, sessionNumber) {
   return fetch("/api/courses/enroll", {
@@ -104,14 +105,22 @@ export default function CourseEnrollModal({
             )}
             {step === 1 && (
               <div className="flex flex-col gap-6 w-96">
-                <h1 className="text-2xl font-bold">Choose your session</h1>
+                <div className="flex items-center">
+                  <h1 className="text-2xl font-bold mr-2">
+                    Enroll in {enrollInfo.courseCode}
+                  </h1>
+                  <Badge label={enrollInfo.courseSemester} />
+                </div>
                 <div className="text-gray-600 flex flex-col gap-2">
                   <span>Choose the session that you are enrolled in.</span>
                   <span>
                     If you are unsure about this, please{" "}
-                    <u>
-                      <b>confirm with your course instructor</b>
-                    </u>{" "}
+                    <span className="underline underline-offset-1">
+                      confirm with your course instructor
+                    </span>{" "}
+                    <span className="font-medium">
+                      ({enrollInfo.instructor})
+                    </span>{" "}
                     before you proceed.
                   </span>
                 </div>
@@ -128,7 +137,7 @@ export default function CourseEnrollModal({
                           readOnly
                         />
                         {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
-                        <span className="cursor-pointer hover:opacity-50 px-4 py-2 transition-all rounded border font-bold text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600">
+                        <span className="cursor-pointer hover:opacity-50 px-4 py-2 transition-all rounded border font-medium text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600">
                           {session}
                         </span>
                       </div>

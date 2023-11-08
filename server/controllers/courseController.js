@@ -320,9 +320,17 @@ const getCourseEnrollInfo = asyncHandler(async (req, res) => {
         )
       );
   }
+
+  const instructor = await User.findOne({
+    _id: course.instructor,
+  });
+
   return res.status(200).json({
     success: true,
     courseId: course._id,
+    courseCode: course.courseCode,
+    courseSemester: course.courseSemester,
+    instructor: instructor.firstName + " " + instructor.lastName,
     sessions: course.sessions.map((session) => session.sessionNumber),
   });
 });
