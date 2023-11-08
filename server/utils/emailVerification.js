@@ -1,6 +1,6 @@
 import { transporter, mailOptions, backendUrl } from "./mailTransporter.js";
 
-const sendEmailConfirmation = function(user){
+const sendEmailConfirmation = (user) => {
     mailOptions.to = user.email;
     mailOptions.subject = "iQuiz Account Verification";
     mailOptions.html = `<p>Verify your iQuiz account below by clicking on the link!</p>
