@@ -71,15 +71,10 @@ const getUsers = asyncHandler(async (req, res) => {
 //@desc   Logs in user, given a valid email and password.
 //@access Public
 const loginUser = asyncHandler(async (req, res) => {
-  if (req.session.user) {
+  if (req.session.email) {
     return res.status(400).json(formatMessage(false, "User already logged in"));
   }
-
-  if (req.session.email) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "User already logged in"));
-  }
+  
   const { email, password } = req.body;
 
   //Verify all fields exist.
@@ -178,17 +173,17 @@ const verifyUser = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "User is not registered"));
   }
 
-  if (user.verified == true) {
+  if (user.verified) {
     return res
       .status(400)
       .json(formatMessage(false, "User is already verified"));
   }
 
-  if (user.emailVerificationCode == emailVerificationCode) {
+  if (user.emailVerificationCode === emailVerificationCode) {
     user.verified = true;
     const updateUser = await User.updateOne({ _id: userId }, user);
 
-    if (updateUser.modifiedCount == 1) {
+    if (updateUser.modifiedCount === 1) {
       return res.json(formatMessage(true, "User has been verified!"));
     }
     return res

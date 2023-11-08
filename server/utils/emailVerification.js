@@ -1,6 +1,6 @@
 import { transporter, defaultMailOptions, backendUrl } from "./mailTransporter.js";
-
-const sendEmailVerification = function(user){
+  
+const sendEmailVerification = (user) => {
   const mailOptions = {
     ...defaultMailOptions,
     to: user.email,

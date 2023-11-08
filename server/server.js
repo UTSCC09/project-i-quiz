@@ -57,7 +57,7 @@ app.use(
 // Cookie.user checking
 app.use(function (req, res, next) {
   let cookies = parse(req.headers.cookie || "");
-  if (cookies && cookies.user == null && req.session.email) {
+  if (cookies && !cookies.user && req.session.email) {
     req.session.email = null;
   }
   req.user = null;
