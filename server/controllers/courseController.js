@@ -436,10 +436,8 @@ const setAccentColor = asyncHandler(async (req, res) => {
 
 async function getEnrolledCourses(studentEmail) {
   const student = await User.findOne({ email: studentEmail });
-  if (!student) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (student.type !== "student") {
-    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  if (!student || student.type !== "student") {
+    return [];
   }
 
   const enrolledCourses = [];
