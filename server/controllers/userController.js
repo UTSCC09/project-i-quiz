@@ -2,6 +2,9 @@ import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
+import sendEmailConfirmation from "../utils/emailVerification.js";
+import { parse, serialize } from "cookie";
+import crypto from "crypto";
 
 const saltRounds = 10;
 
@@ -40,10 +43,12 @@ const registerUser = asyncHandler(async (req, res) => {
         lastName: lastName,
         email: email,
         password: hashedPassword,
+        emailConfirmationCode: crypto.randomUUID().slice(0, 8),
       });
 
       //Return user object
       if (user) {
+        sendEmailConfirmation(user);
         return res
           .status(200)
           .json(formatMessage(true, "Registered Successfully"));
@@ -66,6 +71,8 @@ const getUsers = asyncHandler(async (req, res) => {
 //@desc   Logs in user, given a valid email and password.
 //@access Public
 const loginUser = asyncHandler(async (req, res) => {
+  if (req.session.user) {
+    return res.status(400).json(formatMessage(false, "User already logged in"));
   if (req.session.email) {
     return res
       .status(400)
@@ -84,6 +91,18 @@ const loginUser = asyncHandler(async (req, res) => {
     return res
       .status(400)
       .json(formatMessage(false, "Email is not registered"));
+  }
+
+  //Checks if user's account is verified
+  if (!user.verified) {
+    return res
+      .status(400)
+      .json(
+        formatMessage(
+          false,
+          "Please verify your account first before you log in!"
+        )
+      );
   }
 
   compare(password, user.password, function (err, result) {
@@ -127,7 +146,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   if (!req.session.email) {
     return res.status(400).json(formatMessage(false, "User is not logged in"));
   }
-
+  
   req.session.destroy(function (err) {
     if (err)
       return res
@@ -137,4 +156,46 @@ const logoutUser = asyncHandler(async (req, res) => {
   });
 });
 
-export { registerUser, getUsers, loginUser, logoutUser };
+
+//@route  POST api/users/verify/:userID/:emailConfirmationCode
+//@desc   Takes a confirmation code and verifys user if same emailConfirmationCode stored in db.
+//@access Public
+const verifyUser = asyncHandler(async (req, res) => {
+  const { userId, emailConfirmationCode } = req.params;
+
+  if (!userId || !emailConfirmationCode) {
+    return res.status(400).json(formatMessage(false, "Missing arguments"));
+  }
+
+  if (!mongoose.isValidObjectId(userId)) {
+    return res.status(400).json(formatMessage(false, "Bad user id"));
+  }
+
+  const user = await User.findOne({ _id: userId });
+  if (!user) {
+    return res.status(400).json(formatMessage(false, "User is not registered"));
+  }
+
+  if (user.verified == true) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "User is already verified"));
+  }
+
+  if (user.emailConfirmationCode == emailConfirmationCode) {
+    user.verified = true;
+    const updateUser = await User.updateOne({ _id: userId }, user);
+
+    if (updateUser.modifiedCount == 1) {
+      return res.json(formatMessage(true, "User has been verified!"));
+    }
+    return res
+      .status(500)
+      .json(formatMessage(false, "Failed to update Users database"));
+  }
+  return res
+    .status(400)
+    .json(formatMessage(false, "Invalid confirmation code"));
+});
+
+export { registerUser, getUsers, loginUser, logoutUser, verifyUser };
