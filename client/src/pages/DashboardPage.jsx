@@ -62,7 +62,9 @@ async function fetchEnrolledCourses() {
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" });
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
       }
       return response.json();
     })
