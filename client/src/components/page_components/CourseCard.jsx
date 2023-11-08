@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import Badge from "components/elements/Badge";
 import { Link } from "react-router-dom";
 import DropdownMenu from "components/elements/DropdownMenu";
+import { isStudentUserType } from "utils/CookieUtils";
 
 export default function CourseCard({
   courseObject,
@@ -10,6 +11,7 @@ export default function CourseCard({
   accentColorModalShowSet,
   courseDropModalShowSet,
 }) {
+  const isStudent = isStudentUserType();
   const [dropdownShow, dropdownShowSet] = useState(false);
   const courseCardRef = useRef();
 
@@ -18,6 +20,26 @@ export default function CourseCard({
   const courseName = courseObject.courseName;
   const courseSemester = courseObject.courseSemester;
   const accentColor = courseObject.accentColor;
+
+  let courseEditOptions = [
+    {
+      label: "Edit color",
+      onClick: () => {
+        targetCourseObjectSet(courseObject);
+        accentColorModalShowSet(true);
+      },
+    },
+  ];
+
+  if (isStudent) {
+    courseEditOptions.push({
+      label: <div className="text-red-600">Drop course</div>,
+      onClick: () => {
+        targetCourseObjectSet(courseObject);
+        courseDropModalShowSet(true);
+      },
+    });
+  }
 
   return (
     <div ref={courseCardRef} className="w-full md:w-[48%] lg:w-[48%]">
@@ -69,22 +91,7 @@ export default function CourseCard({
             </svg>
           </button>
           <DropdownMenu
-            options={[
-              {
-                label: "Edit color",
-                onClick: () => {
-                  targetCourseObjectSet(courseObject);
-                  accentColorModalShowSet(true);
-                },
-              },
-              {
-                label: <div className="text-red-600">Drop course</div>,
-                onClick: () => {
-                  targetCourseObjectSet(courseObject);
-                  courseDropModalShowSet(true);
-                },
-              },
-            ]}
+            options={courseEditOptions}
             dropdownShow={dropdownShow}
             dropdownShowSet={dropdownShowSet}
           />

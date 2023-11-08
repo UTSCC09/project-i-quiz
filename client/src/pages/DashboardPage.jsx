@@ -10,6 +10,7 @@ import Toast from "components/elements/Toast";
 import CourseEnrollModal from "components/page_components/CourseEnrollModal";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
+import { isStudentUserType } from "utils/CookieUtils";
 
 /* -- API function calls -- */
 
@@ -54,9 +55,43 @@ async function dropCourse(courseId) {
     });
 }
 
+async function fetchData() {
+  if (isStudentUserType()) {
+    return fetchEnrolledCourses();
+  } else {
+    return fetchInstructedCourses();
+  }
+}
+
 // Fetch enrolled courses
 async function fetchEnrolledCourses() {
   return fetch("/api/courses/enrolled", {
+    method: "GET",
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      if (!result.success) {
+        console.error(result.message);
+        return [];
+      }
+      return result.payload;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
+
+// Fetch instructed courses
+async function fetchInstructedCourses() {
+  return fetch("/api/courses/instructed", {
     method: "GET",
     withCredentials: true,
   })
@@ -85,6 +120,7 @@ async function fetchEnrolledCourses() {
 export default function DashboardPage() {
   const quizSectionRef = useRef(null);
   const courseSectionRef = useRef(null);
+  const isStudent = isStudentUserType();
 
   const [activeCourseList, activeCourseListSet] = useState([]);
   const [selectedTab, _setSelectedTab] = useState("quizzes");
@@ -101,7 +137,7 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    fetchEnrolledCourses().then((fetchedPayload) => {
+    fetchData().then((fetchedPayload) => {
       activeCourseListSet(fetchedPayload);
     });
   }, [activeCourseListSet]);
@@ -114,7 +150,7 @@ export default function DashboardPage() {
         enrollModalShowSet={enrollModalShowSet}
         onSuccess={(courseCode) => {
           enrollModalShowSet(false);
-          fetchEnrolledCourses().then((payload) => {
+          fetchData().then((payload) => {
             activeCourseListSet(payload);
             setTimeout(() => {
               toastMessageSet(
@@ -129,7 +165,7 @@ export default function DashboardPage() {
           courseObject={targetCourseObject}
           updateAccentColor={updateAccentColor}
           onSuccess={() => {
-            fetchEnrolledCourses()
+            fetchData()
               .then((payload) => {
                 activeCourseListSet(payload);
               })
@@ -152,7 +188,7 @@ export default function DashboardPage() {
           courseObject={targetCourseObject}
           dropCourse={dropCourse}
           onSuccess={() => {
-            fetchEnrolledCourses()
+            fetchData()
               .then((payload) => {
                 activeCourseListSet(payload);
               })
@@ -169,9 +205,9 @@ export default function DashboardPage() {
         additionalButtons={
           <button
             className="btn-outline py-0 text-sm w-28 h-8 sm:h-10 shrink-0"
-            onClick={() => enrollModalShowSet(true)}
+            onClick={isStudent ? () => enrollModalShowSet(true) : () => {}}
           >
-            Add course
+            {isStudent ? "Add course" : "Create course"}
           </button>
         }
       />
