@@ -72,7 +72,7 @@ const createCourse = asyncHandler(async (req, res) => {
     await instructor.save();
     return res
       .status(200)
-      .json(formatMessage(true, "Course created successfully"));
+      .json(formatMessage(true, "Course created successfully", course));
   } else {
     return res
       .status(400)
