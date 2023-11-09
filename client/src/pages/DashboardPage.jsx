@@ -19,6 +19,7 @@ import {
   fetchInstructedCourses,
 } from "api/CourseApi";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /* -- API function calls -- */
 
@@ -45,6 +46,9 @@ async function fetchData() {
 /* -- React Component -- */
 
 export default function DashboardPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const quizSectionRef = useRef(null);
   const courseSectionRef = useRef(null);
   const isStudent = isStudentUserType();
@@ -88,8 +92,16 @@ export default function DashboardPage() {
     );
     fetchData().then((fetchedPayload) => {
       activeCourseListSet(fetchedPayload);
+      const { passInMessage } = location.state ?? "";
+      if (passInMessage) {
+        toastMessageSet(passInMessage);
+        navigate("", {});
+        setTimeout(() => {
+          toastMessageSet();
+        }, 3000);
+      }
     });
-  }, [activeCourseListSet, toastMessageSet]);
+  }, [activeCourseListSet, toastMessageSet, location, navigate]);
 
   return (
     <>

@@ -350,7 +350,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
     return res.status(200).json(
       formatMessage(true, "Student enrolled successfully", {
         courseCode: course.courseCode,
-        courseSemester: course.semester,
+        courseSemester: course.courseSemester,
       })
     );
   }

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
@@ -45,6 +45,7 @@ function getQuizData(filter) {
 }
 
 export default function CoursePage() {
+  const navigate = useNavigate();
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
@@ -146,7 +147,6 @@ export default function CoursePage() {
           modalShowSet={accentColorModalShowSet}
         />
       )}
-
       {courseObject && (
         <CourseDropModal
           modalShow={courseDropModalShow}
@@ -154,7 +154,7 @@ export default function CoursePage() {
           courseObject={courseObject}
           onSuccess={() => {
             const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`;
-            refetchDataAndShowToast(successMessage);
+            navigate("/", { state: { passInMessage: successMessage } });
           }}
         />
       )}
