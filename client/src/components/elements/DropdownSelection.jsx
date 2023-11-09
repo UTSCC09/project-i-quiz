@@ -1,4 +1,9 @@
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 function DropdownSelection(
@@ -13,16 +18,28 @@ function DropdownSelection(
   ref
 ) {
   const [dropdownShow, dropdownShowSet] = useState(false);
+  const selectionRef = useRef();
+
+  function validate() {
+    if (selection) {
+      selectionRef.current.classList.remove("input-invalid-state");
+      return true;
+    }
+    selectionRef.current.classList.add("input-invalid-state");
+    return false;
+  }
 
   useImperativeHandle(ref, () => ({
     dropdownShow,
     dropdownShowSet,
+    validate,
   }));
 
   return (
     selections && (
       <div className="relative w-fit select-none">
         <div
+          ref={selectionRef}
           onClick={() => {
             dropdownShowSet(!dropdownShow);
           }}
@@ -91,6 +108,9 @@ function DropdownSelection(
                       <div
                         onMouseDown={() => {
                           onSelectionChange(selection);
+                          selectionRef.current.classList.remove(
+                            "input-invalid-state"
+                          );
                           dropdownShowSet(false);
                         }}
                         className="px-6 py-2 hover:bg-gray-150 transition cursor-pointer whitespace-nowrap"
