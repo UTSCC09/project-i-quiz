@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import SingleLineInput from "components/elements/SingleLineInput";
 import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
@@ -126,7 +126,7 @@ export default function CourseEnrollModal({
                   before you proceed.
                 </span>
               </div>
-              <div className="flex flex-wrap gap-6 w-full my-4">
+              <div className="flex flex-wrap gap-4 w-full my-4">
                 {enrollInfo.sessions.map((session, idx) => {
                   return (
                     <div onClick={() => sessionPickedSet(session)} key={idx}>

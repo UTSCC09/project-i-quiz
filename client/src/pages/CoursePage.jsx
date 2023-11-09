@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
@@ -45,10 +45,6 @@ function getQuizData(filter) {
 }
 
 export default function CoursePage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { passInToastMessage } = location.state ?? "";
-
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
@@ -65,20 +61,29 @@ export default function CoursePage() {
   const dropdownRef = useRef();
   const isStudent = isStudentUserType();
 
-  useEffect(() => {
+  function refetchDataAndShowToast(successMessage) {
     fetchCourseObject(courseId).then((result) => {
       if (result.success) {
         courseObjectSet(result.payload);
-        toastMessageSet(passInToastMessage);
+        toastMessageSet(successMessage);
         setTimeout(() => {
-          navigate(location.pathname, {});
           toastMessageSet();
-        }, 5000);
+        }, 3000);
       } else {
         console.error(result.message);
       }
     });
-  }, [courseObjectSet, courseId, toastMessageSet, passInToastMessage]);
+  }
+
+  useEffect(() => {
+    fetchCourseObject(courseId).then((result) => {
+      if (result.success) {
+        courseObjectSet(result.payload);
+      } else {
+        console.error(result.message);
+      }
+    });
+  }, [courseId, courseObjectSet]);
 
   function onSelectionChange(selection) {
     setSelection(selection);
@@ -134,11 +139,8 @@ export default function CoursePage() {
         <CourseAccentColorModal
           courseObject={courseObject}
           onSuccess={() => {
-            navigate("", {
-              state: {
-                passInToastMessage: `New accent color has been set for ${courseObject.courseCode} ${courseObject.courseSemester}`,
-              },
-            });
+            const successMessage = `New accent color has been set for ${courseObject.courseCode} ${courseObject.courseSemester}`;
+            refetchDataAndShowToast(successMessage);
           }}
           modalShow={accentColorModalShow}
           modalShowSet={accentColorModalShowSet}
@@ -151,11 +153,8 @@ export default function CoursePage() {
           modalShowSet={courseDropModalShowSet}
           courseObject={courseObject}
           onSuccess={() => {
-            navigate("", {
-              state: {
-                passInToastMessage: `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`,
-              },
-            });
+            const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`;
+            refetchDataAndShowToast(successMessage);
           }}
         />
       )}
@@ -165,11 +164,8 @@ export default function CoursePage() {
           modalShowSet={accessCodeUpdateModalShowSet}
           courseObject={courseObject}
           onSuccess={(newAccessCode) => {
-            navigate("", {
-              state: {
-                passInToastMessage: `Access code for ${courseObject.courseCode} ${courseObject.courseSemester} has been updated to ${newAccessCode}`,
-              },
-            });
+            const successMessage = `Access code for ${courseObject.courseCode} ${courseObject.courseSemester} has been updated to ${newAccessCode}`;
+            refetchDataAndShowToast(successMessage);
           }}
         />
       )}

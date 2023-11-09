@@ -72,43 +72,44 @@ export default function DashboardPage() {
     }
   }
 
-  useEffect(() => {
+  function refetchDataAndShowToast(successMessage) {
     fetchData().then((fetchedPayload) => {
       activeCourseListSet(fetchedPayload);
+      toastMessageSet(successMessage);
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
     });
+  }
+
+  useEffect(() => {
     setSelectedTab(
       localStorage.getItem("selected_tab").toString() ?? "quizzes"
     );
-  }, [activeCourseListSet]);
+    fetchData().then((fetchedPayload) => {
+      activeCourseListSet(fetchedPayload);
+    });
+  }, [activeCourseListSet, toastMessageSet]);
 
   return (
     <>
-      <Toast
-        toastMessage={toastMessage}
-        toastMessageSet={(newMessage) => toastMessageSet(newMessage)}
-      />
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <CourseEnrollModal
         enrollModalShow={enrollModalShow}
         enrollModalShowSet={enrollModalShowSet}
         onSuccess={(courseCode, courseSemester) => {
-          fetchData().then((payload) => {
-            activeCourseListSet(payload);
-            toastMessageSet(
-              `${courseCode} ${courseSemester} has been added to your course list`
-            );
-          });
+          const successMessage = `${courseCode} ${courseSemester} has been added to your course list`;
+          refetchDataAndShowToast(successMessage);
+          refetchDataAndShowToast(successMessage);
         }}
       />
       <CourseCreateModal
         modalShow={courseCreateModalShow}
         modalShowSet={courseCreateModalShowSet}
         onSuccess={(courseCode, courseSemester) => {
-          fetchData().then((payload) => {
-            activeCourseListSet(payload);
-            toastMessageSet(
-              `${courseCode} ${courseSemester} has been created`
-            );
-          });
+          const successMessage = `${courseCode} ${courseSemester} has been created`;
+          refetchDataAndShowToast(successMessage);
+          refetchDataAndShowToast(successMessage);
         }}
       />
       {targetCourseObject && (
@@ -116,16 +117,8 @@ export default function DashboardPage() {
           courseObject={targetCourseObject}
           updateAccentColor={updateAccentColor}
           onSuccess={() => {
-            fetchData()
-              .then((payload) => {
-                activeCourseListSet(payload);
-              })
-              .then(() => {
-                accentColorModalShowSet(false);
-                toastMessageSet(
-                  `New accent color has been set for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester}`
-                );
-              });
+            const successMessage = `New accent color has been set for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester}`;
+            refetchDataAndShowToast(successMessage);
           }}
           modalShow={accentColorModalShow}
           modalShowSet={accentColorModalShowSet}
@@ -139,16 +132,8 @@ export default function DashboardPage() {
           courseObject={targetCourseObject}
           dropCourse={dropCourse}
           onSuccess={() => {
-            fetchData()
-              .then((payload) => {
-                activeCourseListSet(payload);
-              })
-              .then(() => {
-                courseDropModalShowSet(false);
-                toastMessageSet(
-                  `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been removed from your course list`
-                );
-              });
+            const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been removed from your course list`;
+            refetchDataAndShowToast(successMessage);
           }}
         />
       )}
@@ -158,16 +143,8 @@ export default function DashboardPage() {
           modalShowSet={accessCodeUpdateModalShowSet}
           courseObject={targetCourseObject}
           onSuccess={(newAccessCode) => {
-            fetchData()
-              .then((payload) => {
-                activeCourseListSet(payload);
-              })
-              .then(() => {
-                courseDropModalShowSet(false);
-                toastMessageSet(
-                  `Access code for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been updated to ${newAccessCode}`
-                );
-              });
+            const successMessage = `Access code for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been updated to ${newAccessCode}`;
+            refetchDataAndShowToast(successMessage);
           }}
         />
       )}
