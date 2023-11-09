@@ -185,7 +185,7 @@ export default function CourseEnrollModal({
                       colorPicked,
                       sessionPicked
                     ).then((payload) => {
-                      onSuccess(payload.courseCode);
+                      onSuccess(payload.courseCode, payload.courseSemester);
                       stepSet(0);
                       sessionPickedSet(null);
                       colorPickedSet(null);

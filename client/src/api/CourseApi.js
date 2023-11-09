@@ -27,6 +27,36 @@ async function dropCourse(courseId) {
     });
 }
 
+async function checkNewCourseAvailability(
+  courseCode,
+  CourseName,
+  courseSemester
+) {
+  return fetch(`/api/courses/instructed/availability`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify({ courseCode, CourseName, courseSemester }),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    });
+}
+
+async function createCourse(courseData) {
+  return fetch("/api/courses", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify(courseData),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    });
+}
+
 // Fetch enrolled courses
 async function fetchEnrolledCourses() {
   return fetch("/api/courses/enrolled", {
@@ -78,10 +108,28 @@ async function fetchInstructedCourses() {
       console.error(err);
     });
 }
+async function updateAccessCode(courseId, accessCode) {
+  return fetch("/api/courses/access_code", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify({
+      courseId,
+      accessCode,
+    }),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    });
+}
 
 export {
   updateAccentColor,
   dropCourse,
+  checkNewCourseAvailability,
+  createCourse,
   fetchEnrolledCourses,
   fetchInstructedCourses,
+  updateAccessCode,
 };

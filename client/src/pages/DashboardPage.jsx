@@ -84,30 +84,26 @@ export default function DashboardPage() {
       <CourseEnrollModal
         enrollModalShow={enrollModalShow}
         enrollModalShowSet={enrollModalShowSet}
-        onSuccess={(courseCode) => {
-          enrollModalShowSet(false);
+        onSuccess={(courseCode, courseSemester) => {
           fetchData().then((payload) => {
             activeCourseListSet(payload);
-            setTimeout(() => {
-              toastMessageSet(
-                courseCode + " has been added to your course list"
-              );
-            }, 200);
+            enrollModalShowSet(false);
+            toastMessageSet(
+              `${courseCode} ${courseSemester} has been added to your course list`
+            );
           });
         }}
       />
       <CourseCreateModal
         modalShow={courseCreateModalShow}
         modalShowSet={courseCreateModalShowSet}
-        onSuccess={(courseCode) => {
-          enrollModalShowSet(false);
+        onSuccess={(courseCode, courseSemester) => {
           fetchData().then((payload) => {
             activeCourseListSet(payload);
-            setTimeout(() => {
-              toastMessageSet(
-                courseCode + " has been added to your course list"
-              );
-            }, 200);
+            courseCreateModalShowSet(false);
+            toastMessageSet(
+              `${courseCode} ${courseSemester} has been created`
+            );
           });
         }}
       />
