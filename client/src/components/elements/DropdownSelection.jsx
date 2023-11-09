@@ -68,7 +68,7 @@ function DropdownSelection(
               </span>
             </div>
           ) : (
-            <div className="w-full mr-4 py-3">{selection}</div>
+            <div className="w-full text-center mr-4 py-3">{selection}</div>
           )}
           {/* [Credit]: svg from https://heroicons.dev */}
           <svg
