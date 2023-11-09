@@ -9,7 +9,8 @@ import {
   setAccentColor,
   getCourseEnrollInfo,
   getCourse,
-  setAccessCode
+  setAccessCode,
+  checkNewCourseAvailability,
 } from "../controllers/courseController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -18,6 +19,9 @@ const router = Router();
 router.route("/")
   .post(protect, createCourse)
   .get(protect, getAllCourses);
+
+router.route("/instructed/availability")
+  .post(protect, checkNewCourseAvailability);
 
 router.route("/instructed")
   .get(protect, getMyInstructedCourses);

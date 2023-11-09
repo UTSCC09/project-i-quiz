@@ -146,6 +146,51 @@ const getMyInstructedCourses = asyncHandler(async (req, res) => {
     );
 });
 
+//@route  POST api/courses/instructed/availability
+//@desc   Allow instructor to get a course by course name
+//@access Private
+const checkNewCourseAvailability = asyncHandler(async (req, res) => {
+  const { courseCode, courseName, courseSemester } = req.body;
+  if (!((courseName && courseSemester) || (courseCode && courseSemester))) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Check if valid user
+  const instructor = await User.findOne({ email: req.session.email });
+  if (!instructor) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  } else if (instructor.type !== "instructor") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  //Check if there is a pre-existing course in the instructor's course list
+  const existingCourse = await Course.findOne({
+    $and: [
+      { $or: [{ courseCode: courseCode }, { courseName: courseName }] },
+      { courseSemester: courseSemester },
+    ],
+  });
+  if (!existingCourse || !existingCourse.instructor.equals(instructor._id)) {
+    return res
+      .status(200)
+      .json(
+        formatMessage(
+          true,
+          "You are able to create the course with the provided properties"
+        )
+      );
+  }
+  return res
+    .status(400)
+    .json(
+      formatMessage(
+        false,
+        "The course already exists in your course list",
+        existingCourse
+      )
+    );
+});
+
 //@route  GET api/courses/enrolled
 //@desc   Retrieve all courses signed in student is enrolled in
 //@access Private
@@ -546,4 +591,5 @@ export {
   setAccentColor,
   getCourseEnrollInfo,
   getCourse,
+  checkNewCourseAvailability,
 };
