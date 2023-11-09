@@ -49,16 +49,21 @@ export default function CourseCard({
       >
         <Link
           to={"/courses/" + courseId}
-          className="relative border border-l-0 py-4 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 hover:bg-gray-100 transition-all w-full"
+          className="relative border border-l-0 py-6 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 hover:bg-gray-100 transition-all w-full"
         >
           <div className="flex flex-col md:mb-6 w-full pr-4">
-            <Badge label={courseSemester} accentColor={accentColor} />
-            <div className="flex items-center">
+            <div className="hidden md:block mb-1">
+              <Badge label={courseSemester} accentColor={accentColor} />
+            </div>
+            <div className="flex items-center gap-2">
               <span className="text-gray-900 font-bold text-2xl md:text-3xl">
                 {courseCode}
               </span>
+              <div className="md:hidden">
+                <Badge label={courseSemester} accentColor={accentColor} />
+              </div>
             </div>
-            <span className="text-gray-500 text-xs ml-1 mt-0.5">
+            <span className="text-gray-500 text-xs ml-0.5 mt-0.5">
               {courseName}
             </span>
           </div>
