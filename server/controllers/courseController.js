@@ -111,6 +111,19 @@ const setAccessCode = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Access denied"));
   }
 
+  // Check if the access code already exists
+  const targetCourse = await Course.findOne({ accessCode: accessCode });
+  if (targetCourse) {
+    return res
+      .status(400)
+      .json(
+        formatMessage(
+          false,
+          `Access code "${accessCode}" is unavailable. Try another one.`
+        )
+      );
+  }
+
   const updatedCourse = await Course.updateOne(
     { _id: courseId },
     { $set: { accessCode: accessCode } }
@@ -574,6 +587,7 @@ async function fetchFormattedCourse(course, accentColor, instructor) {
     courseName: course.courseName,
     courseSemester: course.courseSemester,
     accentColor: accentColor,
+    accessCode: course.accessCode,
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
     quizzes: course.quizzes,

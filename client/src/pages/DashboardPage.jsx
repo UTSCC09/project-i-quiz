@@ -18,6 +18,7 @@ import {
   fetchEnrolledCourses,
   fetchInstructedCourses,
 } from "api/CourseApi";
+import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 
 /* -- API function calls -- */
 
@@ -54,6 +55,8 @@ export default function DashboardPage() {
   const [accentColorModalShow, accentColorModalShowSet] = useState(false);
   const [courseDropModalShow, courseDropModalShowSet] = useState(false);
   const [courseCreateModalShow, courseCreateModalShowSet] = useState(false);
+  const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
+    useState(false);
   const [targetCourseObject, targetCourseObjectSet] = useState();
   const [toastMessage, toastMessageSet] = useState();
 
@@ -149,6 +152,25 @@ export default function DashboardPage() {
           }}
         />
       )}
+      {targetCourseObject && (
+        <AccessCodeUpdateModal
+          modalShow={accessCodeUpdateModalShow}
+          modalShowSet={accessCodeUpdateModalShowSet}
+          courseObject={targetCourseObject}
+          onSuccess={(newAccessCode) => {
+            fetchData()
+              .then((payload) => {
+                activeCourseListSet(payload);
+              })
+              .then(() => {
+                courseDropModalShowSet(false);
+                toastMessageSet(
+                  `Access code for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been updated to ${newAccessCode}`
+                );
+              });
+          }}
+        />
+      )}
       <NavBar
         additionalButtons={
           <button
@@ -234,6 +256,9 @@ export default function DashboardPage() {
                         targetCourseObjectSet={targetCourseObjectSet}
                         accentColorModalShowSet={accentColorModalShowSet}
                         courseDropModalShowSet={courseDropModalShowSet}
+                        accessCodeUpdateModalShowSet={
+                          accessCodeUpdateModalShowSet
+                        }
                         key={idx}
                       />
                     );

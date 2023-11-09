@@ -10,6 +10,7 @@ export default function CourseCard({
   targetCourseObjectSet,
   accentColorModalShowSet,
   courseDropModalShowSet,
+  accessCodeUpdateModalShowSet,
 }) {
   const isStudent = isStudentUserType();
   const [dropdownShow, dropdownShowSet] = useState(false);
@@ -37,6 +38,14 @@ export default function CourseCard({
       onClick: () => {
         targetCourseObjectSet(courseObject);
         courseDropModalShowSet(true);
+      },
+    });
+  } else {
+    courseEditOptions.push({
+      label: "Update access code",
+      onClick: () => {
+        targetCourseObjectSet(courseObject);
+        accessCodeUpdateModalShowSet(true);
       },
     });
   }
