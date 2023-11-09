@@ -123,7 +123,7 @@ export default function DashboardPage() {
   const isStudent = isStudentUserType();
 
   const [activeCourseList, activeCourseListSet] = useState([]);
-  const [selectedTab, _setSelectedTab] = useState("quizzes");
+  const [selectedTab, _setSelectedTab] = useState();
   const [enrollModalShow, enrollModalShowSet] = useState(false);
   const [accentColorModalShow, accentColorModalShowSet] = useState(false);
   const [courseDropModalShow, courseDropModalShowSet] = useState(false);
@@ -132,14 +132,23 @@ export default function DashboardPage() {
 
   function setSelectedTab(selection) {
     _setSelectedTab(selection);
-    quizSectionRef.current.classList.toggle("hidden");
-    courseSectionRef.current.classList.toggle("hidden");
+    localStorage.setItem("selected_tab", selection);
+    if (selection === "quizzes") {
+      quizSectionRef.current.classList.remove("hidden");
+      courseSectionRef.current.classList.add("hidden");
+    } else {
+      quizSectionRef.current.classList.add("hidden");
+      courseSectionRef.current.classList.remove("hidden");
+    }
   }
 
   useEffect(() => {
     fetchData().then((fetchedPayload) => {
       activeCourseListSet(fetchedPayload);
     });
+    setSelectedTab(
+      localStorage.getItem("selected_tab").toString() ?? "quizzes"
+    );
   }, [activeCourseListSet]);
 
   return (

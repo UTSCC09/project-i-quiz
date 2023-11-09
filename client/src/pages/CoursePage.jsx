@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
 import QuizDataMock_all from "mock_data/CoursePage/QuizDataMock_all.json";
@@ -10,7 +10,7 @@ import NavBar from "components/page_components/NavBar";
 import Dropdown from "components/elements/Dropdown";
 
 async function fetchCourseInfo(courseId) {
-  return fetch("/api/courses/enrolled/" + courseId, {
+  return fetch("/api/courses/" + courseId, {
     method: "GET",
     withCredentials: true,
   })
@@ -22,7 +22,7 @@ async function fetchCourseInfo(courseId) {
     })
     .catch((err) => {
       console.error(err);
-    })
+    });
 }
 
 function getQuizData(filter) {
@@ -36,7 +36,6 @@ function getQuizData(filter) {
     default:
       return;
   }
-
 }
 
 export default function CoursePage() {
@@ -49,12 +48,11 @@ export default function CoursePage() {
     fetchCourseInfo(courseId).then((result) => {
       if (result.success) {
         courseInfoSet(result.payload);
-      }
-      else {
+      } else {
         console.error(result.message);
       }
-    })
-  }, [courseInfoSet, courseId])
+    });
+  }, [courseInfoSet, courseId]);
 
   function onSelectionChange(selection) {
     setSelection(selection);
@@ -69,58 +67,76 @@ export default function CoursePage() {
       transition: {
         ease: "easeInOut",
         duration: 0.3,
-      }
+      },
     },
     hide: {
       opacity: 0,
       scale: 0.95,
       height: 0,
-    }
+    },
   };
 
   return (
     <>
       <NavBar />
-      {courseInfo && <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
-        onClick={() => {
-          if (dropdownRef.current.showDropdown) {
-            dropdownRef.current.setShowDropdown(false);
-          }
-        }}>
-        <div className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
-          <div className="flex items-end justify-between mb-6 md:mb-8">
-            <div className="flex flex-col pr-4">
-              <Badge label={courseInfo.courseSemester} accentColor={courseInfo.accentColor} />
-              <div className="flex items-center">
-                <span className="text-gray-900 font-bold text-3xl md:text-4xl">
-                  {courseInfo.courseCode}
+      {courseInfo && (
+        <div
+          className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
+          onClick={() => {
+            if (dropdownRef.current.showDropdown) {
+              dropdownRef.current.setShowDropdown(false);
+            }
+          }}
+        >
+          <div className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
+            <div className="flex items-end justify-between mb-6 md:mb-8">
+              <div className="flex flex-col pr-4">
+                <Badge
+                  label={courseInfo.courseSemester}
+                  accentColor={courseInfo.accentColor}
+                />
+                <div className="flex items-center">
+                  <span className="text-gray-900 font-bold text-3xl md:text-4xl">
+                    {courseInfo.courseCode}
+                  </span>
+                </div>
+                <span className="text-gray-500 text-xs md:text-sm ml-1 mt-0.5">
+                  {courseInfo.courseName}
                 </span>
               </div>
-              <span className="text-gray-500 text-xs md:text-sm ml-1 mt-0.5">{courseInfo.courseName}</span>
+              <Dropdown
+                ref={dropdownRef}
+                selection={selection}
+                onSelectionChange={onSelectionChange}
+              />
             </div>
-            <Dropdown ref={dropdownRef} selection={selection} onSelectionChange={onSelectionChange} />
+            <AnimatePresence>
+              {
+                <motion.div
+                  key={quizList}
+                  variants={variants}
+                  animate={"show"}
+                  initial={"hide"}
+                  exit={"hide"}
+                >
+                  {" "}
+                  {<QuizList quizDataArr={quizList} />}
+                </motion.div>
+              }
+            </AnimatePresence>
           </div>
-          <AnimatePresence>{
-            <motion.div key={quizList} variants={variants} animate={"show"} initial={"hide"} exit={"hide"}> {
-              <QuizList quizDataArr={quizList} />
-            }
-            </motion.div>
-          }
-          </AnimatePresence>
         </div>
-      </div>}
+      )}
     </>
-  )
+  );
 }
 
 function QuizList({ quizDataArr }) {
   return (
     <div className={"flex flex-col w-full gap-4"}>
-      {
-        quizDataArr.map((quizObject, idx) => {
-          return <QuizCard quizObject={quizObject} key={idx} />
-        })
-      }
+      {quizDataArr.map((quizObject, idx) => {
+        return <QuizCard quizObject={quizObject} key={idx} />;
+      })}
     </div>
-  )
+  );
 }

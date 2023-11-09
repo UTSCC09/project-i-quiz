@@ -14,7 +14,7 @@ export default function DropdownMenu({
               initial={{ opacity: 0, y: "-5%" }}
               animate={{ opacity: 1, y: "0" }}
               exit={{ opacity: 0, y: "-5%" }}
-              className="flex z-30 flex-col bg-white rounded-md shadow-lg absolute text-slate-600 text-sm border divide-y select-none"
+              className="absolute right-2 sm:-right-1/4 flex z-30 flex-col bg-white rounded-md shadow-lg text-slate-600 text-sm border divide-y select-none"
             >
               {options.map((option, idx) => {
                 return (
