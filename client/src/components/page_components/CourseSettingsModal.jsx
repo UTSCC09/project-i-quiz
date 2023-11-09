@@ -4,7 +4,7 @@ import SingleLineInput from "components/elements/SingleLineInput";
 import AlertBanner from "components/elements/AlertBanner";
 import { dropCourse } from "api/CourseApi";
 
-export default function CourseDropModal({
+export default function CourseSettingsModal({
   modalShow,
   modalShowSet,
   courseObject,
@@ -66,7 +66,6 @@ export default function CourseDropModal({
                 ) {
                   dropCourse(courseObject.courseId).then((result) => {
                     if (result.success) {
-                      modalShowSet(false);
                       onSuccess();
                     } else {
                       alertRef.current.setMessage(result.message);

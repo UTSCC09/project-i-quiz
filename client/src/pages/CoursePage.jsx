@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
@@ -8,8 +8,14 @@ import QuizDataMock_new from "mock_data/CoursePage/QuizDataMock_new.json";
 import QuizDataMock_past from "mock_data/CoursePage/QuizDataMock_past.json";
 import NavBar from "components/page_components/NavBar";
 import DropdownSelection from "components/elements/DropdownSelection";
+import DropdownMenu from "components/elements/DropdownMenu";
+import { isStudentUserType } from "utils/CookieUtils";
+import Toast from "components/elements/Toast";
+import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
+import CourseDropModal from "components/page_components/CourseDropModal";
+import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 
-async function fetchCourseInfo(courseId) {
+async function fetchCourseObject(courseId) {
   return fetch("/api/courses/" + courseId, {
     method: "GET",
     withCredentials: true,
@@ -39,21 +45,40 @@ function getQuizData(filter) {
 }
 
 export default function CoursePage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { passInToastMessage } = location.state ?? "";
+
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState(getQuizData(selection));
+  const [courseObject, courseObjectSet] = useState({});
+  const [courseSettingsDropdownShow, courseSettingsDropdownShowSet] =
+    useState(false);
+  const [accentColorModalShow, accentColorModalShowSet] = useState(false);
+  const [courseDropModalShow, courseDropModalShowSet] = useState(false);
+  const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
+    useState(false);
+  const [toastMessage, toastMessageSet] = useState();
+
   const dropdownRef = useRef();
-  const [courseInfo, courseInfoSet] = useState({});
+  const isStudent = isStudentUserType();
+
   useEffect(() => {
-    fetchCourseInfo(courseId).then((result) => {
+    fetchCourseObject(courseId).then((result) => {
       if (result.success) {
-        courseInfoSet(result.payload);
+        courseObjectSet(result.payload);
+        toastMessageSet(passInToastMessage);
+        setTimeout(() => {
+          navigate(location.pathname, {});
+          toastMessageSet();
+        }, 5000);
       } else {
         console.error(result.message);
       }
     });
-  }, [courseInfoSet, courseId]);
+  }, [courseObjectSet, courseId, toastMessageSet, passInToastMessage]);
 
   function onSelectionChange(selection) {
     setSelection(selection);
@@ -77,10 +102,79 @@ export default function CoursePage() {
     },
   };
 
+  let courseEditOptions = [
+    {
+      label: "Edit color",
+      onClick: () => {
+        accentColorModalShowSet(true);
+      },
+    },
+  ];
+
+  if (isStudent) {
+    courseEditOptions.push({
+      label: <div className="text-red-600">Drop course</div>,
+      onClick: () => {
+        courseDropModalShowSet(true);
+      },
+    });
+  } else {
+    courseEditOptions.push({
+      label: "Update access code",
+      onClick: () => {
+        accessCodeUpdateModalShowSet(true);
+      },
+    });
+  }
+
   return (
     <>
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
+      {courseObject && (
+        <CourseAccentColorModal
+          courseObject={courseObject}
+          onSuccess={() => {
+            navigate("", {
+              state: {
+                passInToastMessage: `New accent color has been set for ${courseObject.courseCode} ${courseObject.courseSemester}`,
+              },
+            });
+          }}
+          modalShow={accentColorModalShow}
+          modalShowSet={accentColorModalShowSet}
+        />
+      )}
+
+      {courseObject && (
+        <CourseDropModal
+          modalShow={courseDropModalShow}
+          modalShowSet={courseDropModalShowSet}
+          courseObject={courseObject}
+          onSuccess={() => {
+            navigate("", {
+              state: {
+                passInToastMessage: `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`,
+              },
+            });
+          }}
+        />
+      )}
+      {courseObject && (
+        <AccessCodeUpdateModal
+          modalShow={accessCodeUpdateModalShow}
+          modalShowSet={accessCodeUpdateModalShowSet}
+          courseObject={courseObject}
+          onSuccess={(newAccessCode) => {
+            navigate("", {
+              state: {
+                passInToastMessage: `Access code for ${courseObject.courseCode} ${courseObject.courseSemester} has been updated to ${newAccessCode}`,
+              },
+            });
+          }}
+        />
+      )}
       <NavBar />
-      {courseInfo && (
+      {courseObject && (
         <div
           className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
           onClick={() => {
@@ -94,38 +188,47 @@ export default function CoursePage() {
               <div className="flex flex-col pr-4">
                 <div className="flex items-center gap-3">
                   <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
-                    {courseInfo.courseCode}
+                    {courseObject.courseCode}
                   </span>
                   <Badge
-                    label={courseInfo.courseSemester}
-                    accentColor={courseInfo.accentColor}
+                    label={courseObject.courseSemester}
+                    accentColor={courseObject.accentColor}
                   />
                 </div>
                 <span className="text-gray-500 text-sm ml-0.5">
-                  {courseInfo.courseName}
+                  {courseObject.courseName}
                 </span>
               </div>
               <div className="flex items-center gap-2 sm:gap-4">
-                <div
-                  className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  onClick={() => {}}
-                >
-                  {/* [Credit]: svg from https://heroicons.dev */}
-                  <svg
-                    className="h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
+                <div className="relative">
+                  <div
+                    className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
+                    onClick={() => {
+                      courseSettingsDropdownShowSet(true);
+                    }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                    />
-                  </svg>
+                    {/* [Credit]: svg from https://heroicons.dev */}
+                    <svg
+                      className="h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                      />
+                    </svg>
+                  </div>
+                  <DropdownMenu
+                    options={courseEditOptions}
+                    dropdownShow={courseSettingsDropdownShow}
+                    dropdownShowSet={courseSettingsDropdownShowSet}
+                  />
                 </div>
                 <div className="shadow-sm">
                   <DropdownSelection

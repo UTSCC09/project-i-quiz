@@ -2,10 +2,10 @@ import Modal from "components/elements/Modal";
 import { useEffect, useRef, useState } from "react";
 import ColorPicker from "./ColorPicker";
 import AlertBanner from "components/elements/AlertBanner";
+import { updateAccentColor } from "api/CourseApi";
 
 export default function CourseAccentColorModal({
   courseObject,
-  updateAccentColor,
   onSuccess,
   modalShow,
   modalShowSet,
@@ -42,6 +42,7 @@ export default function CourseAccentColorModal({
               updateAccentColor(courseObject.courseId, colorPicked).then(
                 (result) => {
                   if (result.success) {
+                    modalShowSet(false);
                     onSuccess();
                   } else {
                     alertRef.current.setMessage(result.message);

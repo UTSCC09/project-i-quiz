@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 const variants = {
   show: {
@@ -14,14 +14,7 @@ const variants = {
     scale: 0.95,
   },
 };
-export default function Toast({
-  toastMessage,
-  toastMessageSet,
-  timeout = 5000,
-}) {
-  setTimeout(() => {
-    toastMessageSet(null);
-  }, timeout);
+export default function Toast({ toastMessage, toastMessageSet }) {
   return (
     <>
       <div className="fixed left-0 top-0 z-20 h-screen w-screen pointer-events-none flex items-end justify-center">

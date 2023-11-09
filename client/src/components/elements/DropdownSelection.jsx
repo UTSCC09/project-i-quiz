@@ -19,6 +19,7 @@ function DropdownSelection(
 ) {
   const [dropdownShow, dropdownShowSet] = useState(false);
   const selectionRef = useRef();
+  const selectionListRef = useRef();
 
   function validate() {
     if (selection) {
@@ -102,15 +103,21 @@ function DropdownSelection(
                 exit={{ opacity: 0, y: "-5%" }}
                 className="mt-2.5 bg-white rounded-lg shadow-lg border"
               >
-                <div className="py-2 text-sm text-gray-600 flex flex-col">
+                <div
+                  ref={selectionListRef}
+                  className="py-2 text-sm text-gray-600 flex flex-col"
+                >
                   {selections.map((selection, idx) => {
                     return (
                       <div
                         onMouseDown={() => {
-                          onSelectionChange(selection);
+                          selectionListRef.current.classList.add(
+                            "pointer-events-none"
+                          );
                           selectionRef.current.classList.remove(
                             "input-invalid-state"
                           );
+                          onSelectionChange(selection);
                           dropdownShowSet(false);
                         }}
                         className="px-6 py-2 hover:bg-gray-150 transition cursor-pointer whitespace-nowrap"
