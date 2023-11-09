@@ -34,7 +34,7 @@ export default function Toast({
               initial={"hide"}
               exit={"hide"}
             >
-              <div className="relative flex justify-between py-4 bg-white rounded-lg h-fit shadow-lg shadow-gray-200 border text-sm text-slate-600 items-center pointer-events-auto mb-12">
+              <div className="relative flex justify-between py-4 bg-white rounded-lg h-fit shadow-xl border text-sm text-slate-600 items-center pointer-events-auto mb-12">
                 <div className="pl-10 pr-16">{toastMessage}</div>
                 <button
                   className="absolute right-0 mx-3 p-1 cursor-pointer hover:opacity-50 rounded-full transition-all"

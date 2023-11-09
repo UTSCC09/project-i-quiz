@@ -80,14 +80,16 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
+      <Toast
+        toastMessage={toastMessage}
+        toastMessageSet={(newMessage) => toastMessageSet(newMessage)}
+      />
       <CourseEnrollModal
         enrollModalShow={enrollModalShow}
         enrollModalShowSet={enrollModalShowSet}
         onSuccess={(courseCode, courseSemester) => {
           fetchData().then((payload) => {
             activeCourseListSet(payload);
-            enrollModalShowSet(false);
             toastMessageSet(
               `${courseCode} ${courseSemester} has been added to your course list`
             );
@@ -100,7 +102,6 @@ export default function DashboardPage() {
         onSuccess={(courseCode, courseSemester) => {
           fetchData().then((payload) => {
             activeCourseListSet(payload);
-            courseCreateModalShowSet(false);
             toastMessageSet(
               `${courseCode} ${courseSemester} has been created`
             );

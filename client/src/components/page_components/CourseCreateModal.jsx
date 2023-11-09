@@ -32,6 +32,15 @@ export default function CourseCreateModal({
     courseCreationDataSet(newData);
   }
 
+  function resetAllStates() {
+    stepSet(0);
+    helpMessageShowSet(false);
+    yearSet();
+    semesterSet();
+    colorPickedSet();
+    courseCreationDataSet();
+  }
+
   async function submitCreateCourseForm(e) {
     e.preventDefault();
     let inputsValidated = courseNameInputRef.current.validate("required");
@@ -92,10 +101,7 @@ export default function CourseCreateModal({
           modalShow={modalShow}
           modalShowSet={modalShowSet}
           onClose={() => {
-            stepSet(0);
-            helpMessageShowSet(false);
-            semesterSet();
-            yearSet();
+            resetAllStates();
           }}
           content={
             <div className="sm:w-96">
@@ -317,6 +323,8 @@ export default function CourseCreateModal({
                             result.payload.courseCode,
                             result.payload.courseSemester
                           );
+                          resetAllStates();
+                          modalShowSet(false);
                         } else {
                           alertRef.current.textContent =
                             "Course creation failed. Please try again later.";
