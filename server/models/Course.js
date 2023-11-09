@@ -28,6 +28,10 @@ const CourseSchema = new mongoose.Schema({
     type: String,
   },
   sessions: [SessionSchema],
+  archived: {
+    type: Boolean,
+    default: false,
+  },
   quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }]
 });
 

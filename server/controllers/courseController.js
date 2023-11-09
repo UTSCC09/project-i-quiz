@@ -305,6 +305,11 @@ const getCourseEnrollInfo = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Invalid course access code"));
   }
 
+  //Check if archived
+  if (course.archived) {
+    return res.status(400).json(formatMessage(false, "Cannot drop archived course"));
+  }
+
   //Check if student is already enrolled in the specified course
   if (
     student.courses.findIndex((studentCourse) =>
@@ -379,6 +384,46 @@ const dropCourse = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(formatMessage(true, "Student dropped successfully"));
+});
+
+//@route  POST api/courses/archive
+//@desc   Archive or unarchive course (flips boolean value).
+//@access Private
+const archiveCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.body;
+
+  if (courseId == null) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  const instructor = await User.findOne({ email: req.session.email });
+
+  if (!instructor || instructor.type != "instructor") {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  }
+
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    return res.status(400).json(formatMessage(false, "Invalid courseId"));
+  }
+
+  if (course.instructor.toString() != instructor._id.toString()) {
+    return res.status(400).json(formatMessage(false, 
+      "Cannot archive, not the course instructor"));
+  }
+
+  if (course.archived) {
+    course.archived = false;
+    await course.save();
+    return res.json(formatMessage(true, "Successfuly unarchived course"));
+  }
+  else {
+    course.archived = true;
+    await course.save();
+    return res.json(formatMessage(true, "Successfuly archived course"));
+  }
+
 });
 
 //@route  POST api/courses/accent_color
@@ -506,6 +551,7 @@ export {
   getAllCourses,
   enrollInCourse,
   dropCourse,
+  archiveCourse,
   setAccentColor,
   getCourseEnrollInfo,
   getEnrolledCourse,
