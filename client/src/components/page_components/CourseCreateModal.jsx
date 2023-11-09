@@ -6,6 +6,7 @@ import DropdownSelection from "components/elements/DropdownSelection";
 import { AnimatePresence, motion } from "framer-motion";
 import { checkNewCourseAvailability, createCourse } from "api/CourseApi";
 import AccessCodeInput from "./AccessCodeInput";
+import AlertBanner from "components/elements/AlertBanner";
 
 export default function CourseCreateModal({
   modalShow,
@@ -52,12 +53,12 @@ export default function CourseCreateModal({
       courseCodeInputRef.current.validate("required") && inputsValidated;
 
     if (!inputsValidated) {
-      alertRef.current.textContent = "Please fill out all fields";
-      alertRef.current.classList.remove("hidden");
+      alertRef.current.setMessage("Please fill out all required fields");
+      alertRef.current.show();
       return;
     }
 
-    alertRef.current.classList.add("hidden");
+    alertRef.current.hide();
 
     const formData = new FormData(e.target);
     formData.forEach((value, key) => addCourseCreationData(key, value));
@@ -70,11 +71,11 @@ export default function CourseCreateModal({
       courseCreationData.courseSemester
     ).then((result) => {
       if (result.success) {
-        alertRef.current.classList.add("hidden");
+        alertRef.current.hide();
         stepSet(1);
       } else {
-        alertRef.current.textContent = result.message;
-        alertRef.current.classList.remove("hidden");
+        alertRef.current.setMessage(result.message);
+        alertRef.current.show();
       }
     });
   }
@@ -118,10 +119,7 @@ export default function CourseCreateModal({
                     className="gap-6 flex flex-col"
                     onSubmit={submitCreateCourseForm}
                   >
-                    <div
-                      ref={alertRef}
-                      className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-                    ></div>
+                    <AlertBanner ref={alertRef} />
                     <div className="relative flex flex-col gap-4">
                       <SingleLineInput
                         ref={courseNameInputRef}
@@ -239,10 +237,7 @@ export default function CourseCreateModal({
                   <h1 className="text-2xl font-bold">
                     Set course access code
                   </h1>
-                  <div
-                    ref={alertRef}
-                    className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-                  ></div>
+                  <AlertBanner ref={alertRef} />
                   <div className="text-gray-600 flex flex-col gap-4">
                     <span>
                       A unique course access code is required. Students will
@@ -259,13 +254,14 @@ export default function CourseCreateModal({
                     onClick={() => {
                       const accessCode = accessCodeInputRef.current.getValue();
                       if (accessCode.length < 6) {
-                        alertRef.current.textContent =
-                          "Course access code has to be at least 6 characters";
-                        alertRef.current.classList.remove("hidden");
+                        alertRef.current.setMessage(
+                          "Course access code has to be at least 6 characters"
+                        );
+                        alertRef.current.show();
                         accessCodeInputRef.current.setValidationState(false);
                         return;
                       }
-                      alertRef.current.classList.add("hidden");
+                      alertRef.current.hide();
                       addCourseCreationData("accessCode", accessCode);
                       stepSet(step + 1);
                     }}
@@ -277,10 +273,7 @@ export default function CourseCreateModal({
               {step === 2 && (
                 <div className="flex flex-col gap-6">
                   <h1 className="text-2xl font-bold">Choose a color</h1>
-                  <div
-                    ref={alertRef}
-                    className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-                  ></div>
+                  <AlertBanner ref={alertRef} />
                   <div className="flex flex-col gap-4 text-gray-600">
                     <span>
                       Pick an accent color for your newly created course.
@@ -310,9 +303,10 @@ export default function CourseCreateModal({
                           resetAllStates();
                           modalShowSet(false);
                         } else {
-                          alertRef.current.textContent =
-                            "Course creation failed. Please try again later.";
-                          alertRef.current.classList.remove("hidden");
+                          alertRef.current.setMessage(
+                            "Course creation failed. Please try again later."
+                          );
+                          alertRef.current.show();
                         }
                       });
                     }}

@@ -1,6 +1,7 @@
 import Modal from "components/elements/Modal";
 import { useEffect, useRef, useState } from "react";
 import ColorPicker from "./ColorPicker";
+import AlertBanner from "components/elements/AlertBanner";
 
 export default function CourseAccentColorModal({
   courseObject,
@@ -24,10 +25,7 @@ export default function CourseAccentColorModal({
       content={
         <div className="flex flex-col w-96 gap-6">
           <h1 className="text-2xl font-bold">Fresh color, fresh start</h1>
-          <div
-            ref={alertRef}
-            className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-          ></div>
+          <AlertBanner ref={alertRef} />
           <span className="w-96 text-gray-600">
             Pick a new accent color for{" "}
             <b>
@@ -46,8 +44,8 @@ export default function CourseAccentColorModal({
                   if (result.success) {
                     onSuccess();
                   } else {
-                    alertRef.current.textContent = result.message;
-                    alertRef.current.classList.remove("hidden");
+                    alertRef.current.setMessage(result.message);
+                    alertRef.current.show();
                   }
                 }
               );

@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import Modal from "components/elements/Modal";
 import SingleLineInput from "components/elements/SingleLineInput";
+import AlertBanner from "components/elements/AlertBanner";
 
 export default function CourseDropModal({
   modalShow,
@@ -19,10 +20,7 @@ export default function CourseDropModal({
       content={
         <div className="flex flex-col sm:w-96 gap-6">
           <h1 className="text-2xl font-bold">Dropping a course</h1>
-          <div
-            ref={alertRef}
-            className="rounded border-l-4 text-red-700 border-red-600 bg-red-50 p-4 text-sm col-span-6 hidden"
-          ></div>
+          <AlertBanner ref={alertRef} />
           <div className="flex flex-col gap-4 text-gray-600">
             <span>
               Are you sure you want to drop{" "}
@@ -70,8 +68,8 @@ export default function CourseDropModal({
                     if (result.success) {
                       onSuccess();
                     } else {
-                      alertRef.current.textContent = result.message;
-                      alertRef.current.classList.remove("hidden");
+                      alertRef.current.setMessage(result.message);
+                      alertRef.current.show();
                     }
                   });
                 }

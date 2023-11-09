@@ -2,6 +2,7 @@ import { updateAccessCode } from "api/CourseApi";
 import Modal from "components/elements/Modal";
 import { useRef } from "react";
 import AccessCodeInput from "./AccessCodeInput";
+import AlertBanner from "components/elements/AlertBanner";
 
 export default function AccessCodeUpdateModal({
   courseObject,
@@ -21,10 +22,7 @@ export default function AccessCodeUpdateModal({
         <div className="flex flex-col w-96 gap-6">
           <h1 className="text-2xl font-bold">Update course access code</h1>
           <div className="flex flex-col gap-4">
-            <div
-              ref={alertRef}
-              className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-            ></div>
+            <AlertBanner ref={alertRef} />
             <span className="text-gray-600">
               Set a new access code for{" "}
               <b>
@@ -42,21 +40,22 @@ export default function AccessCodeUpdateModal({
             onClick={() => {
               const newAccessCode = accessCodeInputRef.current.getValue();
               if (newAccessCode.length < 6) {
-                alertRef.current.textContent =
-                  "Course access code has to be at least 6 characters";
-                alertRef.current.classList.remove("hidden");
+                alertRef.current.setMessage(
+                  "Course access code has to be at least 6 characters"
+                );
+                alertRef.current.show();
                 accessCodeInputRef.current.setValidationState(false);
                 return;
               }
-              alertRef.current.classList.add("hidden");
+              alertRef.current.hide();
               updateAccessCode(courseObject.courseId, newAccessCode).then(
                 (result) => {
                   if (result.success) {
                     onSuccess(newAccessCode);
                     modalShowSet(false);
                   } else {
-                    alertRef.current.textContent = result.message;
-                    alertRef.current.classList.remove("hidden");
+                    alertRef.current.setMessage(result.message);
+                    alertRef.current.show();
                   }
                 }
               );

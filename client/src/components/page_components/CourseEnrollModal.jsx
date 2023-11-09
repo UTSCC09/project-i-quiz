@@ -3,6 +3,7 @@ import SingleLineInput from "components/elements/SingleLineInput";
 import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
 import Badge from "components/elements/Badge";
+import AlertBanner from "components/elements/AlertBanner";
 
 async function enrollInCourse(courseId, accentColor, sessionNumber) {
   return fetch("/api/courses/enroll", {
@@ -62,10 +63,7 @@ export default function CourseEnrollModal({
                 className="gap-6 flex flex-col"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <div
-                  ref={alertRef}
-                  className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-                ></div>
+                <AlertBanner ref={alertRef} />
                 <SingleLineInput
                   ref={courseAccessCodeInputRef}
                   label="Course Access Code"
@@ -93,8 +91,8 @@ export default function CourseEnrollModal({
                           enrollInfoSet(result);
                           stepSet(step + 1);
                         } else {
-                          alertRef.current.textContent = result.message;
-                          alertRef.current.classList.remove("hidden");
+                          alertRef.current.setMessage(result.message);
+                          alertRef.current.show();
                           courseAccessCodeInputRef.current.setValidationState(
                             false
                           );

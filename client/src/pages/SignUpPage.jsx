@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import SingleLineInput from "components/elements/SingleLineInput";
 import iquizLogo from "media/iquiz_logo.svg";
 import { getUserCookie } from "utils/CookieUtils";
+import AlertBanner from "components/elements/AlertBanner";
 
 export default function SignUpPage() {
   const location = useLocation();
@@ -101,7 +102,7 @@ function SignUpForm({ email, userType }) {
       // Validate non-emptiness
       if (!inputElmt.validate("required")) {
         flag = false;
-        alertRef.current.textContent = "Please fill out all fields";
+        alertRef.current.setMessage("Please fill out all fields");
       }
       // Validate email input (inputRefs[2])
       if (
@@ -110,13 +111,13 @@ function SignUpForm({ email, userType }) {
         !inputElmt.validate("email")
       ) {
         flag = false;
-        alertRef.current.textContent = "Invalid email address format";
+        alertRef.current.setMessage("Invalid email address format");
       }
     });
 
     // If the above validation failed, show alert banner and return
     if (!flag) {
-      alertRef.current.classList.remove("hidden");
+      alertRef.current.show();
       return;
     }
 
@@ -127,8 +128,9 @@ function SignUpForm({ email, userType }) {
     ) {
       flag = false;
       inputRefs.current[3].setValidationState(false);
-      alertRef.current.textContent =
-        "Passwords must be at least 8 characters and contain at least one letter and one number";
+      alertRef.current.setMessage(
+        "Passwords must be at least 8 characters and contain at least one letter and one number"
+      );
     }
 
     // Check passwords match
@@ -138,17 +140,17 @@ function SignUpForm({ email, userType }) {
       flag = false;
       inputRefs.current[3].setValidationState(false);
       inputRefs.current[4].setValidationState(false);
-      alertRef.current.textContent = "Passwords doesn't match";
+      alertRef.current.setMessage("Passwords doesn't match");
     }
 
     // If validation failed, show alert banner and return
     if (!flag) {
-      alertRef.current.classList.remove("hidden");
+      alertRef.current.show();
       return;
     }
 
-    // If validation passed, remove alert banner
-    alertRef.current.classList.add("hidden");
+    // If validation passed, hide alert banner
+    alertRef.current.hide();
 
     // Call Sign Up API
     const formData = new FormData(e.target);
@@ -170,14 +172,14 @@ function SignUpForm({ email, userType }) {
         if (result.success) {
           navigate("/home");
         } else {
-          alertRef.current.textContent = result.message;
-          alertRef.current.classList.remove("hidden");
+          alertRef.current.setMessage(result.message);
+          alertRef.current.show();
         }
       })
       .catch((err) => {
         console.error(err);
-        alertRef.current.textContent = "Could not connect to the server";
-        alertRef.current.classList.remove("hidden");
+        alertRef.current.setMessage("Could not connect to the server");
+        alertRef.current.show();
       });
   }
 
@@ -212,12 +214,7 @@ function SignUpForm({ email, userType }) {
           </Link>
         </span>
       </div>
-      <div
-        ref={alertRef}
-        className="rounded border-l-4 text-red-700 border-red-500 bg-red-50 p-4 text-sm col-span-6 hidden"
-      >
-        Please fill out all fields
-      </div>
+      <AlertBanner ref={alertRef} />
       <div className="col-span-3">
         <SingleLineInput
           id="firstNameInput"
