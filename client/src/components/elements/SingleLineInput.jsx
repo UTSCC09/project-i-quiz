@@ -89,10 +89,15 @@ function SingleLineInput(
     return innerInputRef.current.value;
   }
 
+  function setValue(newVal) {
+    innerInputRef.current.value = newVal;
+  }
+
   useImperativeHandle(ref, () => ({
     validate,
     setValidationState,
     getValue,
+    setValue,
   }));
 
   return (
