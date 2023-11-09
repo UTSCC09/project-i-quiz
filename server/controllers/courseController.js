@@ -257,7 +257,7 @@ const dropCourse = asyncHandler(async (req, res) => {
 const archiveCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.body;
 
-  if (courseId == null || typeof(archived) != "boolean") {
+  if (courseId == null) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -273,16 +273,20 @@ const archiveCourse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Invalid courseId"));
   }
 
-  if (!course.instructor != instructor) {
+  if (course.instructor.toString() != instructor._id.toString()) {
     return res.status(400).json(formatMessage(false, 
       "Cannot archive, not the course instructor"));
   }
 
   if (course.archived) {
     course.archived = false;
+    await course.save();
+    return res.json(formatMessage(true, "Successfuly unarchived course"));
   }
   else {
     course.archived = true;
+    await course.save();
+    return res.json(formatMessage(true, "Successfuly archived course"));
   }
 
   await course.save();
