@@ -11,6 +11,13 @@ import CourseEnrollModal from "components/page_components/CourseEnrollModal";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import { isStudentUserType } from "utils/CookieUtils";
+import CourseCreateModal from "components/page_components/CourseCreateModal";
+import {
+  updateAccentColor,
+  dropCourse,
+  fetchEnrolledCourses,
+  fetchInstructedCourses,
+} from "api/CourseApi";
 
 /* -- API function calls -- */
 
@@ -26,93 +33,12 @@ function getUpcomingQuizzes() {
   return QuizDataMock_upcoming.quizList;
 }
 
-async function updateAccentColor(courseId, accentColor) {
-  return fetch("/api/courses/accent_color", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-    body: JSON.stringify({
-      courseId,
-      accentColor,
-    }),
-  })
-    .then((response) => response.json())
-    .then((result) => {
-      return result;
-    });
-}
-
-async function dropCourse(courseId) {
-  return fetch("/api/courses/drop", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-    body: JSON.stringify({ courseId }),
-  })
-    .then((response) => response.json())
-    .then((result) => {
-      return result;
-    });
-}
-
 async function fetchData() {
   if (isStudentUserType()) {
     return fetchEnrolledCourses();
   } else {
     return fetchInstructedCourses();
   }
-}
-
-// Fetch enrolled courses
-async function fetchEnrolledCourses() {
-  return fetch("/api/courses/enrolled", {
-    method: "GET",
-    withCredentials: true,
-  })
-    .then(async (response) => {
-      if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
-          window.location.reload();
-        });
-      }
-      return response.json();
-    })
-    .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-        return [];
-      }
-      return result.payload;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-}
-
-// Fetch instructed courses
-async function fetchInstructedCourses() {
-  return fetch("/api/courses/instructed", {
-    method: "GET",
-    withCredentials: true,
-  })
-    .then(async (response) => {
-      if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
-          window.location.reload();
-        });
-      }
-      return response.json();
-    })
-    .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-        return [];
-      }
-      return result.payload;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
 }
 
 /* -- React Component -- */
@@ -127,6 +53,7 @@ export default function DashboardPage() {
   const [enrollModalShow, enrollModalShowSet] = useState(false);
   const [accentColorModalShow, accentColorModalShowSet] = useState(false);
   const [courseDropModalShow, courseDropModalShowSet] = useState(false);
+  const [courseCreateModalShow, courseCreateModalShowSet] = useState(false);
   const [targetCourseObject, targetCourseObjectSet] = useState();
   const [toastMessage, toastMessageSet] = useState();
 
@@ -157,6 +84,21 @@ export default function DashboardPage() {
       <CourseEnrollModal
         enrollModalShow={enrollModalShow}
         enrollModalShowSet={enrollModalShowSet}
+        onSuccess={(courseCode) => {
+          enrollModalShowSet(false);
+          fetchData().then((payload) => {
+            activeCourseListSet(payload);
+            setTimeout(() => {
+              toastMessageSet(
+                courseCode + " has been added to your course list"
+              );
+            }, 200);
+          });
+        }}
+      />
+      <CourseCreateModal
+        modalShow={courseCreateModalShow}
+        modalShowSet={courseCreateModalShowSet}
         onSuccess={(courseCode) => {
           enrollModalShowSet(false);
           fetchData().then((payload) => {
@@ -214,7 +156,13 @@ export default function DashboardPage() {
         additionalButtons={
           <button
             className="btn-outline py-0 text-sm w-28 h-8 sm:h-10 shrink-0"
-            onClick={isStudent ? () => enrollModalShowSet(true) : () => {}}
+            onClick={
+              isStudent
+                ? () => enrollModalShowSet(true)
+                : () => {
+                    courseCreateModalShowSet(true);
+                  }
+            }
           >
             {isStudent ? "Add course" : "Create course"}
           </button>
