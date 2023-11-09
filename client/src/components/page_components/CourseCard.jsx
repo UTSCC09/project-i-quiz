@@ -19,7 +19,7 @@ export default function CourseCard({
   const courseCode = courseObject.courseCode;
   const courseName = courseObject.courseName;
   const courseSemester = courseObject.courseSemester;
-  const accentColor = courseObject.accentColor;
+  const accentColor = courseObject.accentColor ?? "#0366FF";
 
   let courseEditOptions = [
     {
