@@ -7,7 +7,7 @@ import QuizDataMock_all from "mock_data/CoursePage/QuizDataMock_all.json";
 import QuizDataMock_new from "mock_data/CoursePage/QuizDataMock_new.json";
 import QuizDataMock_past from "mock_data/CoursePage/QuizDataMock_past.json";
 import NavBar from "components/page_components/NavBar";
-import Dropdown from "components/elements/Dropdown";
+import DropdownSelection from "components/elements/DropdownSelection";
 
 async function fetchCourseInfo(courseId) {
   return fetch("/api/courses/" + courseId, {
@@ -39,10 +39,11 @@ function getQuizData(filter) {
 }
 
 export default function CoursePage() {
+  const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState(getQuizData(selection));
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef();
   const [courseInfo, courseInfoSet] = useState({});
   useEffect(() => {
     fetchCourseInfo(courseId).then((result) => {
@@ -83,8 +84,8 @@ export default function CoursePage() {
         <div
           className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
           onClick={() => {
-            if (dropdownRef.current.showDropdown) {
-              dropdownRef.current.setShowDropdown(false);
+            if (dropdownRef.current.dropdownShow) {
+              dropdownRef.current.dropdownShowSet(false);
             }
           }}
         >
@@ -104,11 +105,15 @@ export default function CoursePage() {
                   {courseInfo.courseName}
                 </span>
               </div>
-              <Dropdown
-                ref={dropdownRef}
-                selection={selection}
-                onSelectionChange={onSelectionChange}
-              />
+              <div className="shadow-sm">
+                <DropdownSelection
+                  ref={dropdownRef}
+                  selections={filters}
+                  selection={selection}
+                  onSelectionChange={onSelectionChange}
+                  height="2.5rem"
+                />
+              </div>
             </div>
             <AnimatePresence>
               {

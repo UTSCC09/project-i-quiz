@@ -35,7 +35,7 @@ export default function DropdownMenu({
         </AnimatePresence>
         {dropdownShow && (
           <div
-            className="fixed z-20 left-0 top-0 w-screen h-screen bg-opacity-10 cursor-default"
+            className="fixed z-10 left-0 top-0 w-screen h-screen cursor-default"
             onClick={() => dropdownShowSet(false)}
           ></div>
         )}
