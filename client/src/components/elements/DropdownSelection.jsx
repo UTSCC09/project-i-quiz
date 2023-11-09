@@ -21,12 +21,12 @@ function DropdownSelection(
 
   return (
     selections && (
-      <div className="relative w-fit">
-        <button
+      <div className="relative w-fit select-none">
+        <div
           onClick={() => {
             dropdownShowSet(!dropdownShow);
           }}
-          className="text-slate-500 border bg-white hover:bg-gray-100 rounded-lg text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
+          className="text-slate-500 border bg-white cursor-pointer hover:bg-gray-100 rounded-lg text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
           style={{ width: width, height: height }}
         >
           <input
@@ -69,7 +69,7 @@ function DropdownSelection(
               opacity="0.8"
             ></path>
           </svg>
-        </button>
+        </div>
         <input
           type="checkbox"
           className="peer hidden"
@@ -86,17 +86,18 @@ function DropdownSelection(
                 className="mt-2.5 bg-white rounded-lg shadow-lg border"
               >
                 <div className="py-2 text-sm text-gray-600 flex flex-col">
-                  {selections.map((selection) => {
+                  {selections.map((selection, idx) => {
                     return (
-                      <button
+                      <div
                         onMouseDown={() => {
                           onSelectionChange(selection);
                           dropdownShowSet(false);
                         }}
-                        className="px-6 py-2 hover:bg-gray-150 transition whitespace-nowrap"
+                        className="px-6 py-2 hover:bg-gray-150 transition cursor-pointer whitespace-nowrap"
+                        key={idx}
                       >
                         {selection}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
