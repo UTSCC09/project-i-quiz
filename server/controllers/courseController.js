@@ -73,8 +73,7 @@ const createCourse = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .json(formatMessage(true, "Course created successfully"));
-  }
-  else {
+  } else {
     return res.status(400).json(formatMessage(false, "Course creation failed"));
   }
 });
@@ -224,11 +223,10 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   const { courseId, sessionNumber, accentColor } = req.body;
 
   //Check if valid user
-  const student = await User.findOne({ email: req.session.email});
+  const student = await User.findOne({ email: req.session.email });
   if (!student) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
-  }
-  else if (student.type !== "student") {
+  } else if (student.type !== "student") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
@@ -401,7 +399,6 @@ const archiveCourse = asyncHandler(async (req, res) => {
     (course) => course.courseId.toString() === courseId
   );
 
-
   if (courseIndex === -1) {
     return res.status(400).json(formatMessage(false, "Not enrolled in course"));
   }
@@ -409,14 +406,14 @@ const archiveCourse = asyncHandler(async (req, res) => {
   if (user.courses[courseIndex].archived) {
     user.courses[courseIndex].archived = false;
     await user.save();
-    return res.json(formatMessage(true, "Successfully unarchived user's course"));
-  }
-  else {
+    return res.json(
+      formatMessage(true, "Successfully unarchived user's course")
+    );
+  } else {
     user.courses[courseIndex].archived = true;
     await user.save();
     return res.json(formatMessage(true, "Successfully archived user's course"));
   }
-
 });
 
 //@route  POST api/courses/accent_color
@@ -532,7 +529,7 @@ async function fetchFormattedCourse(course, accentColor, instructor) {
     accentColor: accentColor,
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
-    quizzes: course.quizzes
+    quizzes: course.quizzes,
   };
 }
 
