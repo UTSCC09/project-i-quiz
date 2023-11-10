@@ -34,7 +34,7 @@ export default function CoursePage() {
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
-  const [quizList, setQuizList] = useState(getQuizData(selection));
+  const [quizList, setQuizList] = useState([]);
   const [courseObject, courseObjectSet] = useState({});
   const [courseSettingsDropdownShow, courseSettingsDropdownShowSet] =
     useState(false);
@@ -112,7 +112,9 @@ export default function CoursePage() {
     fetchCourseObject(courseId).then((result) => {
       if (result.success) {
         courseObjectSet(result.payload);
-        document.querySelector("main").classList.remove("invisible");
+        /* TODO: Fetch actual quiz list */
+        setQuizList(getQuizData(selection));
+        document.querySelector("main").classList.remove("hidden");
       } else {
         console.error(result.message);
       }
@@ -164,7 +166,7 @@ export default function CoursePage() {
           }
         }}
       >
-        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem] invisible">
+        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem] hidden">
           <div className="flex items-end justify-between mb-6 md:mb-8">
             <div className="flex flex-col pr-4">
               <div className="flex items-center gap-3">
@@ -223,18 +225,15 @@ export default function CoursePage() {
             </div>
           </div>
           <AnimatePresence>
-            {
-              <motion.div
-                key={quizList}
-                variants={variants}
-                animate={"show"}
-                initial={"hide"}
-                exit={"hide"}
-              >
-                {" "}
-                {<QuizList quizDataArr={quizList} />}
-              </motion.div>
-            }
+            <motion.div
+              key={quizList}
+              variants={variants}
+              animate={"show"}
+              initial={"hide"}
+              exit={"hide"}
+            >
+              <QuizList quizDataArr={quizList} />
+            </motion.div>
           </AnimatePresence>
         </main>
       </div>

@@ -92,7 +92,7 @@ export default function DashboardPage() {
     setSelectedTab(selectedTab);
     fetchData().then((fetchedPayload) => {
       activeCourseListSet(fetchedPayload);
-      document.querySelector("main").classList.remove("invisible");
+      document.querySelector("main").classList.remove("hidden");
       const { passInMessage } = location.state ?? "";
       if (passInMessage) {
         toastMessageSet(passInMessage);
@@ -178,7 +178,7 @@ export default function DashboardPage() {
         }
       />
       <div className="min-h-screen w-full bg-gray-100">
-        <main className="h-full px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-32 sm:py-36 invisible">
+        <main className="h-full px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-32 sm:py-36 hidden">
           <div className="flex lg:hidden bg-gray-200 rounded-lg w-full justify-between">
             <label className="cursor-pointer w-[49%]">
               <input
@@ -206,6 +206,8 @@ export default function DashboardPage() {
               </div>
             </label>
           </div>
+
+          {/* --- Quiz Section --- */}
           <div
             ref={quizSectionRef}
             className="lg:w-[35%] flex flex-col gap-8 lg:flex"
@@ -231,6 +233,8 @@ export default function DashboardPage() {
               }
             />
           </div>
+
+          {/* --- Course Section --- */}
           <div
             ref={courseSectionRef}
             className="hidden flex flex-col gap-8 lg:flex lg:w-[65%]"
