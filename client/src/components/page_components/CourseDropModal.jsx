@@ -34,8 +34,8 @@ export default function CourseDropModal({
               quizzes from the course, including your own <b>quiz history</b>.{" "}
             </span>
             <span>
-              To confirm, enter the course code and the semester of the course
-              that you wish to drop.
+              To confirm, enter the course code and the semester & year of the
+              course that you wish to drop.
             </span>
             <span className="mt-2 text-red-600">
               <b>Warning:</b> This action can <b>NOT</b> be undone
@@ -45,7 +45,7 @@ export default function CourseDropModal({
             <SingleLineInput ref={courseCodeInputRef} label="Course code" />
             <SingleLineInput
               ref={semesterInputRef}
-              label="Semester"
+              label="Semester & Year"
               acceptSpace
             />
           </div>
