@@ -17,11 +17,8 @@ const createQuiz = asyncHandler(async (req, res) => {
 
   //Check if valid user
   try {
-    const instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    }
-    else if (instructor.type !== "instructor") {
+    const instructor = req.user;
+    if (instructor.type !== "instructor") {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {
@@ -138,11 +135,8 @@ const getQuiz = asyncHandler(async (req, res) => {
   //Check if valid user
   let instructor;
   try {
-    instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    }
-    else if (instructor.type !== "instructor") {
+    instructor = req.user;
+    if (instructor.type !== "instructor") {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {
@@ -184,11 +178,8 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
   //Check if valid user
   let instructor;
   try {
-    instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    }
-    else if (instructor.type !== "instructor") {
+    instructor = req.user;
+    if (instructor.type !== "instructor") {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {
@@ -213,7 +204,6 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
 
   //Get quizzes for course
   try {
-    console.log(req.params.courseId);
     const quizzes = await Quiz.find({ course: req.params.courseId });
     if (!quizzes) {
       return res.status(400).json(formatMessage(false, "Invalid course"));
@@ -263,7 +253,6 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
   for (let i = 0; i < course.quizzes.length; i++) {
     try {
       const quiz = await Quiz.findById(course.quizzes[i]);
-      console.log("quiz: ", quiz);
       if (!quiz) {
         return res.status(400).json(formatMessage(false, "Invalid quiz id"));
       }
@@ -272,7 +261,6 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
       if (currentDateTime < quiz.startTime ) { currentQuizStatus = "Upcoming"; }
       else if (currentDateTime > quiz.endTime) { currentQuizStatus = "Past"; }
       else { currentQuizStatus = "Active"; }
-      console.log("About to push");
       formattedQuizzes.push({
         quizId: quiz._id,
         quizName: quiz.quizName,
@@ -297,11 +285,8 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   //Check if valid user
   let instructor;
   try {
-    instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    }
-    else if (instructor.type !== "instructor") {
+    instructor = req.user;
+    if (instructor.type !== "instructor") {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {
@@ -379,11 +364,8 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
   //Check if valid user
   let instructor;
   try {
-    instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    }
-    else if (instructor.type !== "instructor") {
+    instructor = req.user;
+    if (instructor.type !== "instructor") {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {
@@ -512,11 +494,8 @@ const addQuizQuestion = asyncHandler(async (req, res) => {
   //Check if valid user
   let instructor;
   try {
-    instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    }
-    else if (instructor.type !== "instructor") {
+    instructor = req.user;
+    if (instructor.type !== "instructor") {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {

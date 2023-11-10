@@ -22,10 +22,8 @@ const createCourse = asyncHandler(async (req, res) => {
   }
 
   //Check if valid user
-  const instructor = await User.findOne({ email: req.session.email });
-  if (!instructor) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (instructor.type !== "instructor") {
+  const instructor = req.user;
+  if (instructor.type !== "instructor") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
@@ -90,10 +88,8 @@ const setAccessCode = asyncHandler(async (req, res) => {
   }
 
   // Check if valid user
-  const instructor = await User.findOne({ email: req.session.email });
-  if (!instructor) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (instructor.type !== "instructor") {
+  const instructor = req.user;
+  if (instructor.type !== "instructor") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
@@ -128,10 +124,8 @@ const setAccessCode = asyncHandler(async (req, res) => {
 //@access Private
 const getMyInstructedCourses = asyncHandler(async (req, res) => {
   // Check if the user is a valid instructor
-  const instructor = await User.findOne({ email: req.session.email });
-  if (!instructor) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (instructor.type !== "instructor") {
+  const instructor = req.user;
+  if (instructor.type !== "instructor") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
@@ -171,7 +165,7 @@ const getAllCourses = asyncHandler(async (req, res) => {
   const courses = await Course.find({});
   const formattedCourses = [];
   for (let i = 0; i < courses.length; i++) {
-    const instructor = await User.findById(courses[i].instructor);
+    const instructor = req.user;
     const formattedSessions = [];
     for (let j = 0; j < courses[i].sessions.length; j++) {
       formattedSessions.push({
@@ -223,10 +217,8 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   const { courseId, sessionNumber, accentColor } = req.body;
 
   //Check if valid user
-  const student = await User.findOne({ email: req.session.email });
-  if (!student) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (student.type !== "student") {
+  const student = req.user;
+  if (student.type !== "student") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
@@ -288,10 +280,8 @@ const getCourseEnrollInfo = asyncHandler(async (req, res) => {
   const { accessCode } = req.params;
 
   //Check if valid user
-  const student = await User.findOne({ email: req.session.email });
-  if (!student) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (student.type !== "student") {
+  const student = req.user;
+  if (student.type !== "student") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
@@ -337,10 +327,8 @@ const dropCourse = asyncHandler(async (req, res) => {
   }
 
   // Check if valid user
-  const student = await User.findOne({ email: req.session.email });
-  if (!student) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (student.type !== "student") {
+  const student = req.user;
+  if (student.type !== "student") {
     return res.status(400).json(formatMessage(false, "Invalid user type"));
   }
 
@@ -389,12 +377,7 @@ const archiveCourse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
-  const user = await User.findOne({ email: req.session.email });
-
-  if (!user) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  }
-
+  const user = req.user;
   const courseIndex = await user.courses.findIndex(
     (course) => course.courseId.toString() === courseId
   );
@@ -427,8 +410,7 @@ const setAccentColor = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
-  // Check if valid user
-  const user = await User.findOne({ email: req.session.email });
+  const user = req.user;
 
   // Check if valid course
   const course = await Course.findById(courseId);
@@ -470,8 +452,8 @@ const setAccentColor = asyncHandler(async (req, res) => {
 // ------------------------------ Helper functions ------------------------------
 
 async function getEnrolledCourses(studentEmail) {
-  const student = await User.findOne({ email: studentEmail });
-  if (!student || student.type !== "student") {
+  const student = req.user;
+  if (student.type !== "student") {
     return [];
   }
 
