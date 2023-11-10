@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema({
   courses: [{ 
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
     accentColor: String,
+    archived: { type: Boolean, default: false }
   }],
   emailConfirmationCode: {
     type: String,

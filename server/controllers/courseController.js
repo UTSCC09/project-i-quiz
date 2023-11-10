@@ -396,32 +396,30 @@ const archiveCourse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
-  const instructor = await User.findOne({ email: req.session.email });
+  const user = await User.findOne({ email: req.session.email });
 
-  if (!instructor || instructor.type != "instructor") {
+  if (!user) {
     return res.status(400).json(formatMessage(false, "Invalid user"));
   }
 
-  const course = await Course.findById(courseId);
+  const courseIndex = await user.courses.findIndex(
+    (course) => course.courseId.toString() === courseId
+  );
 
-  if (!course) {
-    return res.status(400).json(formatMessage(false, "Invalid courseId"));
+
+  if (courseIndex === -1) {
+    return res.status(400).json(formatMessage(false, "Not enrolled in course"));
   }
 
-  if (course.instructor.toString() != instructor._id.toString()) {
-    return res.status(400).json(formatMessage(false, 
-      "Cannot archive, not the course instructor"));
-  }
-
-  if (course.archived) {
-    course.archived = false;
-    await course.save();
-    return res.json(formatMessage(true, "Successfuly unarchived course"));
+  if (user.courses[courseIndex].archived) {
+    user.courses[courseIndex].archived = false;
+    await user.save();
+    return res.json(formatMessage(true, "Successfully unarchived user's course"));
   }
   else {
-    course.archived = true;
-    await course.save();
-    return res.json(formatMessage(true, "Successfuly archived course"));
+    user.courses[courseIndex].archived = true;
+    await user.save();
+    return res.json(formatMessage(true, "Successfully archived user's course"));
   }
 
 });
