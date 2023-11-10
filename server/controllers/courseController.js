@@ -305,11 +305,6 @@ const getCourseEnrollInfo = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Invalid course access code"));
   }
 
-  //Check if archived
-  if (course.archived) {
-    return res.status(400).json(formatMessage(false, "Cannot drop archived course"));
-  }
-
   //Check if student is already enrolled in the specified course
   if (
     student.courses.findIndex((studentCourse) =>
