@@ -108,6 +108,28 @@ async function fetchInstructedCourses() {
       console.error(err);
     });
 }
+
+async function fetchCourseObject(courseId) {
+  return fetch("/api/courses/" + courseId, {
+    method: "GET",
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
+
 async function updateAccessCode(courseId, accessCode) {
   return fetch("/api/courses/access_code", {
     method: "POST",
@@ -132,4 +154,5 @@ export {
   fetchEnrolledCourses,
   fetchInstructedCourses,
   updateAccessCode,
+  fetchCourseObject,
 };

@@ -14,22 +14,7 @@ import Toast from "components/elements/Toast";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
-
-async function fetchCourseObject(courseId) {
-  return fetch("/api/courses/" + courseId, {
-    method: "GET",
-    withCredentials: true,
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((result) => {
-      return result;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-}
+import { fetchCourseObject } from "api/CourseApi";
 
 function getQuizData(filter) {
   switch (filter) {
