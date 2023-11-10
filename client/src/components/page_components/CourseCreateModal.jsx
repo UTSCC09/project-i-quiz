@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { checkNewCourseAvailability, createCourse } from "api/CourseApi";
 import AccessCodeInput from "./AccessCodeInput";
 import AlertBanner from "components/elements/AlertBanner";
+import Badge from "components/elements/Badge";
 
 export default function CourseCreateModal({
   modalShow,
@@ -272,7 +273,13 @@ export default function CourseCreateModal({
               )}
               {step === 2 && (
                 <div className="flex flex-col gap-6">
-                  <h1 className="text-2xl font-bold">Choose a color</h1>
+                  <h1 className="text-2xl font-bold flex items-center gap-2">
+                    <div>Pick a color for {courseCreationData.courseCode}</div>
+                    <Badge
+                      label={courseCreationData.courseSemester}
+                      accentColor={colorPicked}
+                    />
+                  </h1>
                   <AlertBanner ref={alertRef} />
                   <div className="flex flex-col gap-4 text-gray-600">
                     <span>

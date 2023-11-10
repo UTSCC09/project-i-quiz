@@ -63,7 +63,7 @@ export default function DashboardPage() {
   const [courseCreateModalShow, courseCreateModalShowSet] = useState(false);
   const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
     useState(false);
-  const [targetCourseObject, targetCourseObjectSet] = useState();
+  const [targetCourseObject, targetCourseObjectSet] = useState({});
   const [toastMessage, toastMessageSet] = useState();
 
   function setSelectedTab(selection) {
@@ -125,42 +125,35 @@ export default function DashboardPage() {
           refetchDataAndShowToast(successMessage);
         }}
       />
-      {targetCourseObject && (
-        <CourseAccentColorModal
-          courseObject={targetCourseObject}
-          updateAccentColor={updateAccentColor}
-          onSuccess={() => {
-            const successMessage = `New accent color has been set for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester}`;
-            refetchDataAndShowToast(successMessage);
-          }}
-          modalShow={accentColorModalShow}
-          modalShowSet={accentColorModalShowSet}
-        />
-      )}
-
-      {targetCourseObject && (
-        <CourseDropModal
-          modalShow={courseDropModalShow}
-          modalShowSet={courseDropModalShowSet}
-          courseObject={targetCourseObject}
-          dropCourse={dropCourse}
-          onSuccess={() => {
-            const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been removed from your course list`;
-            refetchDataAndShowToast(successMessage);
-          }}
-        />
-      )}
-      {targetCourseObject && (
-        <AccessCodeUpdateModal
-          modalShow={accessCodeUpdateModalShow}
-          modalShowSet={accessCodeUpdateModalShowSet}
-          courseObject={targetCourseObject}
-          onSuccess={(newAccessCode) => {
-            const successMessage = `Access code for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been updated to ${newAccessCode}`;
-            refetchDataAndShowToast(successMessage);
-          }}
-        />
-      )}
+      <CourseAccentColorModal
+        courseObject={targetCourseObject}
+        updateAccentColor={updateAccentColor}
+        onSuccess={() => {
+          const successMessage = `New accent color has been set for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester}`;
+          refetchDataAndShowToast(successMessage);
+        }}
+        modalShow={accentColorModalShow}
+        modalShowSet={accentColorModalShowSet}
+      />
+      <CourseDropModal
+        modalShow={courseDropModalShow}
+        modalShowSet={courseDropModalShowSet}
+        courseObject={targetCourseObject}
+        dropCourse={dropCourse}
+        onSuccess={() => {
+          const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been removed from your course list`;
+          refetchDataAndShowToast(successMessage);
+        }}
+      />
+      <AccessCodeUpdateModal
+        modalShow={accessCodeUpdateModalShow}
+        modalShowSet={accessCodeUpdateModalShowSet}
+        courseObject={targetCourseObject}
+        onSuccess={(newAccessCode) => {
+          const successMessage = `Access code for ${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been updated to ${newAccessCode}`;
+          refetchDataAndShowToast(successMessage);
+        }}
+      />
       <NavBar
         additionalButtons={
           <button

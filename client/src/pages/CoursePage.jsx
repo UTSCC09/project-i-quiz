@@ -112,51 +112,46 @@ export default function CoursePage() {
     fetchCourseObject(courseId).then((result) => {
       if (result.success) {
         courseObjectSet(result.payload);
-        /* TODO: Fetch actual quiz list */
-        setQuizList(getQuizData(selection));
         document.querySelector("main").classList.remove("hidden");
       } else {
         console.error(result.message);
       }
     });
+
+    /* TODO: Fetch actual quiz list */
+    setQuizList(getQuizData(selection));
   }, [courseId, courseObjectSet]);
 
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
-      {courseObject && (
-        <CourseAccentColorModal
-          courseObject={courseObject}
-          onSuccess={() => {
-            const successMessage = `New accent color has been set for ${courseObject.courseCode} ${courseObject.courseSemester}`;
-            refetchDataAndShowToast(successMessage);
-          }}
-          modalShow={accentColorModalShow}
-          modalShowSet={accentColorModalShowSet}
-        />
-      )}
-      {courseObject && (
-        <CourseDropModal
-          modalShow={courseDropModalShow}
-          modalShowSet={courseDropModalShowSet}
-          courseObject={courseObject}
-          onSuccess={() => {
-            const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`;
-            navigate("/", { state: { passInMessage: successMessage } });
-          }}
-        />
-      )}
-      {courseObject && (
-        <AccessCodeUpdateModal
-          modalShow={accessCodeUpdateModalShow}
-          modalShowSet={accessCodeUpdateModalShowSet}
-          courseObject={courseObject}
-          onSuccess={(newAccessCode) => {
-            const successMessage = `Access code for ${courseObject.courseCode} ${courseObject.courseSemester} has been updated to ${newAccessCode}`;
-            refetchDataAndShowToast(successMessage);
-          }}
-        />
-      )}
+      <CourseAccentColorModal
+        courseObject={courseObject}
+        onSuccess={() => {
+          const successMessage = `New accent color has been set for ${courseObject.courseCode} ${courseObject.courseSemester}`;
+          refetchDataAndShowToast(successMessage);
+        }}
+        modalShow={accentColorModalShow}
+        modalShowSet={accentColorModalShowSet}
+      />
+      <CourseDropModal
+        modalShow={courseDropModalShow}
+        modalShowSet={courseDropModalShowSet}
+        courseObject={courseObject}
+        onSuccess={() => {
+          const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`;
+          navigate("/", { state: { passInMessage: successMessage } });
+        }}
+      />
+      <AccessCodeUpdateModal
+        modalShow={accessCodeUpdateModalShow}
+        modalShowSet={accessCodeUpdateModalShowSet}
+        courseObject={courseObject}
+        onSuccess={(newAccessCode) => {
+          const successMessage = `Access code for ${courseObject.courseCode} ${courseObject.courseSemester} has been updated to ${newAccessCode}`;
+          refetchDataAndShowToast(successMessage);
+        }}
+      />
       <NavBar />
       <div
         className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"

@@ -107,8 +107,8 @@ export default function CourseEnrollModal({
           )}
           {step === 1 && (
             <div className="flex flex-col gap-6 w-96">
-              <div className="flex items-center">
-                <h1 className="text-2xl font-bold mr-2">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold">
                   Enroll in {enrollInfo.courseCode}
                 </h1>
                 <Badge label={enrollInfo.courseSemester} />
@@ -162,7 +162,13 @@ export default function CourseEnrollModal({
           )}
           {step === 2 && (
             <div className="flex flex-col gap-6">
-              <h1 className="text-2xl font-bold">Choose a color</h1>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                <div>Pick a color for {enrollInfo.courseCode}</div>
+                <Badge
+                  label={enrollInfo.courseSemester}
+                  accentColor={colorPicked}
+                />
+              </h1>
               <div className="flex flex-col gap-4 text-gray-600">
                 <span>Pick an accent color for your newly added course.</span>
                 <span>
