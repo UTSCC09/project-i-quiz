@@ -76,16 +76,6 @@ export default function CoursePage() {
     });
   }
 
-  useEffect(() => {
-    fetchCourseObject(courseId).then((result) => {
-      if (result.success) {
-        courseObjectSet(result.payload);
-      } else {
-        console.error(result.message);
-      }
-    });
-  }, [courseId, courseObjectSet]);
-
   function onSelectionChange(selection) {
     setSelection(selection);
     setQuizList(getQuizData(selection));
@@ -133,6 +123,17 @@ export default function CoursePage() {
     });
   }
 
+  useEffect(() => {
+    fetchCourseObject(courseId).then((result) => {
+      if (result.success) {
+        courseObjectSet(result.payload);
+        document.querySelector("main").classList.remove("invisible");
+      } else {
+        console.error(result.message);
+      }
+    });
+  }, [courseId, courseObjectSet]);
+
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
@@ -170,90 +171,88 @@ export default function CoursePage() {
         />
       )}
       <NavBar />
-      {courseObject && (
-        <div
-          className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
-          onClick={() => {
-            if (dropdownRef.current.dropdownShow) {
-              dropdownRef.current.dropdownShowSet(false);
-            }
-          }}
-        >
-          <div className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
-            <div className="flex items-end justify-between mb-6 md:mb-8">
-              <div className="flex flex-col pr-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
-                    {courseObject.courseCode}
-                  </span>
-                  <Badge
-                    label={courseObject.courseSemester}
-                    accentColor={courseObject.accentColor}
-                  />
-                </div>
-                <span className="text-gray-500 text-sm ml-0.5">
-                  {courseObject.courseName}
+      <div
+        className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
+        onClick={() => {
+          if (dropdownRef.current.dropdownShow) {
+            dropdownRef.current.dropdownShowSet(false);
+          }
+        }}
+      >
+        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem] invisible">
+          <div className="flex items-end justify-between mb-6 md:mb-8">
+            <div className="flex flex-col pr-4">
+              <div className="flex items-center gap-3">
+                <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
+                  {courseObject.courseCode}
                 </span>
+                <Badge
+                  label={courseObject.courseSemester}
+                  accentColor={courseObject.accentColor}
+                />
               </div>
-              <div className="flex items-center gap-2 sm:gap-4">
-                <div className="relative">
-                  <div
-                    className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                    onClick={() => {
-                      courseSettingsDropdownShowSet(true);
-                    }}
+              <span className="text-gray-500 text-sm ml-0.5">
+                {courseObject.courseName}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="relative">
+                <div
+                  className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
+                  onClick={() => {
+                    courseSettingsDropdownShowSet(true);
+                  }}
+                >
+                  {/* [Credit]: svg from https://heroicons.dev */}
+                  <svg
+                    className="h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
-                    {/* [Credit]: svg from https://heroicons.dev */}
-                    <svg
-                      className="h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                      />
-                    </svg>
-                  </div>
-                  <DropdownMenu
-                    options={courseEditOptions}
-                    dropdownShow={courseSettingsDropdownShow}
-                    dropdownShowSet={courseSettingsDropdownShowSet}
-                  />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                    />
+                  </svg>
                 </div>
-                <div className="shadow-sm">
-                  <DropdownSelection
-                    ref={dropdownRef}
-                    selections={filters}
-                    selection={selection}
-                    onSelectionChange={onSelectionChange}
-                    height="2.5rem"
-                  />
-                </div>
+                <DropdownMenu
+                  options={courseEditOptions}
+                  dropdownShow={courseSettingsDropdownShow}
+                  dropdownShowSet={courseSettingsDropdownShowSet}
+                />
+              </div>
+              <div className="shadow-sm">
+                <DropdownSelection
+                  ref={dropdownRef}
+                  selections={filters}
+                  selection={selection}
+                  onSelectionChange={onSelectionChange}
+                  height="2.5rem"
+                />
               </div>
             </div>
-            <AnimatePresence>
-              {
-                <motion.div
-                  key={quizList}
-                  variants={variants}
-                  animate={"show"}
-                  initial={"hide"}
-                  exit={"hide"}
-                >
-                  {" "}
-                  {<QuizList quizDataArr={quizList} />}
-                </motion.div>
-              }
-            </AnimatePresence>
           </div>
-        </div>
-      )}
+          <AnimatePresence>
+            {
+              <motion.div
+                key={quizList}
+                variants={variants}
+                animate={"show"}
+                initial={"hide"}
+                exit={"hide"}
+              >
+                {" "}
+                {<QuizList quizDataArr={quizList} />}
+              </motion.div>
+            }
+          </AnimatePresence>
+        </main>
+      </div>
     </>
   );
 }

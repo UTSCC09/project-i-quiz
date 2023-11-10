@@ -5,7 +5,7 @@ import DropdownMenu from "components/elements/DropdownMenu";
 
 export default function NavBar({ additionalButtons }) {
   return (
-    <header className="fixed h-24 sm:h-28 w-full bg-white shadow-sm flex items-center px-8 md:px-20 justify-between z-10 transition-all">
+    <header className="fixed top-0 left-0 h-24 sm:h-28 w-full bg-white shadow-sm flex items-center px-8 md:px-20 justify-between z-10 transition-all">
       <Link to="/">
         <img src={logo} alt="iQuiz! Logo" className="ml-2 h-6 sm:h-7" />
       </Link>
