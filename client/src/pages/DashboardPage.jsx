@@ -87,9 +87,7 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    setSelectedTab(
-      localStorage.getItem("selected_tab").toString() ?? "quizzes"
-    );
+    setSelectedTab(localStorage.getItem("selected_tab") ?? "quizzes");
     fetchData().then((fetchedPayload) => {
       activeCourseListSet(fetchedPayload);
       const { passInMessage } = location.state ?? "";
