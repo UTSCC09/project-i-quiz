@@ -59,6 +59,12 @@ export default function CourseCreateModal({
       return;
     }
 
+    if (courseCreationData["numOfSessions"] < 0) {
+      alertRef.current.setMessage("Number of sections cannot be negative");
+      alertRef.current.show();
+      return;
+    }
+
     alertRef.current.hide();
 
     const formData = new FormData(e.target);

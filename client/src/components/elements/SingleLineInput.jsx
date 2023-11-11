@@ -34,7 +34,12 @@ function SingleLineInput(
 
   useEffect(() => {
     innerInputRef.current.addEventListener("keydown", (e) => {
+      /* Ignore space key when acceptSpace is false */
       if (!acceptSpace && e.which === 32) {
+        e.preventDefault();
+      }
+      /* Ignore minus key when input type is number */
+      if (inputType === "number" && e.which === 189) {
         e.preventDefault();
       }
     });
