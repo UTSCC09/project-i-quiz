@@ -13,6 +13,8 @@ export default function CourseDropModal({
   const alertRef = useRef();
   const courseCodeInputRef = useRef();
   const semesterInputRef = useRef();
+  const yearInputRef = useRef();
+
   return (
     <Modal
       modalShow={modalShow}
@@ -34,19 +36,23 @@ export default function CourseDropModal({
               quizzes from the course, including your own <b>quiz history</b>.{" "}
             </span>
             <span>
-              To confirm, enter the course code and the semester & year of the
+              To confirm, enter the course code, semester, and the year of the
               course that you wish to drop.
             </span>
             <span className="mt-2 text-red-600">
               <b>Warning:</b> This action can <b>NOT</b> be undone
             </span>
           </div>
-          <div className="flex gap-4">
-            <SingleLineInput ref={courseCodeInputRef} label="Course code" />
+          <div className="flex gap-2">
+            <div className="w-[20rem]">
+              <SingleLineInput ref={courseCodeInputRef} label="Course code" />
+            </div>
+            <SingleLineInput ref={semesterInputRef} label="Semester" />
             <SingleLineInput
-              ref={semesterInputRef}
-              label="Semester & Year"
-              acceptSpace
+              ref={yearInputRef}
+              label="Year"
+              maxLength={2}
+              numberOnly
             />
           </div>
           <div className="flex gap-4">
@@ -56,14 +62,27 @@ export default function CourseDropModal({
                 const enteredCourseCode =
                   courseCodeInputRef.current.getValue();
                 const enteredSemester = semesterInputRef.current.getValue();
-                if (enteredCourseCode !== courseObject.courseCode)
+                const enteredYear = yearInputRef.current.getValue();
+                let validated = true;
+
+                if (enteredCourseCode !== courseObject.courseCode) {
                   courseCodeInputRef.current.setValidationState(false);
-                if (enteredSemester !== courseObject.courseSemester)
-                  semesterInputRef.current.setValidationState(false);
+                  validated = false;
+                }
                 if (
-                  enteredCourseCode === courseObject.courseCode &&
-                  enteredSemester === courseObject.courseSemester
+                  enteredSemester !== courseObject.courseSemester.split(" ")[0]
                 ) {
+                  semesterInputRef.current.setValidationState(false);
+                  validated = false;
+                }
+                if (
+                  enteredYear !== courseObject.courseSemester.split(" ")[1]
+                ) {
+                  yearInputRef.current.setValidationState(false);
+                  validated = false;
+                }
+
+                if (validated) {
                   dropCourse(courseObject.courseId).then((result) => {
                     if (result.success) {
                       modalShowSet(false);
