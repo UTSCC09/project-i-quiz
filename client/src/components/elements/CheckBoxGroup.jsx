@@ -58,6 +58,7 @@ function CheckOption(props) {
           className="flex cursor-pointer items-center rounded-lg border border-gray-100 bg-white p-4 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500 peer-checked:bg-blue-10 peer-checked:font-medium"
         >
           <div>
+            {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
             <motion.svg
               key="check"
               xmlns="http://www.w3.org/2000/svg"

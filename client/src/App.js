@@ -32,7 +32,7 @@ const App = () => {
             <QuizPage />
           </ProtectedRoute>
         } />
-        <Route path="/dashboard" element={ 
+        <Route path="/home" element={ 
           <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
