@@ -395,7 +395,7 @@ const archiveCourse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Invalid user"));
   }
 
-  const courseIndex = await user.courses.findIndex(
+  const courseIndex = user.courses.findIndex(
     (course) => course.courseId.toString() === courseId
   );
 
@@ -488,6 +488,7 @@ async function getEnrolledCourses(studentEmail) {
       courseSemester: course.courseSemester,
       instructor: instructor.firstName + " " + instructor.lastName,
       accentColor: student.courses[i].accentColor,
+      archived: course.archived,
     });
   }
   return enrolledCourses;
@@ -530,6 +531,7 @@ async function fetchFormattedCourse(course, accentColor, instructor) {
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
     quizzes: course.quizzes,
+    archived: course.archived,
   };
 }
 
