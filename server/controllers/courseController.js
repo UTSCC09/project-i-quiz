@@ -462,6 +462,43 @@ const dropCourse = asyncHandler(async (req, res) => {
     .json(formatMessage(true, "Student dropped successfully"));
 });
 
+//@route  POST api/courses/archive
+//@desc   Archive or unarchive course (flips boolean value).
+//@access Private
+const archiveCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.body;
+
+  if (courseId == null) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  const user = await User.findOne({ email: req.session.email });
+
+  if (!user) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  }
+
+  const courseIndex = user.courses.findIndex(
+    (course) => course.courseId.toString() === courseId
+  );
+
+  if (courseIndex === -1) {
+    return res.status(400).json(formatMessage(false, "Not enrolled in course"));
+  }
+
+  if (user.courses[courseIndex].archived) {
+    user.courses[courseIndex].archived = false;
+    await user.save();
+    return res.json(
+      formatMessage(true, "Successfully unarchived user's course")
+    );
+  } else {
+    user.courses[courseIndex].archived = true;
+    await user.save();
+    return res.json(formatMessage(true, "Successfully archived user's course"));
+  }
+});
+
 //@route  POST api/courses/accent_color
 //@desc   Set accent color for a specific course
 //@access Private
@@ -534,6 +571,7 @@ async function getEnrolledCourses(studentEmail) {
       courseSemester: course.courseSemester,
       instructor: instructor.firstName + " " + instructor.lastName,
       accentColor: student.courses[i].accentColor,
+      archived: course.archived,
     });
   }
   return enrolledCourses;
@@ -592,6 +630,7 @@ async function fetchFormattedCourse(course, accentColor, instructor) {
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
     quizzes: course.quizzes,
+    archived: course.archived,
   };
 }
 
@@ -603,6 +642,7 @@ export {
   getAllCourses,
   enrollInCourse,
   dropCourse,
+  archiveCourse,
   setAccentColor,
   getCourseEnrollInfo,
   getCourse,

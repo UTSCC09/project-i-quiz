@@ -6,6 +6,7 @@ import {
   getAllCourses,
   enrollInCourse,
   dropCourse,
+  archiveCourse,
   setAccentColor,
   getCourseEnrollInfo,
   getCourse,
@@ -34,6 +35,9 @@ router.route("/enroll")
 
 router.route("/drop")
   .post(protect, dropCourse);
+
+router.route("/archive")
+  .post(protect, archiveCourse);
 
 router.route("/accent_color")
   .post(protect, setAccentColor);
