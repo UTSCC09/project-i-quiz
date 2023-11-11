@@ -8,6 +8,7 @@ import NotFoundPage from "pages/NotFoundPage";
 import DashboardPage from "pages/DashboardPage";
 import CoursePage from "pages/CoursePage";
 import ProtectedRoute from "components/ProtectedRoute";
+import QuizEditorPage from "pages/QuizEditorPage";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -58,6 +59,7 @@ const App = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="*" element={<NotFoundPage />} />
+      <Route path="/edit-quiz" element={<QuizEditorPage />} />
     </Routes>
   );
 };
