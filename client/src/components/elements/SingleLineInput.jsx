@@ -22,7 +22,6 @@ function SingleLineInput(
     inputType = "text",
     autoComplete,
     acceptSpace = false,
-    numberOnly = false,
     defaultValue = "",
     maxLength = 256,
   },
@@ -38,22 +37,8 @@ function SingleLineInput(
       if (!acceptSpace && e.which === 32) {
         e.preventDefault();
       }
-      /* 
-        8: Backspace;
-        9: Tab;
-        48-57: digit 0 to digit 9 keys;
-        96-105: numpad keys
-      */
-      if (
-        numberOnly &&
-        e.which !== 8 &&
-        e.which !== 9 &&
-        (e.which < 48 || (e.which > 57 && e.which < 96) || e.which > 105)
-      ) {
-        e.preventDefault();
-      }
     });
-  }, [innerInputRef, acceptSpace, numberOnly]);
+  }, [innerInputRef, acceptSpace]);
 
   function validateEmailFormat(stringVal) {
     return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);

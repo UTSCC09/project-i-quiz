@@ -166,7 +166,7 @@ export default function CourseCreateModal({
                           ref={sectionNumInputRef}
                           name="numOfSessions"
                           label="Number of sections (Optional)"
-                          numberOnly
+                          inputType="number"
                         />
                         <div
                           className="absolute z-10 text-slate-400 text-center right-0 top-1/2 p-4 -translate-y-1/2 cursor-pointer hover:opacity-50 transition"
