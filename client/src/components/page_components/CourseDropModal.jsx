@@ -43,21 +43,25 @@ export default function CourseDropModal({
               <b>Warning:</b> This action can <b>NOT</b> be undone
             </span>
           </div>
-          <div className="flex gap-2">
-            <div className="w-[20rem]">
-              <SingleLineInput ref={courseCodeInputRef} label="Course code" />
+          <div className="grid grid-cols-2 gap-3">
+            <SingleLineInput ref={courseCodeInputRef} label="Course code" />
+
+            <div className="grid grid-cols-5 gap-3">
+              <div className="col-span-3">
+                <SingleLineInput ref={semesterInputRef} label="Semester" />
+              </div>
+              <div className="col-span-2">
+                <SingleLineInput
+                  ref={yearInputRef}
+                  label="Year"
+                  maxLength={2}
+                />
+              </div>
             </div>
-            <SingleLineInput ref={semesterInputRef} label="Semester" />
-            <SingleLineInput
-              ref={yearInputRef}
-              label="Year"
-              maxLength={2}
-              numberOnly
-            />
           </div>
           <div className="flex gap-4">
             <button
-              className="btn-primary bg-red-600 border-red-600 hover:text-red-600"
+              className="btn-primary bg-red-600 border-red-600 hover:text-red-600 focus:ring-red-200"
               onClick={() => {
                 const enteredCourseCode =
                   courseCodeInputRef.current.getValue();
