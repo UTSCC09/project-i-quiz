@@ -97,7 +97,7 @@ export default function CoursePage() {
     });
 
     courseEditOptions.push({
-      label: "Archive Course",
+      label: "Archive course",
       onClick: () => {
         courseArchiveModalShowSet(true);
       },
@@ -120,7 +120,7 @@ export default function CoursePage() {
     }
   } else {
     courseEditOptions.push({
-      label: "Unarchive Course",
+      label: "Unarchive course",
       onClick: () => {
         courseArchiveModalShowSet(true);
       },
@@ -139,7 +139,7 @@ export default function CoursePage() {
 
     /* TODO: Fetch actual quiz list */
     setQuizList(getQuizData(selection));
-  }, [courseId, courseObjectSet]);
+  }, [courseId, courseObjectSet, selection]);
 
   return (
     <>
