@@ -36,7 +36,7 @@ export default function CourseCard({
     });
 
     courseEditOptions.push({
-      label: "Archive Course",
+      label: "Archive course",
       onClick: () => {
         targetCourseObjectSet(courseObject);
         courseArchiveModalShowSet(true);
@@ -62,7 +62,7 @@ export default function CourseCard({
     }
   } else {
     courseEditOptions.push({
-      label: "Unarchive Course",
+      label: "Unarchive course",
       onClick: () => {
         targetCourseObjectSet(courseObject);
         courseArchiveModalShowSet(true);

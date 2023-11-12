@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
 import { archiveCourse } from "api/CourseApi";
+import Badge from "components/elements/Badge";
 
 export default function CourseArchiveModal({
   modalShow,
@@ -18,7 +19,15 @@ export default function CourseArchiveModal({
         modalShowSet={modalShowSet}
         content={
           <div className="flex flex-col sm:w-96 gap-6">
-            <h1 className="text-2xl font-bold">Archiving a course</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold">
+                Archiving {courseObject.courseCode}
+              </h1>
+              <Badge
+                label={courseObject.courseSemester}
+                accentColor={courseObject.accentColor}
+              />
+            </div>
             <AlertBanner ref={alertRef} />
             <div className="flex flex-col gap-4 text-gray-600">
               <span>
@@ -29,13 +38,14 @@ export default function CourseArchiveModal({
                 ?{" "}
               </span>
               <span>
-                By archiving a course on iQuiz, you will be put into the{" "}
-                <b>archived section</b>.{" "}
+                The course will be moved into the folded{" "}
+                <b>Archived Courses</b> section. You may unarchive it at any
+                time.
               </span>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-2">
               <button
-                className="btn-primary bg-red-600 border-red-600 hover:text-red-600 focus:ring-red-200"
+                className="btn-primary"
                 onClick={() => {
                   archiveCourse(courseObject.courseId).then((result) => {
                     if (result.success) {
@@ -68,7 +78,15 @@ export default function CourseArchiveModal({
         modalShowSet={modalShowSet}
         content={
           <div className="flex flex-col sm:w-96 gap-6">
-            <h1 className="text-2xl font-bold">Unarchiving a course</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold">
+                Unarchiving {courseObject.courseCode}
+              </h1>
+              <Badge
+                label={courseObject.courseSemester}
+                accentColor={courseObject.accentColor}
+              />
+            </div>
             <AlertBanner ref={alertRef} />
             <div className="flex flex-col gap-4 text-gray-600">
               <span>
@@ -79,9 +97,9 @@ export default function CourseArchiveModal({
                 ?{" "}
               </span>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-2">
               <button
-                className="btn-primary bg-red-600 border-red-600 hover:text-red-600 focus:ring-red-200"
+                className="btn-primary"
                 onClick={() => {
                   archiveCourse(courseObject.courseId).then((result) => {
                     if (result.success) {
