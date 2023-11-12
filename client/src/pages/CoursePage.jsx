@@ -12,6 +12,7 @@ import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
+import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { fetchCourseObject } from "api/CourseApi";
@@ -39,6 +40,7 @@ export default function CoursePage() {
   const [courseSettingsDropdownShow, courseSettingsDropdownShowSet] =
     useState(false);
   const [accentColorModalShow, accentColorModalShowSet] = useState(false);
+  const [courseArchiveModalShow, courseArchiveModalShowSet] = useState(false);
   const [courseDropModalShow, courseDropModalShowSet] = useState(false);
   const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
     useState(false);
@@ -83,27 +85,44 @@ export default function CoursePage() {
     },
   };
 
-  let courseEditOptions = [
-    {
+  let archived = courseObject.archived;
+  let courseEditOptions = [];
+
+  if (!archived) {
+    courseEditOptions.push({
       label: "Edit color",
       onClick: () => {
         accentColorModalShowSet(true);
       },
-    },
-  ];
+    });
 
-  if (isStudent) {
     courseEditOptions.push({
-      label: <div className="text-red-600">Drop course</div>,
+      label: "Archive course",
       onClick: () => {
-        courseDropModalShowSet(true);
+        courseArchiveModalShowSet(true);
       },
     });
+
+    if (isStudent) {
+      courseEditOptions.push({
+        label: <div className="text-red-600">Drop course</div>,
+        onClick: () => {
+          courseDropModalShowSet(true);
+        },
+      });
+    } else {
+      courseEditOptions.push({
+        label: "Update access code",
+        onClick: () => {
+          accessCodeUpdateModalShowSet(true);
+        },
+      });
+    }
   } else {
     courseEditOptions.push({
-      label: "Update access code",
+      label: "Unarchive course",
       onClick: () => {
-        accessCodeUpdateModalShowSet(true);
+        courseArchiveModalShowSet(true);
       },
     });
   }
@@ -120,7 +139,7 @@ export default function CoursePage() {
 
     /* TODO: Fetch actual quiz list */
     setQuizList(getQuizData(selection));
-  }, [courseId, courseObjectSet]);
+  }, [courseId, courseObjectSet, selection]);
 
   return (
     <>
@@ -133,6 +152,15 @@ export default function CoursePage() {
         }}
         modalShow={accentColorModalShow}
         modalShowSet={accentColorModalShowSet}
+      />
+      <CourseArchiveModal
+        modalShow={courseArchiveModalShow}
+        modalShowSet={courseArchiveModalShowSet}
+        courseObject={courseObject}
+        onSuccess={() => {
+          const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been archived from your course list`;
+          navigate("/", { state: { passInMessage: successMessage } });
+        }}
       />
       <CourseDropModal
         modalShow={courseDropModalShow}
