@@ -571,7 +571,7 @@ async function getEnrolledCourses(studentEmail) {
       courseSemester: course.courseSemester,
       instructor: instructor.firstName + " " + instructor.lastName,
       accentColor: student.courses[i].accentColor,
-      archived: course.archived,
+      archived: student.courses[i].archived,
     });
   }
   return enrolledCourses;
@@ -585,14 +585,14 @@ async function getInstructedCourses(instructorEmail) {
 
   const instructedCoursesPromises = instructor.courses.map(async (course) => {
     const courseObject = await Course.findById(course.courseId);
-    return fetchFormattedCourse(courseObject, course.accentColor, instructor);
+    return fetchFormattedCourse(courseObject, course.accentColor, instructor, course.archived);
   });
 
   const instructedCourses = await Promise.all(instructedCoursesPromises);
   return instructedCourses;
 }
 
-async function fetchFormattedCourse(course, accentColor, instructor) {
+async function fetchFormattedCourse(course, accentColor, instructor, archived) {
   if (!course) {
     return {};
   }
@@ -630,7 +630,7 @@ async function fetchFormattedCourse(course, accentColor, instructor) {
     instructor: instructor.firstName + " " + instructor.lastName + " (Me)",
     sessions: formattedSessions,
     quizzes: course.quizzes,
-    archived: course.archived,
+    archived: archived,
   };
 }
 
