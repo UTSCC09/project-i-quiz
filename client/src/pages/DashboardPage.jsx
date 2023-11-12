@@ -159,7 +159,11 @@ export default function DashboardPage() {
         courseObject={targetCourseObject}
         archiveCourse={archiveCourse}
         onSuccess={() => {
-          const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been archived from your course list`;
+          const successMessage = `${targetCourseObject.courseCode} ${
+            targetCourseObject.courseSemester
+          } has been ${
+            targetCourseObject.archived ? "unarchived" : "archived"
+          }`;
           refetchDataAndShowToast(successMessage);
         }}
       />
