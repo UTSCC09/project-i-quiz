@@ -13,7 +13,7 @@ import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { fetchCourseObject } from "api/CourseApi";
-import { getQuizzesForInstructedCourse } from "api/QuizApi";
+import { getQuizzesForInstructedCourse, getQuizzesForEnrolledCourse } from "api/QuizApi";
 
 export default function CoursePage() {
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ export default function CoursePage() {
   const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
     useState(false);
   const [toastMessage, toastMessageSet] = useState();
+  const [noQuizzes, setNoQuizzes] = useState(false);
 
   const dropdownRef = useRef();
   const isStudent = isStudentUserType();
@@ -41,15 +42,24 @@ export default function CoursePage() {
         return;
       }
 
+      if (isStudent) {
+        getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
+          setNoQuizzes(resultPayload.length === 0);
+          setQuizList(resultPayload);
+        });
+      }
+      else {
+        getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
+          setNoQuizzes(resultPayload.length === 0);
+          setQuizList(resultPayload);
+        });
+      }
+
       setCourseObject(result.payload);
       toastMessageSet(successMessage);
       setTimeout(() => {
         toastMessageSet();
       }, 3000);
-
-      getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
-        setQuizList(resultPayload);
-      });
     });
   }
 
@@ -150,13 +160,19 @@ export default function CoursePage() {
       setCourseObject(result.payload);
       document.querySelector("main").classList.remove("hidden");
 
-      getQuizzesForInstructedCourse(courseId).then((result) => {
-        setQuizList(result);
-      });
+      if (isStudent) {
+        getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
+          setNoQuizzes(resultPayload.length === 0);
+          setQuizList(resultPayload);
+        });
+      }
+      else {
+        getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
+          setNoQuizzes(resultPayload.length === 0);
+          setQuizList(resultPayload);
+        });
+      }
     });
-
-    /* TODO: Fetch actual quiz list */
-    //setQuizList(getQuizData(selection));
   }, [courseId, setCourseObject, selection]);
 
   return (
@@ -273,10 +289,10 @@ export default function CoursePage() {
               initial={"hide"}
               exit={"hide"}
             >
-              {quizList && quizList.length > 0 ? (
-                <QuizList quizDataArr={quizList} />
-              ) : (
+              {noQuizzes ? (
                 <h1>Start creating quizzes!</h1>
+              ) : (
+                <QuizList quizArr={quizList} courseCode={courseObject.courseCode} />
               )}
             </motion.div>
           </AnimatePresence>
@@ -286,11 +302,17 @@ export default function CoursePage() {
   );
 }
 
-function QuizList({ quizDataArr }) {
+function QuizList({ quizArr, courseCode }) {
   return (
     <div className={"flex flex-col w-full gap-4"}>
-      {quizDataArr.map((quizObject, idx) => {
-        return <QuizCard quizObject={quizObject} key={idx} />;
+      {quizArr.map((currQuizObject, idx) => {
+        return <QuizCard
+          quizObject={{
+            ...currQuizObject,
+            courseCode
+          }}
+          key={idx}
+        />;
       })}
     </div>
   );
