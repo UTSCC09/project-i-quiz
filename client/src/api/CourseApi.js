@@ -14,6 +14,19 @@ async function updateAccentColor(courseId, accentColor) {
     });
 }
 
+async function archiveCourse(courseId) {
+  return fetch("/api/courses/archive", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify({ courseId }),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    });
+}
+
 async function dropCourse(courseId) {
   return fetch("/api/courses/drop", {
     method: "POST",
@@ -148,6 +161,7 @@ async function updateAccessCode(courseId, accessCode) {
 
 export {
   updateAccentColor,
+  archiveCourse,
   dropCourse,
   checkNewCourseAvailability,
   createCourse,

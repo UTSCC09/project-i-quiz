@@ -9,11 +9,13 @@ import Accordion from "components/elements/Accordion";
 import Toast from "components/elements/Toast";
 import CourseEnrollModal from "components/page_components/CourseEnrollModal";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
+import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import { isStudentUserType } from "utils/CookieUtils";
 import CourseCreateModal from "components/page_components/CourseCreateModal";
 import {
   updateAccentColor,
+  archiveCourse,
   dropCourse,
   fetchEnrolledCourses,
   fetchInstructedCourses,
@@ -54,11 +56,13 @@ export default function DashboardPage() {
   const isStudent = isStudentUserType();
 
   const [activeCourseList, activeCourseListSet] = useState([]);
+  const [archivedCourseList, archivedCourseListSet] = useState([]);
   const [selectedTab, _setSelectedTab] = useState(
     localStorage.getItem("selected_tab") ?? "quizzes"
   );
   const [enrollModalShow, enrollModalShowSet] = useState(false);
   const [accentColorModalShow, accentColorModalShowSet] = useState(false);
+  const [courseArchiveModalShow, courseArchiveModalShowSet] = useState(false);
   const [courseDropModalShow, courseDropModalShowSet] = useState(false);
   const [courseCreateModalShow, courseCreateModalShowSet] = useState(false);
   const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
@@ -80,7 +84,8 @@ export default function DashboardPage() {
 
   function refetchDataAndShowToast(successMessage) {
     fetchData().then((fetchedPayload) => {
-      activeCourseListSet(fetchedPayload);
+      activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
+      archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
       toastMessageSet(successMessage);
       setTimeout(() => {
         toastMessageSet();
@@ -91,7 +96,8 @@ export default function DashboardPage() {
   useEffect(() => {
     setSelectedTab(selectedTab);
     fetchData().then((fetchedPayload) => {
-      activeCourseListSet(fetchedPayload);
+      activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
+      archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
       document.querySelector("main").classList.remove("hidden");
       const { passInMessage } = location.state ?? "";
       if (passInMessage) {
@@ -102,7 +108,7 @@ export default function DashboardPage() {
         }, 3000);
       }
     });
-  }, [activeCourseListSet, toastMessageSet, location, navigate]);
+  }, [activeCourseListSet, archivedCourseListSet, toastMessageSet, location, navigate]);
 
   return (
     <>
@@ -134,6 +140,16 @@ export default function DashboardPage() {
         }}
         modalShow={accentColorModalShow}
         modalShowSet={accentColorModalShowSet}
+      />
+      <CourseArchiveModal
+        modalShow={courseArchiveModalShow}
+        modalShowSet={courseArchiveModalShowSet}
+        courseObject={targetCourseObject}
+        archiveCourse={archiveCourse}
+        onSuccess={() => {
+          const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester} has been archived from your course list`;
+          refetchDataAndShowToast(successMessage);
+        }}
       />
       <CourseDropModal
         modalShow={courseDropModalShow}
@@ -242,6 +258,7 @@ export default function DashboardPage() {
                         courseObject={courseObject}
                         targetCourseObjectSet={targetCourseObjectSet}
                         accentColorModalShowSet={accentColorModalShowSet}
+                        courseArchiveModalShowSet={courseArchiveModalShowSet}
                         courseDropModalShowSet={courseDropModalShowSet}
                         accessCodeUpdateModalShowSet={
                           accessCodeUpdateModalShowSet
@@ -258,9 +275,13 @@ export default function DashboardPage() {
               sectionName={"Archived Courses"}
               content={
                 <div className="flex flex-wrap gap-x-[4%] gap-y-6 md:gap-y-8">
-                  {getArchivedCourses().map((courseObject, idx) => {
+                  {archivedCourseList.map((courseObject, idx) => {
                     return (
-                      <CourseCard courseObject={courseObject} key={idx} />
+                      <CourseCard
+                        courseObject={courseObject}
+                        courseArchiveModalShowSet={courseArchiveModalShowSet}
+                        key={idx}
+                      />
                     );
                   })}
                 </div>

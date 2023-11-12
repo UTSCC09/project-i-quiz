@@ -9,6 +9,7 @@ export default function CourseCard({
   notificationNum = 0,
   targetCourseObjectSet,
   accentColorModalShowSet,
+  courseArchiveModalShowSet,
   courseDropModalShowSet,
   accessCodeUpdateModalShowSet,
 }) {
@@ -28,6 +29,13 @@ export default function CourseCard({
       onClick: () => {
         targetCourseObjectSet(courseObject);
         accentColorModalShowSet(true);
+      },
+    },
+    {
+      label: "Archive Course",
+      onClick: () => {
+        targetCourseObjectSet(courseObject);
+        courseArchiveModalShowSet(true);
       },
     },
   ];
