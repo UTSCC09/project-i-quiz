@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import NavBar from "components/page_components/NavBar";
 import CourseCard from "components/page_components/CourseCard";
-import CourseDataMock_archived from "mock_data/DashboardPage/CourseDataMock_archived.json";
 import QuizDataMock_available from "mock_data/DashboardPage/QuizDataMock_available.json";
 import QuizDataMock_upcoming from "mock_data/DashboardPage/QuizDataMock_upcoming.json";
 import QuizCard from "components/page_components/QuizCard";
@@ -24,11 +23,6 @@ import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateMo
 import { useLocation, useNavigate } from "react-router-dom";
 
 /* -- API function calls -- */
-
-function getArchivedCourses() {
-  return CourseDataMock_archived.courseList;
-}
-
 function getAvailableQuizzes() {
   return QuizDataMock_available.quizList;
 }
@@ -84,8 +78,10 @@ export default function DashboardPage() {
 
   function refetchDataAndShowToast(successMessage) {
     fetchData().then((fetchedPayload) => {
-      activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
-      archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
+      if (fetchedPayload) {
+        activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
+        archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
+      }
       toastMessageSet(successMessage);
       setTimeout(() => {
         toastMessageSet();
@@ -96,8 +92,10 @@ export default function DashboardPage() {
   useEffect(() => {
     setSelectedTab(selectedTab);
     fetchData().then((fetchedPayload) => {
-      activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
-      archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
+      if (fetchedPayload) {
+        activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
+        archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
+      }
       document.querySelector("main").classList.remove("hidden");
       const { passInMessage } = location.state ?? "";
       if (passInMessage) {
@@ -279,6 +277,7 @@ export default function DashboardPage() {
                     return (
                       <CourseCard
                         courseObject={courseObject}
+                        targetCourseObjectSet={targetCourseObjectSet}
                         courseArchiveModalShowSet={courseArchiveModalShowSet}
                         key={idx}
                       />
