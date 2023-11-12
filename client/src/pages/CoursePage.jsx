@@ -3,9 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
-import QuizDataMock_all from "mock_data/CoursePage/QuizDataMock_all.json";
-import QuizDataMock_new from "mock_data/CoursePage/QuizDataMock_new.json";
-import QuizDataMock_past from "mock_data/CoursePage/QuizDataMock_past.json";
 import NavBar from "components/page_components/NavBar";
 import DropdownSelection from "components/elements/DropdownSelection";
 import DropdownMenu from "components/elements/DropdownMenu";
@@ -16,27 +13,15 @@ import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { fetchCourseObject } from "api/CourseApi";
-
-function getQuizData(filter) {
-  switch (filter) {
-    case "New Quizzes":
-      return QuizDataMock_new.response;
-    case "All Quizzes":
-      return QuizDataMock_all.response;
-    case "Past Quizzes":
-      return QuizDataMock_past.response;
-    default:
-      return;
-  }
-}
+import { getQuizzesForInstructedCourse } from "api/QuizApi";
 
 export default function CoursePage() {
   const navigate = useNavigate();
-  const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
+  const filters = ["Active Quizzes", "Upcoming Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
-  const [selection, setSelection] = useState("New Quizzes");
+  const [selection, setSelection] = useState("Upcoming Quizzes");
   const [quizList, setQuizList] = useState([]);
-  const [courseObject, courseObjectSet] = useState({});
+  const [courseObject, setCourseObject] = useState({});
   const [courseSettingsDropdownShow, courseSettingsDropdownShowSet] =
     useState(false);
   const [accentColorModalShow, accentColorModalShowSet] = useState(false);
@@ -51,21 +36,50 @@ export default function CoursePage() {
 
   function refetchDataAndShowToast(successMessage) {
     fetchCourseObject(courseId).then((result) => {
-      if (result.success) {
-        courseObjectSet(result.payload);
-        toastMessageSet(successMessage);
-        setTimeout(() => {
-          toastMessageSet();
-        }, 3000);
-      } else {
+      if (!result.success) {
         console.error(result.message);
+        return;
       }
+
+      setCourseObject(result.payload);
+      toastMessageSet(successMessage);
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+
+      getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
+        setQuizList(resultPayload);
+      });
     });
+  }
+
+  function getFilteredQuizzes(filter) {
+    if (!quizList) { return; }
+
+    const currentDateTime = new Date();
+    switch (filter) {
+      case "Active Quizzes":
+        return quizList.filter((quiz) => (
+          currentDateTime >= quiz.startTime && currentDateTime <= quiz.endTime
+        ));
+      case "Upcoming Quizzes":
+        return quizList.filter((quiz) => (
+          currentDateTime < quiz.startTime
+        ));
+      case "All Quizzes":
+        return quizList;
+      case "Past Quizzes":
+        return quizList.filter((quiz) => (
+          currentDateTime > quiz.endTime
+        ));
+      default:
+        return;
+    }
   }
 
   function onSelectionChange(selection) {
     setSelection(selection);
-    setQuizList(getQuizData(selection));
+    setQuizList(getFilteredQuizzes(selection));
   }
 
   const variants = {
@@ -129,17 +143,21 @@ export default function CoursePage() {
 
   useEffect(() => {
     fetchCourseObject(courseId).then((result) => {
-      if (result.success) {
-        courseObjectSet(result.payload);
-        document.querySelector("main").classList.remove("hidden");
-      } else {
+      if (!result.success) {
         console.error(result.message);
+        return;
       }
+      setCourseObject(result.payload);
+      document.querySelector("main").classList.remove("hidden");
+
+      getQuizzesForInstructedCourse(courseId).then((result) => {
+        setQuizList(result);
+      });
     });
 
     /* TODO: Fetch actual quiz list */
-    setQuizList(getQuizData(selection));
-  }, [courseId, courseObjectSet, selection]);
+    //setQuizList(getQuizData(selection));
+  }, [courseId, setCourseObject, selection]);
 
   return (
     <>
@@ -255,7 +273,11 @@ export default function CoursePage() {
               initial={"hide"}
               exit={"hide"}
             >
-              <QuizList quizDataArr={quizList} />
+              {quizList && quizList.length > 0 ? (
+                <QuizList quizDataArr={quizList} />
+              ) : (
+                <h1>Start creating quizzes!</h1>
+              )}
             </motion.div>
           </AnimatePresence>
         </main>

@@ -263,7 +263,6 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
   for (let i = 0; i < course.quizzes.length; i++) {
     try {
       const quiz = await Quiz.findById(course.quizzes[i]);
-      console.log("quiz: ", quiz);
       if (!quiz) {
         return res.status(400).json(formatMessage(false, "Invalid quiz id"));
       }
@@ -272,7 +271,6 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
       if (currentDateTime < quiz.startTime ) { currentQuizStatus = "Upcoming"; }
       else if (currentDateTime > quiz.endTime) { currentQuizStatus = "Past"; }
       else { currentQuizStatus = "Active"; }
-      console.log("About to push");
       formattedQuizzes.push({
         quizId: quiz._id,
         quizName: quiz.quizName,
@@ -504,9 +502,9 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
 });
 
 //@route  POST api/quizzes/question
-//@desc   Allow instructor to add a question to a quiz
+//@desc   Allow instructor to add (a) question(s) to a quiz
 //@access Private
-const addQuizQuestion = asyncHandler(async (req, res) => {
+const addQuizQuestions = asyncHandler(async (req, res) => {
   const { quizId, questions } = req.body;
 
   //Check if valid user
@@ -610,5 +608,5 @@ export {
   getQuizzesForEnrolledCourse,
   basicUpdateQuiz,
   updateQuizQuestion,
-  addQuizQuestion
+  addQuizQuestions
 };
