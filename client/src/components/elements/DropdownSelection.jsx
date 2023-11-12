@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -35,6 +36,14 @@ function DropdownSelection(
     dropdownShowSet,
     validate,
   }));
+
+  useEffect(() => {
+    document.addEventListener("click", (event) => {
+      if (!event.composedPath().includes(selectionRef.current)) {
+        dropdownShowSet(false);
+      }
+    });
+  }, [selectionRef, dropdownShowSet]);
 
   return (
     selections && (
@@ -110,7 +119,7 @@ function DropdownSelection(
                   {selections.map((selection, idx) => {
                     return (
                       <div
-                        onMouseDown={() => {
+                        onClick={() => {
                           selectionListRef.current.classList.add(
                             "pointer-events-none"
                           );

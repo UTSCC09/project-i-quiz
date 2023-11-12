@@ -36,7 +36,6 @@ export default function CoursePage() {
     useState(false);
   const [toastMessage, toastMessageSet] = useState();
 
-  const dropdownRef = useRef();
   const isStudent = isStudentUserType();
 
   const getFilteredQuizzes = useCallback(
@@ -223,14 +222,7 @@ export default function CoursePage() {
         }}
       />
       <NavBar />
-      <div
-        className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
-        onClick={() => {
-          if (dropdownRef.current.dropdownShow) {
-            dropdownRef.current.dropdownShowSet(false);
-          }
-        }}
-      >
+      <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
         <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem] hidden">
           <div className="flex items-end justify-between mb-6 md:mb-8">
             <div className="flex flex-col pr-4">
@@ -290,7 +282,6 @@ export default function CoursePage() {
               )}
               <div className="shadow-sm">
                 <DropdownSelection
-                  ref={dropdownRef}
                   selections={filters}
                   selection={selection}
                   onSelectionChange={onSelectionChange}
