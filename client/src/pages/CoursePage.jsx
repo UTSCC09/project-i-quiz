@@ -26,8 +26,6 @@ export default function CoursePage() {
   const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState();
   const [courseObject, setCourseObject] = useState({});
-  const [courseSettingsDropdownShow, setCourseSettingsDropdownShow] =
-    useState(false);
   const [quizCreateModalShow, quizCreateModalShowSet] = useState(false);
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
@@ -240,46 +238,29 @@ export default function CoursePage() {
               </span>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
-              <div className="relative">
-                <button
-                  className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  onClick={() => {
-                    setCourseSettingsDropdownShow(true);
-                  }}
-                >
-                  {/* [Credit]: svg from https://heroicons.dev */}
-                  <svg
-                    className="h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                    />
-                  </svg>
-                </button>
-                <DropdownMenu
-                  options={courseEditOptions}
-                  dropdownShow={courseSettingsDropdownShow}
-                  dropdownShowSet={setCourseSettingsDropdownShow}
-                />
-              </div>
-              {!isStudent && (
-                <button
-                  className="bg-white shadow-sm h-10 px-4 text-sm text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  onClick={() => {
-                    quizCreateModalShowSet(true);
-                  }}
-                >
-                  Create Quiz
-                </button>
-              )}
+              <DropdownMenu
+                buttonElement={
+                  <button className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
+                    {/* [Credit]: svg from https://heroicons.dev */}
+                    <svg
+                      className="h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                      />
+                    </svg>
+                  </button>
+                }
+                options={courseEditOptions}
+              />
               <div className="shadow-sm">
                 <DropdownSelection
                   selections={filters}
