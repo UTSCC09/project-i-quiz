@@ -79,8 +79,12 @@ export default function DashboardPage() {
   function refetchDataAndShowToast(successMessage) {
     fetchData().then((fetchedPayload) => {
       if (fetchedPayload) {
-        activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
-        archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
+        activeCourseListSet(
+          fetchedPayload.filter((course) => course.archived === false)
+        );
+        archivedCourseListSet(
+          fetchedPayload.filter((course) => course.archived === true)
+        );
       }
       toastMessageSet(successMessage);
       setTimeout(() => {
@@ -93,8 +97,12 @@ export default function DashboardPage() {
     setSelectedTab(selectedTab);
     fetchData().then((fetchedPayload) => {
       if (fetchedPayload) {
-        activeCourseListSet(fetchedPayload.filter((course) => course.archived === false));
-        archivedCourseListSet(fetchedPayload.filter((course) => course.archived === true));
+        activeCourseListSet(
+          fetchedPayload.filter((course) => course.archived === false)
+        );
+        archivedCourseListSet(
+          fetchedPayload.filter((course) => course.archived === true)
+        );
       }
       document.querySelector("main").classList.remove("hidden");
       const { passInMessage } = location.state ?? "";
@@ -106,7 +114,13 @@ export default function DashboardPage() {
         }, 3000);
       }
     });
-  }, [activeCourseListSet, archivedCourseListSet, toastMessageSet, location, navigate]);
+  }, [
+    activeCourseListSet,
+    archivedCourseListSet,
+    toastMessageSet,
+    location,
+    navigate,
+  ]);
 
   return (
     <>

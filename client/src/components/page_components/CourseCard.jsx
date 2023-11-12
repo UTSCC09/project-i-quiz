@@ -26,7 +26,7 @@ export default function CourseCard({
 
   let courseEditOptions = [];
 
-  if (!archived){
+  if (!archived) {
     courseEditOptions.push({
       label: "Edit color",
       onClick: () => {

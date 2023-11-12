@@ -74,9 +74,7 @@ const createCourse = asyncHandler(async (req, res) => {
       .status(200)
       .json(formatMessage(true, "Course created successfully", course));
   } else {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Course creation failed"));
+    return res.status(400).json(formatMessage(false, "Course creation failed"));
   }
 });
 
@@ -585,7 +583,12 @@ async function getInstructedCourses(instructorEmail) {
 
   const instructedCoursesPromises = instructor.courses.map(async (course) => {
     const courseObject = await Course.findById(course.courseId);
-    return fetchFormattedCourse(courseObject, course.accentColor, instructor, course.archived);
+    return fetchFormattedCourse(
+      courseObject,
+      course.accentColor,
+      instructor,
+      course.archived
+    );
   });
 
   const instructedCourses = await Promise.all(instructedCoursesPromises);

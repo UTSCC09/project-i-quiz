@@ -88,7 +88,7 @@ export default function CoursePage() {
   let archived = courseObject.archived;
   let courseEditOptions = [];
 
-  if (!archived){
+  if (!archived) {
     courseEditOptions.push({
       label: "Edit color",
       onClick: () => {
