@@ -1,11 +1,8 @@
-import RadioGroup from "components/elements/RadioGroup";
-import SimpleCheckBox from "components/elements/SimpleCheckBox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function MCQEditor() {
+export default function MCQEditor({ onChange }) {
   const [optionList, optionListSet] = useState([]);
-  const [descContent, descContentSet] = useState("What is this question?");
-  const [descEditable, descEditableSet] = useState(true);
+  const [questionDescription, questionDescriptionSet] = useState("");
   const [optionCount, optionCountSet] = useState(1);
 
   function addOption() {
@@ -13,22 +10,39 @@ export default function MCQEditor() {
       ...optionList,
       {
         id: optionCount,
-        content: optionCount,
+        content: "",
       },
     ]);
     optionCountSet(optionCount + 1);
   }
 
-  function removeOption(targetId) {
-    optionListSet(optionList.filter((option) => targetId !== option.id));
+  function removeOption(id) {
+    optionListSet(optionList.filter((option) => id !== option.id));
   }
+
+  function updateOption(id, content) {
+    const updatedOptionList = optionList.map((option) => {
+      if (option.id === id) {
+        return { id, content };
+      }
+      return option;
+    });
+    optionListSet(updatedOptionList);
+  }
+
+  useEffect(() => {
+    onChange({ prompt: questionDescription, choices: optionList });
+  }, [onChange, questionDescription, optionList]);
 
   return (
     <div className="flex flex-col gap-4 text-sm sm:text-base">
       <textarea
-        className="border w-full px-6 py-4 rounded-md outline-none resize-none focus:ring ring-blue-200 transition-all placeholder-gray-500 hover:bg-gray-50 cursor-pointer focus:cursor-auto focus:bg-white read-only:border-transparent read-only:ring-transparent"
+        className="border w-full px-6 py-4 rounded-md outline-none resize-none focus:ring ring-blue-200 transition-all hover:bg-gray-50 cursor-pointer focus:cursor-auto focus:bg-white read-only:border-transparent read-only:ring-transparent"
         placeholder="Question description"
-        defaultValue={descContent}
+        defaultValue={questionDescription}
+        onInput={(e) => {
+          questionDescriptionSet(e.target.value);
+        }}
       ></textarea>
       {optionList.map((option, idx) => {
         return (
@@ -36,6 +50,9 @@ export default function MCQEditor() {
             option={option}
             placeholder={`Option ${idx + 1}`}
             removeOption={removeOption}
+            onInput={(e) => {
+              updateOption(option.id, e.target.value);
+            }}
             key={option.id}
           />
         );
@@ -51,12 +68,13 @@ export default function MCQEditor() {
   );
 }
 
-function OptionInput({ option, placeholder, removeOption }) {
+function OptionInput({ option, placeholder, removeOption, onInput }) {
   return (
     <div className="relative">
       <input
         className="border rounded-md px-6 py-4 outline-none focus:outline-none focus:ring ring-blue-200 transition-all hover:bg-gray-50 cursor-pointer focus:cursor-auto focus:bg-white read-only:border-transparent read-only:ring-transparent w-full"
         placeholder={placeholder}
+        onInput={onInput}
       />
       <div
         className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 rounded-lg p-1 cursor-pointer hover:bg-gray-100 transition-all"

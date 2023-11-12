@@ -8,7 +8,9 @@ export default function QuizEditorPage() {
       <div className="min-h-screen w-full bg-gray-100 -z-50 flex flex-col items-center">
         <div className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6">
           <div className="w-full bg-white h-fit py-16 px-16 rounded shadow-sm">
-            <MCQEditor />
+            <MCQEditor
+              onChange={(questionObject) => console.log(questionObject)}
+            />
           </div>
         </div>
       </div>
