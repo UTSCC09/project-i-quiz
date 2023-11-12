@@ -4,7 +4,8 @@ import {
   loginUser,
   getUsers,
   logoutUser,
-  verifyUser
+  verifyUserEmail,
+  getPasswordResetCode
 } from "../controllers/userController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -20,7 +21,10 @@ router.route("/login")
 router.route("/logout")
   .get(logoutUser);
 
-router.route("/verify/:userId/:emailVerificationCode")
-  .get(verifyUser);
+router.route("/verifyemail/:userId/:emailVerificationCode")
+  .get(verifyUserEmail);
+
+router.route("/resetpassword")
+  .post(getPasswordResetCode);
 
 export default router;

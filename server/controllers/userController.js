@@ -2,8 +2,8 @@ import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
-import sendEmailVerification from "../utils/emailVerification.js";
-import { parse, serialize } from "cookie";
+import sendEmailVerificationLink from "../utils/emailVerificationUtils.js";
+import sendPasswordResetCode from "../utils/passwordResetUtils.js";
 import crypto from "crypto";
 
 const saltRounds = 10;
@@ -13,6 +13,7 @@ const saltRounds = 10;
 //@access Public
 const registerUser = asyncHandler(async (req, res) => {
   const { type, firstName, lastName, email, password } = req.body;
+
   //Verify all fields exist.
   if (!firstName || !lastName || !email || !password || !type) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
@@ -44,14 +45,13 @@ const registerUser = asyncHandler(async (req, res) => {
         email: email,
         password: hashedPassword,
         emailVerificationCode: crypto.randomUUID().slice(0, 8),
+        passwordReset: {} //Use all default values
       });
 
       //Return user object
       if (user) {
-        sendEmailVerification(user);
-        return res
-          .status(200)
-          .json(formatMessage(true, "Registered Successfully"));
+        await sendEmailVerificationLink(user);
+        return res.status(200).json(formatMessage(true, "Registered Successfully"));
       }
     });
   });
@@ -153,11 +153,10 @@ const logoutUser = asyncHandler(async (req, res) => {
   });
 });
 
-
-//@route  POST api/users/verify/:userID/:emailVerificationCode
-//@desc   Takes a verification code and verifys user's email address if the same emailVerificationCode stored in db.
+//@route  POST api/users/verifyemail/:userID/:emailVerificationCode
+//@desc   Takes a code and verifies user's email if the code matches the generated verification code for that user.
 //@access Public
-const verifyUser = asyncHandler(async (req, res) => {
+const verifyUserEmail = asyncHandler(async (req, res) => {
   const { userId, emailVerificationCode } = req.params;
 
   if (!userId || !emailVerificationCode) {
@@ -195,4 +194,41 @@ const verifyUser = asyncHandler(async (req, res) => {
     .json(formatMessage(false, "Invalid verification code"));
 });
 
-export { registerUser, getUsers, loginUser, logoutUser, verifyUser };
+//@route  POST api/users/resetpasswordcode
+//@desc   Takes an email address and sends password reset code if valid.
+//@access Public
+const getPasswordResetCode = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  //Verify all fields exist.
+  if (!email) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Verify valid email
+  const user = await User.findOne({ email });
+  if (!user || !user.verified) {
+    return res.status(400).json(formatMessage(false, "Invalid email"));
+  }
+
+  //Generate, send and store password reset code
+  user.passwordReset.code = crypto.randomUUID().slice(0, 8);
+  await sendPasswordResetCode(user);
+  await user.save();
+
+  return res.status(200).json(formatMessage(true, "Password reset code sent successfully"));
+});
+
+//@route  POST api/users/verifyresetpasswordcode
+//@desc   Takes a email address and sends password reset code if valid.
+//@access Public
+const verifyPasswordResetCode = asyncHandler(async (req, res) => {});
+
+export {
+  registerUser,
+  getUsers,
+  loginUser,
+  logoutUser,
+  verifyUserEmail,
+  getPasswordResetCode
+};

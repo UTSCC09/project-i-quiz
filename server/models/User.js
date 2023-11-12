@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 
+const PasswordResetSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    default: null
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  attemptsMade: {
+    type: Number,
+    default: 0
+  }
+});
+
 const UserSchema = new mongoose.Schema({
   type : {
     type: String,
@@ -31,6 +46,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  passwordReset: {
+    type: PasswordResetSchema,
+    required: true
+  }
 });
 
 const User = mongoose.model("User", UserSchema);
