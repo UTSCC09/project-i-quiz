@@ -9,6 +9,7 @@ export default function CourseCard({
   notificationNum = 0,
   targetCourseObjectSet,
   accentColorModalShowSet,
+  courseArchiveModalShowSet,
   courseDropModalShowSet,
   accessCodeUpdateModalShowSet,
 }) {
@@ -21,31 +22,50 @@ export default function CourseCard({
   const courseName = courseObject.courseName;
   const courseSemester = courseObject.courseSemester;
   const accentColor = courseObject.accentColor ?? "#0366FF";
+  const archived = courseObject.archived;
 
-  let courseEditOptions = [
-    {
+  let courseEditOptions = [];
+
+  if (!archived) {
+    courseEditOptions.push({
       label: "Edit color",
       onClick: () => {
         targetCourseObjectSet(courseObject);
         accentColorModalShowSet(true);
       },
-    },
-  ];
+    });
 
-  if (isStudent) {
     courseEditOptions.push({
-      label: <div className="text-red-600">Drop course</div>,
+      label: "Archive course",
       onClick: () => {
         targetCourseObjectSet(courseObject);
-        courseDropModalShowSet(true);
+        courseArchiveModalShowSet(true);
       },
     });
+
+    if (isStudent) {
+      courseEditOptions.push({
+        label: <div className="text-red-600">Drop course</div>,
+        onClick: () => {
+          targetCourseObjectSet(courseObject);
+          courseDropModalShowSet(true);
+        },
+      });
+    } else {
+      courseEditOptions.push({
+        label: "Update access code",
+        onClick: () => {
+          targetCourseObjectSet(courseObject);
+          accessCodeUpdateModalShowSet(true);
+        },
+      });
+    }
   } else {
     courseEditOptions.push({
-      label: "Update access code",
+      label: "Unarchive course",
       onClick: () => {
         targetCourseObjectSet(courseObject);
-        accessCodeUpdateModalShowSet(true);
+        courseArchiveModalShowSet(true);
       },
     });
   }
