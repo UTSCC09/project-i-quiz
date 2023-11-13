@@ -92,13 +92,13 @@ export default function DashboardPage() {
       "upcoming",
       isStudent ? "student" : "instructor"
     ).then((fetchedPayload) => {
-      upcomingQuizListSet(fetchedPayload);
+      upcomingQuizListSet(fetchedPayload ?? []);
     });
     getQuizzesForDashboard(
       "active",
       isStudent ? "student" : "instructor"
     ).then((fetchedPayload) => {
-      activeQuizListSet(fetchedPayload);
+      activeQuizListSet(fetchedPayload ?? []);
     });
   }
 
@@ -144,6 +144,18 @@ export default function DashboardPage() {
     selectedTab,
     isStudent,
   ]);
+
+  useEffect(() => {
+    if (
+      activeQuizList &&
+      upcomingQuizList &&
+      activeQuizList.length === 0 &&
+      upcomingQuizList.length === 0
+    ) {
+      quizSectionRef.current.style.display = "none";
+      courseSectionRef.current.style.width = "100%";
+    }
+  }, [activeQuizList, upcomingQuizList]);
 
   return (
     <>
