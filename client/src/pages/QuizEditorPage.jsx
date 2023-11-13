@@ -1,18 +1,18 @@
 import { fetchInstructedCourses } from "api/CourseApi";
-import { createQuiz } from "api/QuizApi";
 import DropdownSelection from "components/elements/DropdownSelection";
-import SingleLineInput from "components/elements/SingleLineInput";
 import Toast from "components/elements/Toast";
 import NavBar from "components/page_components/NavBar";
-import QuizCreateModal from "components/page_components/QuizCreateModal";
 import QuizReleaseModal from "components/page_components/QuizReleaseModal";
 import QuestionEditor from "components/quiz_editor/QuestionEditor";
 import { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export default function QuizEditorPage() {
   const location = useLocation();
   const { passInCourseObject } = location.state ?? {};
+
+  const navigate = useNavigate();
+
   const [courseObject, courseObjectSet] = useState(passInCourseObject);
   const [questionList, questionListSet] = useState([
     {
@@ -91,7 +91,11 @@ export default function QuizEditorPage() {
         modalShow={quizReleaseModalShow}
         modalShowSet={quizReleaseModalShowSet}
         quizData={quizCreationData}
-        onSuccess={() => {}}
+        onSuccess={(quizName) => {
+          navigate("/course/" + courseObject.courseId, {
+            state: { passInMessage: `Quiz "${quizName}" has been created` },
+          });
+        }}
       />
       <div className="min-h-screen w-full bg-gray-100 -z-50 flex flex-col items-center">
         <div className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6">

@@ -47,7 +47,7 @@ const App = () => {
         }
       />
       <Route
-        path="/courses/:courseId"
+        path="/course/:courseId"
         element={
           <ProtectedRoute>
             <CoursePage />

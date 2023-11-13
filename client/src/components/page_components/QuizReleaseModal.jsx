@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
-import SingleLineInput from "components/elements/SingleLineInput";
 import { createQuiz } from "api/QuizApi";
 
 export default function QuizReleaseModal({
@@ -46,7 +45,7 @@ export default function QuizReleaseModal({
     console.log(quizCreationData);
     createQuiz(quizCreationData).then((result) => {
       if (result.success) {
-        // onSuccess(result.payload.quizName);
+        onSuccess(result.payload.quizName);
         modalShowSet(false);
       } else {
         alertRef.current.setMessage(result.message || "Something went wrong");

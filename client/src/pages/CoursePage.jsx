@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
@@ -21,6 +21,8 @@ import {
 
 export default function CoursePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
@@ -154,6 +156,7 @@ export default function CoursePage() {
     fetchCourseObject(courseId).then((result) => {
       if (!result.success) {
         console.error(result.message);
+        navigate("/page-not-found");
         return;
       }
       setCourseObject(result.payload);
@@ -168,12 +171,23 @@ export default function CoursePage() {
         });
       }
     });
-  }, [courseId, setQuizList, setCourseObject, isStudent]);
+  }, [courseId, setQuizList, setCourseObject, isStudent, navigate]);
+
+  useEffect(() => {
+    const { passInMessage } = location.state ?? "";
+    if (passInMessage) {
+      toastMessageSet(passInMessage);
+      navigate("", {});
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+    }
+  }, [location.state, navigate, toastMessageSet]);
 
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
-      <QuizCreateModal
+      {/* <QuizCreateModal
         modalShow={quizCreateModalShow}
         modalShowSet={quizCreateModalShowSet}
         courseId={courseId}
@@ -181,7 +195,7 @@ export default function CoursePage() {
           const successMessage = `${quizName} has been created`;
           refetchDataAndShowToast(successMessage);
         }}
-      />
+      /> */}
       <CourseAccentColorModal
         courseObject={courseObject}
         onSuccess={() => {

@@ -72,7 +72,7 @@ export default function CourseCard({
   return (
     <div ref={courseCardRef} className="w-full relative md:w-[48%] lg:w-[48%]">
       <Link
-        to={"/courses/" + courseId}
+        to={"/course/" + courseId}
         className="rounded-md w-full border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer h-fit flex items-center justify-end"
         style={{ borderLeftColor: accentColor }}
       >
