@@ -5,6 +5,7 @@ import formatMessage from "../utils/utils.js";
 import sendEmailConfirmation from "../utils/emailVerification.js";
 import { parse, serialize } from "cookie";
 import crypto from "crypto";
+import mongoose from "mongoose";
 
 const saltRounds = 10;
 
