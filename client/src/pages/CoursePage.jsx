@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
@@ -8,7 +8,6 @@ import DropdownSelection from "components/elements/DropdownSelection";
 import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
-import QuizCreateModal from "components/page_components/QuizCreateModal";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
 import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
@@ -28,7 +27,6 @@ export default function CoursePage() {
   const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState();
   const [courseObject, setCourseObject] = useState({});
-  const [quizCreateModalShow, quizCreateModalShowSet] = useState(false);
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
   const [courseDropModalShow, setCourseDropModalShow] = useState(false);

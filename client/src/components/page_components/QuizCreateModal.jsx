@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
 import SingleLineInput from "components/elements/SingleLineInput";
-import FreeFormInput from "components/elements/FreeFormInput";
 import { createQuiz } from "api/QuizApi";
 
 export default function QuizCreateModal({
@@ -19,7 +18,6 @@ export default function QuizCreateModal({
 
   const [step, stepSet] = useState(0);
   const [quizCreationData, quizCreationDataSet] = useState({});
-  const [questionsArrField, setQuestionsArrField] = useState(null);
 
   const addQuizCreationData = (key, value) => {
     let newData = quizCreationData;
