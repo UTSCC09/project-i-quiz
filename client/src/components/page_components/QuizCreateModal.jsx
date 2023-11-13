@@ -140,7 +140,7 @@ export default function QuizCreateModal({
                     onClick={() => {
                       addQuizCreationData(
                         "questions",
-                        questionsArrRef.current.value
+                        JSON.parse(questionsArrRef.current.value)
                       );
                       addQuizCreationData("course", courseId);
                       createQuiz(quizCreationData).then((result) => {
