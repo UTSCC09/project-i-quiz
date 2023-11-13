@@ -53,7 +53,7 @@ function DropdownSelection(
           onClick={() => {
             dropdownShowSet(!dropdownShow);
           }}
-          className="text-slate-500 border bg-white cursor-pointer hover:bg-gray-50 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
+          className="text-gray-700 border bg-white cursor-pointer hover:bg-gray-100 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
           style={{ width: width, height: height }}
         >
           <input
@@ -73,7 +73,7 @@ function DropdownSelection(
               <div className="text-left text-black absolute bottom-[6.3px] pl-4 w-full border-none">
                 {selection}
               </div>
-              <span className="absolute start-4 top-1/2 text-sm -translate-y-1/2 text-gray-500 transition-all peer-checked:top-3 peer-checked:text-xs peer-focus:top-3 peer-focus:text-xs">
+              <span className="absolute start-4 top-1/2 text-sm -translate-y-1/2 text-gray-700 transition-all peer-checked:top-3 peer-checked:text-xs peer-focus:top-3 peer-focus:text-xs">
                 {label}
               </span>
             </div>

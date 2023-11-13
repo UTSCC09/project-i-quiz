@@ -240,7 +240,7 @@ export default function CoursePage() {
             <div className="flex items-center gap-2 sm:gap-4">
               <DropdownMenu
                 buttonElement={
-                  <button className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
+                  <button className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-gray-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
                     {/* [Credit]: svg from https://heroicons.dev */}
                     <svg
                       className="h-5"
