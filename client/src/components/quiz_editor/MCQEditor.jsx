@@ -125,33 +125,9 @@ function OptionInput({
         onInput={onInput}
         required
       />
-      <button
-        type="button"
-        title="Remove option"
-        className="absolute h-6 w-6 flex items-center justify-center right-2 top-1/2 -translate-y-1/2 text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
-        onClick={() => {
-          if (removeOption) removeOption(option.id);
-        }}
-      >
-        {/* [Credit]: svg from https://heroicons.dev */}
-        <svg
-          className="h-4"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            clipRule="evenodd"
-            fillRule="evenodd"
-            d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-          ></path>
-        </svg>
-      </button>
-      <button
-        type="button"
+      <div
         title="Set as answer"
-        className="absolute h-6 w-6 flex items-center justify-center invisible group-hover:visible peer-checked:visible peer-checked:text-green-600 right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-100 transition-all rounded-lg"
+        className="absolute h-6 w-6 flex items-center justify-center invisible group-hover:visible peer-checked:visible peer-checked:text-green-600 right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-100 transition-all rounded-lg cursor-pointer"
         onClick={() => {
           toggleanswerIdList(option.id);
         }}
@@ -172,7 +148,29 @@ function OptionInput({
             d="M4.5 12.75l6 6 9-13.5"
           />
         </svg>
-      </button>
+      </div>
+      <div
+        title="Remove option"
+        className="absolute h-6 w-6 flex items-center justify-center right-2 top-1/2 -translate-y-1/2 text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all cursor-pointer"
+        onClick={() => {
+          if (removeOption) removeOption(option.id);
+        }}
+      >
+        {/* [Credit]: svg from https://heroicons.dev */}
+        <svg
+          className="h-4"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            clipRule="evenodd"
+            fillRule="evenodd"
+            d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+          ></path>
+        </svg>
+      </div>
     </div>
   );
 }

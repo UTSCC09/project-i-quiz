@@ -102,7 +102,7 @@ export default function QuizEditorPage() {
                   placeholder="Quiz Title"
                   defaultValue={quizName}
                   onInput={(e) => quizNameSet(e.target.value)}
-                  className="px-2 py-2 text-lg outline-none rounded-md"
+                  className="px-2 py-2 text-lg outline-none rounded-md w-full"
                   required
                 />
               </div>
