@@ -47,7 +47,7 @@ export default function MCQEditor({
     answerIdListSet(answerIdList.filter((aId) => aId !== id));
   }
 
-  function toggleanswerIdList(id) {
+  function toggleAnswerIdList(id) {
     if (answerIdList.includes(id)) {
       removeanswerIdList(id);
     } else {
@@ -80,7 +80,7 @@ export default function MCQEditor({
             option={option}
             placeholder={`Option ${idx + 1}`}
             isAnswer={answerIdList.includes(option.id)}
-            toggleanswerIdList={toggleanswerIdList}
+            toggleAnswerIdList={toggleAnswerIdList}
             removeOption={removeOption}
             onInput={(e) => {
               updateOption(option.id, e.target.value);
@@ -106,7 +106,7 @@ function OptionInput({
   option,
   placeholder,
   isAnswer,
-  toggleanswerIdList,
+  toggleAnswerIdList,
   removeOption,
   onInput,
 }) {
@@ -123,13 +123,14 @@ function OptionInput({
         placeholder={placeholder}
         defaultValue={option.content}
         onInput={onInput}
+        autoFocus={option.id !== "0"}
         required
       />
       <div
         title="Set as answer"
         className="absolute h-6 w-6 flex items-center justify-center invisible group-hover:visible peer-checked:visible peer-checked:text-green-600 right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-100 transition-all rounded-lg cursor-pointer"
         onClick={() => {
-          toggleanswerIdList(option.id);
+          toggleAnswerIdList(option.id);
         }}
       >
         {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
