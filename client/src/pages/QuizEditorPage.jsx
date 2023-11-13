@@ -64,10 +64,6 @@ export default function QuizEditorPage() {
     [questionListSet]
   );
 
-  window.onbeforeunload = () => {
-    return "";
-  };
-
   useEffect(() => {
     fetchInstructedCourses().then((payload) => {
       activeCourseListSet(payload);
