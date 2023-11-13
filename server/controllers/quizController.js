@@ -274,8 +274,8 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
         quizId: quiz._id,
         quizName: quiz.quizName,
         status: currentQuizStatus,
-        releaseDate: quiz.startTime,
-        dueDate: quiz.endTime
+        startTime: quiz.startTime,
+        endTime: quiz.endTime
       });
     } catch (error) {
       return res.status(400).json(formatMessage(false, "Mongoose error finding quizzes for course"));
@@ -710,8 +710,8 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(async (req, res) => 
             quizName: quiz.quizName,
             course: course.courseName,
             accentColor: accentColor,
-            releaseDate: quiz.startTime,
-            dueDate: quiz.endTime
+            startTime: quiz.startTime,
+            endTime: quiz.endTime
           });
         }
       } catch (error) {
@@ -768,8 +768,8 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
             quizName: quiz.quizName,
             course: course.courseName,
             accentColor: accentColor,
-            releaseDate: quiz.startTime,
-            dueDate: quiz.endTime
+            startTime: quiz.startTime,
+            endTime: quiz.endTime
           });
         }
       } catch (error) {
