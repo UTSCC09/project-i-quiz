@@ -78,10 +78,11 @@ export default function CourseCard({
     >
       <Link
         to={"/course/" + courseId}
+        state={{ passInCourseObject: courseObject }}
         className="rounded-md w-full border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer h-fit flex items-center justify-end"
         style={{ borderLeftColor: accentColor }}
       >
-        <div className="border border-l-0 py-6 md:py-0 h-fit md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 hover:bg-gray-100 transition-all w-full">
+        <div className="border border-l-0 py-6 md:py-0 h-24 md:h-36 box-border items-center md:items-end bg-white rounded-r-md flex px-4 md:px-6 hover:bg-gray-100 transition-all w-full">
           <div className="flex flex-col md:mb-6 w-full pr-4">
             <div className="hidden md:block mb-1">
               <Badge label={courseSemester} accentColor={accentColor} />

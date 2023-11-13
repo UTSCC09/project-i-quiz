@@ -21,12 +21,13 @@ import {
 export default function CoursePage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { passInCourseObject } = location.state ?? {};
 
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState();
-  const [courseObject, setCourseObject] = useState({});
+  const [courseObject, setCourseObject] = useState(passInCourseObject ?? {});
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
   const [courseDropModalShow, setCourseDropModalShow] = useState(false);
@@ -185,15 +186,6 @@ export default function CoursePage() {
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
-      {/* <QuizCreateModal
-        modalShow={quizCreateModalShow}
-        modalShowSet={quizCreateModalShowSet}
-        courseId={courseId}
-        onSuccess={(quizName) => {
-          const successMessage = `${quizName} has been created`;
-          refetchDataAndShowToast(successMessage);
-        }}
-      /> */}
       <CourseAccentColorModal
         courseObject={courseObject}
         onSuccess={() => {
@@ -293,29 +285,34 @@ export default function CoursePage() {
               </div>
             </div>
           </div>
-          <AnimatePresence>
-            {quizList && (
-              <motion.div
-                key={getFilteredQuizzes(selection)}
-                variants={variants}
-                animate={"show"}
-                initial={"hide"}
-                exit={"hide"}
-              >
-                {getFilteredQuizzes(selection).length === 0 ? (
-                  <div className=" bg-gray-200 px-6 py-4 rounded-md text-sm sm:text-base">
+          <AnimatePresence initial={false}>
+            {quizList ? (
+              <div>
+                {getFilteredQuizzes(selection).length === 0 && (
+                  <div className=" bg-gray-200 px-6 h-16 pt-5 rounded-md text-sm sm:text-base">
                     {selection === "All Quizzes"
                       ? `No quizzes available`
                       : `No ${selection.toLowerCase()} available`}
                   </div>
-                ) : (
+                )}
+                <motion.div
+                  key={getFilteredQuizzes(selection)}
+                  variants={variants}
+                  animate={"show"}
+                >
                   <QuizList
                     accentColor={courseObject.accentColor}
                     quizArr={getFilteredQuizzes(selection)}
                     courseCode={courseObject.courseCode}
                   />
-                )}
-              </motion.div>
+                </motion.div>
+              </div>
+            ) : (
+              <div class="animate-pulse w-full">
+                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+              </div>
             )}
           </AnimatePresence>
         </main>
