@@ -25,7 +25,7 @@ export default function CoursePage() {
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
-  const [quizList, setQuizList] = useState([]);
+  const [quizList, setQuizList] = useState();
   const [courseObject, setCourseObject] = useState({});
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
@@ -293,19 +293,31 @@ export default function CoursePage() {
               </div>
             </div>
           </div>
-          {getFilteredQuizzes(selection).length === 0 ? (
-            <div className=" bg-gray-200 px-6 py-4 rounded-md text-sm sm:text-base">
-              {selection === "All Quizzes"
-                ? `No quizzes available`
-                : `No ${selection.toLowerCase()} available`}
-            </div>
-          ) : (
-            <QuizList
-              accentColor={courseObject.accentColor}
-              quizArr={getFilteredQuizzes(selection)}
-              courseCode={courseObject.courseCode}
-            />
-          )}
+          <AnimatePresence>
+            {quizList && (
+              <motion.div
+                key={getFilteredQuizzes(selection)}
+                variants={variants}
+                animate={"show"}
+                initial={"hide"}
+                exit={"hide"}
+              >
+                {getFilteredQuizzes(selection).length === 0 ? (
+                  <div className=" bg-gray-200 px-6 py-4 rounded-md text-sm sm:text-base">
+                    {selection === "All Quizzes"
+                      ? `No quizzes available`
+                      : `No ${selection.toLowerCase()} available`}
+                  </div>
+                ) : (
+                  <QuizList
+                    accentColor={courseObject.accentColor}
+                    quizArr={getFilteredQuizzes(selection)}
+                    courseCode={courseObject.courseCode}
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
       </div>
     </>
