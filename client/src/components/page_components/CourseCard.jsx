@@ -6,6 +6,7 @@ import { isStudentUserType } from "utils/CookieUtils";
 
 export default function CourseCard({
   courseObject,
+  zIndex,
   notificationNum = 0,
   targetCourseObjectSet,
   accentColorModalShowSet,
@@ -70,7 +71,11 @@ export default function CourseCard({
   }
 
   return (
-    <div ref={courseCardRef} className="w-full relative md:w-[48%] lg:w-[48%]">
+    <div
+      style={{ zIndex: zIndex }}
+      ref={courseCardRef}
+      className="w-full relative md:w-[48%] lg:w-[48%]"
+    >
       <Link
         to={"/course/" + courseId}
         className="rounded-md w-full border-l-[16px] md:border-l-[24px] shadow shadow-gray-200 cursor-pointer h-fit flex items-center justify-end"
@@ -96,7 +101,7 @@ export default function CourseCard({
         </div>
       </Link>
 
-      <div className="absolute md:top-4 right-0">
+      <div className="absolute top-1/2 -translate-y-1/2 md:translate-y-0 md:top-4 right-0">
         <DropdownMenu
           buttonElement={
             <button className="mx-2 p-1 text-slate-600 rounded-full hover:bg-gray-100 transition">

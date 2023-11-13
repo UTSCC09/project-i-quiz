@@ -351,6 +351,7 @@ export default function DashboardPage() {
                     return (
                       <CourseCard
                         courseObject={courseObject}
+                        zIndex={activeCourseList.length - idx}
                         targetCourseObjectSet={targetCourseObjectSet}
                         accentColorModalShowSet={accentColorModalShowSet}
                         courseArchiveModalShowSet={courseArchiveModalShowSet}
