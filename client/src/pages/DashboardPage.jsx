@@ -62,7 +62,7 @@ export default function DashboardPage() {
   const [activeCourseList, activeCourseListSet] = useState([]);
   const [archivedCourseList, archivedCourseListSet] = useState([]);
 
-  const [activeQuizList, activeQuizListSet] = useState([]);
+  const [activeQuizList, activeQuizListSet] = useState();
   const [upcomingQuizList, upcomingQuizListSet] = useState([]);
 
   const [selectedTab, _setSelectedTab] = useState(
@@ -281,16 +281,11 @@ export default function DashboardPage() {
             ref={quizSectionRef}
             className="lg:w-[35%] flex flex-col gap-8 lg:flex"
           >
-            <AnimatePresence>
-              {activeQuizList.length !== 0 && (
-                <motion.div
-                  variants={variants}
-                  animate={"show"}
-                  initial={"hide"}
-                  exit={"hide"}
-                >
+            {activeQuizList && upcomingQuizList ? (
+              <>
+                {activeQuizList.length !== 0 && (
                   <Accordion
-                    sectionName="Upcoming Quizzes"
+                    sectionName="Available Quizzes"
                     content={
                       <div className="flex flex-col gap-4 lg:gap-6">
                         {activeQuizList.map((quizObject, idx) => {
@@ -305,17 +300,8 @@ export default function DashboardPage() {
                       </div>
                     }
                   />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <AnimatePresence>
-              {upcomingQuizList.length !== 0 && (
-                <motion.div
-                  variants={variants}
-                  animate={"show"}
-                  initial={"hide"}
-                  exit={"hide"}
-                >
+                )}
+                {activeQuizList.length !== 0 && (
                   <Accordion
                     sectionName="Upcoming Quizzes"
                     content={
@@ -332,9 +318,18 @@ export default function DashboardPage() {
                       </div>
                     }
                   />
-                </motion.div>
-              )}
-            </AnimatePresence>
+                )}
+              </>
+            ) : (
+              <div class="animate-pulse w-full">
+                <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded mb-8"></div>
+                <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded mb-4"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded mb-4"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded mb-4"></div>
+              </div>
+            )}
           </div>
 
           {/* --- Course Section --- */}
