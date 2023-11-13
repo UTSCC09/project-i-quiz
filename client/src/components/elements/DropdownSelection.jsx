@@ -44,7 +44,7 @@ function DropdownSelection(
           onClick={() => {
             dropdownShowSet(!dropdownShow);
           }}
-          className="text-slate-500 border bg-white cursor-pointer hover:bg-gray-100 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
+          className="text-slate-500 border bg-white cursor-pointer hover:bg-gray-50 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
           style={{ width: width, height: height }}
         >
           <input
