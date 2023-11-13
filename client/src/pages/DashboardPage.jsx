@@ -59,11 +59,11 @@ export default function DashboardPage() {
   const courseSectionRef = useRef(null);
   const isStudent = isStudentUserType();
 
-  const [activeCourseList, activeCourseListSet] = useState([]);
-  const [archivedCourseList, archivedCourseListSet] = useState([]);
+  const [activeCourseList, activeCourseListSet] = useState();
+  const [archivedCourseList, archivedCourseListSet] = useState();
 
   const [activeQuizList, activeQuizListSet] = useState();
-  const [upcomingQuizList, upcomingQuizListSet] = useState([]);
+  const [upcomingQuizList, upcomingQuizListSet] = useState();
 
   const [selectedTab, _setSelectedTab] = useState(
     localStorage.getItem("selected_tab") ?? "quizzes"
@@ -122,25 +122,28 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setSelectedTab(selectedTab);
-    fetchCourses().then((fetchedPayload) => {
-      if (fetchedPayload) {
-        activeCourseListSet(
-          fetchedPayload.filter((course) => course.archived === false)
-        );
-        archivedCourseListSet(
-          fetchedPayload.filter((course) => course.archived === true)
-        );
-      }
-      document.querySelector("main").classList.remove("hidden");
-      const { passInMessage } = location.state ?? "";
-      if (passInMessage) {
-        toastMessageSet(passInMessage);
-        navigate("", {});
-        setTimeout(() => {
-          toastMessageSet();
-        }, 3000);
-      }
-    });
+    setTimeout(
+      () =>
+        fetchCourses().then((fetchedPayload) => {
+          if (fetchedPayload) {
+            activeCourseListSet(
+              fetchedPayload.filter((course) => course.archived === false)
+            );
+            archivedCourseListSet(
+              fetchedPayload.filter((course) => course.archived === true)
+            );
+          }
+          const { passInMessage } = location.state ?? "";
+          if (passInMessage) {
+            toastMessageSet(passInMessage);
+            navigate("", {});
+            setTimeout(() => {
+              toastMessageSet();
+            }, 3000);
+          }
+        }),
+      1000
+    );
 
     getQuizzesForDashboard(
       "upcoming",
@@ -245,7 +248,7 @@ export default function DashboardPage() {
         }
       />
       <div className="min-h-screen w-full bg-gray-100">
-        <main className="h-full px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-32 sm:py-36 hidden">
+        <main className="h-full px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-32 sm:py-36">
           {/* Tab bar for mobile device */}
           <div className="flex lg:hidden bg-gray-200 rounded-lg w-full justify-between">
             <label className="cursor-pointer w-[49%]">
@@ -337,14 +340,9 @@ export default function DashboardPage() {
             ref={courseSectionRef}
             className="hidden flex flex-col gap-8 lg:flex lg:w-[65%]"
           >
-            <AnimatePresence>
-              {activeCourseList.length !== 0 && (
-                <motion.div
-                  variants={variants}
-                  animate={"show"}
-                  initial={"hide"}
-                  exit={"hide"}
-                >
+            {activeCourseList && archivedCourseList ? (
+              <>
+                {activeCourseList.length !== 0 && (
                   <Accordion
                     sectionName={"Active Courses"}
                     content={
@@ -370,17 +368,8 @@ export default function DashboardPage() {
                       </div>
                     }
                   />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <AnimatePresence>
-              {archivedCourseList.length !== 0 && (
-                <motion.div
-                  variants={variants}
-                  animate={"show"}
-                  initial={"hide"}
-                  exit={"hide"}
-                >
+                )}
+                {archivedCourseList.length !== 0 && (
                   <Accordion
                     collapsed
                     sectionName={"Archived Courses"}
@@ -401,9 +390,22 @@ export default function DashboardPage() {
                       </div>
                     }
                   />
-                </motion.div>
-              )}
-            </AnimatePresence>
+                )}
+              </>
+            ) : (
+              <div class="animate-pulse w-full">
+                <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
+
+                <div className="md:grid md:grid-cols-2 gap-x-[4%]">
+                  <div className="bg-gray-200 h-24 md:h-36 rounded mb-8"></div>
+                  <div className="bg-gray-200 h-24 md:h-36 rounded mb-8"></div>
+                </div>
+                <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
+                <div className="md:grid md:grid-cols-2 gap-x-[4%]">
+                  <div className="bg-gray-200 h-24 md:h-36 rounded mb-8"></div>
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>
