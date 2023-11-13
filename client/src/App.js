@@ -8,6 +8,8 @@ import NotFoundPage from "pages/NotFoundPage";
 import DashboardPage from "pages/DashboardPage";
 import CoursePage from "pages/CoursePage";
 import ProtectedRoute from "components/ProtectedRoute";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 
 const App = () => {  
   const { pathname } = useLocation();
@@ -18,7 +20,7 @@ const App = () => {
   }, [pathname]);
 
   return (
-    <>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Routes>
         {/* -- Protected Routes -- */}
         <Route path="/" element={ 
@@ -48,7 +50,7 @@ const App = () => {
         <Route path="/signup" element={ <SignUpPage /> } />
         <Route path="*" element={ <NotFoundPage />} />
       </Routes>
-    </>
+    </LocalizationProvider>
   );
 }
 export default App;

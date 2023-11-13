@@ -8,6 +8,7 @@ import DropdownSelection from "components/elements/DropdownSelection";
 import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
+import QuizCreateModal from "components/page_components/QuizCreateModal";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
 import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
@@ -21,16 +22,17 @@ export default function CoursePage() {
   const { courseId } = useParams();
   const [selection, setSelection] = useState("Upcoming Quizzes");
   const [quizList, setQuizList] = useState([]);
+  const [filteredQuizList, setFilteredQuizList] = useState([]);
+  const [noQuizzes, setNoQuizzes] = useState(false);
   const [courseObject, setCourseObject] = useState({});
-  const [courseSettingsDropdownShow, courseSettingsDropdownShowSet] =
-    useState(false);
-  const [accentColorModalShow, accentColorModalShowSet] = useState(false);
-  const [courseArchiveModalShow, courseArchiveModalShowSet] = useState(false);
-  const [courseDropModalShow, courseDropModalShowSet] = useState(false);
-  const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
+  const [courseSettingsDropdownShow, setCourseSettingsDropdownShow] = useState(false);
+  const [quizCreateModalShow, quizCreateModalShowSet] = useState(false);
+  const [accentColorModalShow, setAccentColorModalShow] = useState(false);
+  const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
+  const [courseDropModalShow, setCourseDropModalShow] = useState(false);
+  const [accessCodeUpdateModalShow, setAccessCodeUpdateModalShow] =
     useState(false);
   const [toastMessage, toastMessageSet] = useState();
-  const [noQuizzes, setNoQuizzes] = useState(false);
 
   const dropdownRef = useRef();
   const isStudent = isStudentUserType();
@@ -44,14 +46,14 @@ export default function CoursePage() {
 
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
-          setNoQuizzes(resultPayload.length === 0);
           setQuizList(resultPayload);
+          setFilteredQuizList(getFilteredQuizzes(selection));
         });
       }
       else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
-          setNoQuizzes(resultPayload.length === 0);
           setQuizList(resultPayload);
+          setFilteredQuizList(getFilteredQuizzes(selection));
         });
       }
 
@@ -69,19 +71,23 @@ export default function CoursePage() {
     const currentDateTime = new Date();
     switch (filter) {
       case "Active Quizzes":
-        return quizList.filter((quiz) => (
-          currentDateTime >= quiz.startTime && currentDateTime <= quiz.endTime
-        ));
+        return quizList.filter((quiz) => {
+          const startTime = new Date(quiz.startTime);
+          const endTime = new Date(quiz.endTime);
+          return currentDateTime >= startTime && currentDateTime <= endTime
+        });
       case "Upcoming Quizzes":
-        return quizList.filter((quiz) => (
-          currentDateTime < quiz.startTime
-        ));
+        return quizList.filter((quiz) => {
+          const startTime = new Date(quiz.startTime);
+          return currentDateTime < startTime
+        });
       case "All Quizzes":
         return quizList;
       case "Past Quizzes":
-        return quizList.filter((quiz) => (
-          currentDateTime > quiz.endTime
-        ));
+        return quizList.filter((quiz) => {
+          const endTime = new Date(quiz.endTime);
+          return currentDateTime > endTime
+        });
       default:
         return;
     }
@@ -89,7 +95,7 @@ export default function CoursePage() {
 
   function onSelectionChange(selection) {
     setSelection(selection);
-    setQuizList(getFilteredQuizzes(selection));
+    setFilteredQuizList(getFilteredQuizzes(selection));
   }
 
   const variants = {
@@ -116,14 +122,14 @@ export default function CoursePage() {
     courseEditOptions.push({
       label: "Edit color",
       onClick: () => {
-        accentColorModalShowSet(true);
+        setAccentColorModalShow(true);
       },
     });
 
     courseEditOptions.push({
       label: "Archive course",
       onClick: () => {
-        courseArchiveModalShowSet(true);
+        setCourseArchiveModalShow(true);
       },
     });
 
@@ -131,14 +137,14 @@ export default function CoursePage() {
       courseEditOptions.push({
         label: <div className="text-red-600">Drop course</div>,
         onClick: () => {
-          courseDropModalShowSet(true);
+          setCourseDropModalShow(true);
         },
       });
     } else {
       courseEditOptions.push({
         label: "Update access code",
         onClick: () => {
-          accessCodeUpdateModalShowSet(true);
+          setAccessCodeUpdateModalShow(true);
         },
       });
     }
@@ -146,7 +152,7 @@ export default function CoursePage() {
     courseEditOptions.push({
       label: "Unarchive course",
       onClick: () => {
-        courseArchiveModalShowSet(true);
+        setCourseArchiveModalShow(true);
       },
     });
   }
@@ -162,22 +168,31 @@ export default function CoursePage() {
 
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
-          setNoQuizzes(resultPayload.length === 0);
           setQuizList(resultPayload);
+          setFilteredQuizList(getFilteredQuizzes(selection));
         });
       }
       else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
-          setNoQuizzes(resultPayload.length === 0);
           setQuizList(resultPayload);
+          setFilteredQuizList(getFilteredQuizzes(selection));
         });
       }
     });
-  }, [courseId, setCourseObject, selection]);
+  }, [courseId, setCourseObject]);
 
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
+      <QuizCreateModal
+        modalShow={quizCreateModalShow}
+        modalShowSet={quizCreateModalShowSet}
+        courseId={courseId}
+        onSuccess={(quizName) => {
+          const successMessage = `${quizName} has been created`;
+          refetchDataAndShowToast(successMessage);
+        }}
+      />
       <CourseAccentColorModal
         courseObject={courseObject}
         onSuccess={() => {
@@ -185,11 +200,11 @@ export default function CoursePage() {
           refetchDataAndShowToast(successMessage);
         }}
         modalShow={accentColorModalShow}
-        modalShowSet={accentColorModalShowSet}
+        modalShowSet={setAccentColorModalShow}
       />
       <CourseArchiveModal
         modalShow={courseArchiveModalShow}
-        modalShowSet={courseArchiveModalShowSet}
+        modalShowSet={setCourseArchiveModalShow}
         courseObject={courseObject}
         onSuccess={() => {
           const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been archived from your course list`;
@@ -198,7 +213,7 @@ export default function CoursePage() {
       />
       <CourseDropModal
         modalShow={courseDropModalShow}
-        modalShowSet={courseDropModalShowSet}
+        modalShowSet={setCourseDropModalShow}
         courseObject={courseObject}
         onSuccess={() => {
           const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`;
@@ -207,7 +222,7 @@ export default function CoursePage() {
       />
       <AccessCodeUpdateModal
         modalShow={accessCodeUpdateModalShow}
-        modalShowSet={accessCodeUpdateModalShowSet}
+        modalShowSet={setAccessCodeUpdateModalShow}
         courseObject={courseObject}
         onSuccess={(newAccessCode) => {
           const successMessage = `Access code for ${courseObject.courseCode} ${courseObject.courseSemester} has been updated to ${newAccessCode}`;
@@ -244,7 +259,7 @@ export default function CoursePage() {
                 <div
                   className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
                   onClick={() => {
-                    courseSettingsDropdownShowSet(true);
+                    setCourseSettingsDropdownShow(true);
                   }}
                 >
                   {/* [Credit]: svg from https://heroicons.dev */}
@@ -267,9 +282,17 @@ export default function CoursePage() {
                 <DropdownMenu
                   options={courseEditOptions}
                   dropdownShow={courseSettingsDropdownShow}
-                  dropdownShowSet={courseSettingsDropdownShowSet}
+                  dropdownShowSet={setCourseSettingsDropdownShow}
                 />
               </div>
+              {!isStudent && (
+                <button
+                  className="btn-outline py-0 text-sm w-28 h-8 sm:h-10 shrink-0"
+                  onClick={() => { quizCreateModalShowSet(true); }}
+                >
+                  Create Quiz
+                </button>
+              )}
               <div className="shadow-sm">
                 <DropdownSelection
                   ref={dropdownRef}
@@ -283,16 +306,20 @@ export default function CoursePage() {
           </div>
           <AnimatePresence>
             <motion.div
-              key={quizList}
+              key={filteredQuizList}
               variants={variants}
               animate={"show"}
               initial={"hide"}
               exit={"hide"}
             >
-              {noQuizzes ? (
-                <h1>Start creating quizzes!</h1>
+              {filteredQuizList.length === 0 ? (
+                selection === "All Quizzes" ? (
+                  <h1>Create quizzes to see them here!</h1>
+                ) : (
+                  <h1>No {selection}</h1>
+                )
               ) : (
-                <QuizList quizArr={quizList} courseCode={courseObject.courseCode} />
+                <QuizList quizArr={filteredQuizList} courseCode={courseObject.courseCode} />
               )}
             </motion.div>
           </AnimatePresence>

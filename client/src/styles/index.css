@@ -4,6 +4,7 @@
 
 html {
   background-color: #fff; /* Default color to remain unchanged during scrolling */
+  overflow-y: scroll; /* Always show vertical scrollbar */
 }
 
 body {
@@ -15,6 +16,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 /*---------------------SCROLLING-----------------------*/
 @media screen and (-webkit-min-device-pixel-ratio:0) { 
   body {
@@ -23,7 +25,7 @@ body {
       transition: background-color 0.5s;
   }
   body:hover {
-    background-color: #9bc1ff;
+    background-color: #9bc1ff; 
   }
   body::-webkit-scrollbar {
       width: 7px;

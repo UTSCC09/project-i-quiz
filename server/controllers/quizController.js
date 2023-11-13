@@ -96,7 +96,7 @@ const createQuiz = asyncHandler(async (req, res) => {
           createdQuestion = await OEQ.create(questions[i].question);
           break;
         default:
-          return res.status(400).json(formatMessage(false, "Invalid question type"));
+          return res.status(400).json(formatMessage(false, `Invalid question type ${questions[i].type}`));
       }
     } catch (error) {
       return res.status(400).json(formatMessage(false, "Mongoose error creating question"));
@@ -124,7 +124,7 @@ const createQuiz = asyncHandler(async (req, res) => {
   if (quiz) {
     courseToAddTo.quizzes.push(quiz._id);
     await courseToAddTo.save();
-    return res.status(200).json(formatMessage(true, "Quiz created successfully"));
+    return res.status(200).json(formatMessage(true, "Quiz created successfully", quiz));
   }
   else {
     return res.status(400).json(formatMessage(false, "Quiz creation failed"));
