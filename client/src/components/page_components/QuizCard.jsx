@@ -63,7 +63,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   return (
     <>
       <Link
-        to="/quiz/0"
+        to={"/quiz/" + quizObject.quizId}
         className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer"
         style={{
           borderLeftColor: accentColor,

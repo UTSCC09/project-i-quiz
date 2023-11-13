@@ -27,7 +27,7 @@ const QuizPage = () => {
   }
 
   useEffect(() => {
-    getQuiz("65516efe61d0adaaff97a16f").then((payload) => {
+    getQuiz(quizId).then((payload) => {
       console.log(payload);
       quizObjectSet(payload);
     });
@@ -36,9 +36,9 @@ const QuizPage = () => {
   return (
     <>
       <NavBar />
-      {quizObject && (
-        <form>
-          <div className="min-h-screen w-full flex justify-center py-36 bg-gray-100">
+      <div className="min-h-screen w-full flex justify-center py-36 bg-gray-100">
+        {quizObject && (
+          <form>
             <div className="w-full px-4 md:w-[48rem] flex flex-col items-center">
               {quizObject.questions.map((questionObj, idx) => {
                 return (
@@ -62,9 +62,9 @@ const QuizPage = () => {
                 );
               })}
             </div>
-          </div>
-        </form>
-      )}
+          </form>
+        )}
+      </div>
     </>
   );
 };
