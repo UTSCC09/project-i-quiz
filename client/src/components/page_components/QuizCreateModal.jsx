@@ -129,24 +129,20 @@ export default function QuizCreateModal({
                 <div className="flex flex-col gap-6">
                   <h1 className="text-2xl font-bold">Add Questions</h1>
                   <AlertBanner ref={alertRef} />
-                  <FreeFormInput
+                  <textarea
                     ref={questionsArrRef}
                     name="questionsArr"
-                    label="Questions array (JSON)"
-                    onChange={(e) =>
-                      setQuestionsArrField(JSON.parse(e.target.value))
-                    }
+                    className="border rounded-md px-6 py-4 text-sm outline-none focus:ring ring-blue-200"
+                    placeholder="Questions array (JSON)"
                   />
                   <button
                     className="btn-primary"
-                    style={{
-                      opacity: questionsArrField ? 1 : 0.4,
-                      pointerEvents: questionsArrField ? "auto" : "none",
-                    }}
                     onClick={() => {
-                      addQuizCreationData("questions", questionsArrField);
+                      addQuizCreationData(
+                        "questions",
+                        questionsArrRef.current.value
+                      );
                       addQuizCreationData("course", courseId);
-                      console.log(quizCreationData);
                       createQuiz(quizCreationData).then((result) => {
                         if (result.success) {
                           onSuccess(result.payload.quizName);
