@@ -35,7 +35,7 @@ function getFormattedDateStr(time) {
 export default function QuizCard({ quizObject }) {
   const quizName = quizObject.quizName;
   const courseCode = quizObject.courseCode;
-  const startTime = new Date(quizObject.endTime);
+  const startTime = new Date(quizObject.startTime);
   const endTime = new Date(quizObject.endTime);
   const colorList = [
     colors.pink[500],
