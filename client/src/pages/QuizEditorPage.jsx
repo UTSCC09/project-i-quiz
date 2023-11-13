@@ -91,7 +91,16 @@ export default function QuizEditorPage() {
         onSuccess={() => {}}
       />
       <div className="min-h-screen w-full bg-gray-100 -z-50 flex flex-col items-center">
-        <div className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.reportValidity();
+            if (e.checkValidity()) {
+              quizReleaseModalShowSet(true);
+            }
+          }}
+          className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6"
+        >
           <div className="relative bg-white h-fit py-8 sm:py-12 px-8 sm:px-16 rounded-md shadow-sm">
             <div className="flex justify-between">
               <input
@@ -99,6 +108,7 @@ export default function QuizEditorPage() {
                 defaultValue={quizName}
                 onInput={(e) => quizNameSet(e.target.value)}
                 className="px-1 py-2 text-lg outline-none border-b focus:border-b-blue-600 w-72"
+                required
               />
               {activeCourseList && (
                 <DropdownSelection
@@ -131,6 +141,7 @@ export default function QuizEditorPage() {
                   updateQuestion={updateQuestion}
                 />
                 <button
+                  type="button"
                   title="Remove option"
                   className="absolute h-8 w-8 flex items-center justify-center right-6 top-6 text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={() => {
@@ -157,6 +168,7 @@ export default function QuizEditorPage() {
           })}
           <div className="flex gap-4">
             <button
+              type="button"
               className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
               onClick={() => {
                 addQuestion();
@@ -165,21 +177,21 @@ export default function QuizEditorPage() {
               + Add question
             </button>
             <button
+              type="submit"
               className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
-              onClick={() => {
-                quizReleaseModalShowSet(true);
-              }}
+              onClick={() => {}}
             >
               Release quiz
             </button>
             <button
+              type="button"
               className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
               onClick={() => console.log(JSON.stringify(quizCreationData))}
             >
               Print (DEBUG)
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </>
   );

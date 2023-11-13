@@ -26,6 +26,7 @@ export default function OEQEditor({ questionBody, onChange }) {
         onInput={(e) => {
           questionDescriptionSet(e.target.value);
         }}
+        required
       ></textarea>
       <div className="flex items-center h-6 gap-2 text-gray-700">
         <SimpleCheckBox
@@ -39,6 +40,7 @@ export default function OEQEditor({ questionBody, onChange }) {
             defaultValue={maxLength}
             onInput={(e) => maxLengthSet(Number(e.target.value))}
             className="border rounded-md py-1 px-2 w-16 outline-none focus:ring ring-blue-200 transition-all"
+            required
           />
         )}
       </div>

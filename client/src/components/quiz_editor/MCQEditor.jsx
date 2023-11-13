@@ -68,6 +68,7 @@ export default function MCQEditor({
         onInput={(e) => {
           questionDescriptionSet(e.target.value);
         }}
+        required
       ></textarea>
       {optionList.map((option, idx) => {
         return (
@@ -86,6 +87,7 @@ export default function MCQEditor({
       })}
       <div className="flex gap-4">
         <button
+          type="button"
           className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
           onClick={addOption}
         >
@@ -117,8 +119,10 @@ function OptionInput({
         placeholder={placeholder}
         defaultValue={option.content}
         onInput={onInput}
+        required
       />
       <button
+        type="button"
         title="Remove option"
         className="absolute h-6 w-6 flex items-center justify-center right-2 top-1/2 -translate-y-1/2 text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
         onClick={() => {
@@ -141,6 +145,7 @@ function OptionInput({
         </svg>
       </button>
       <button
+        type="button"
         title="Set as answer"
         className="absolute h-6 w-6 flex items-center justify-center invisible group-hover:visible peer-checked:visible peer-checked:text-green-600 right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-100 transition-all rounded-lg"
         onClick={() => {
