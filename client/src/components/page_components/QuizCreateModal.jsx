@@ -56,19 +56,6 @@ export default function QuizCreateModal({
 
     const formData = new FormData(e.target);
     formData.forEach((value, key) => addQuizCreationData(key, value));
-    if (quizCreationData["quizStartTime"]) {
-      addQuizCreationData(
-        "startTime",
-        new Date(quizCreationData["quizStartTime"])
-      );
-    }
-    if (quizCreationData["quizEndTime"]) {
-      addQuizCreationData(
-        "endTime",
-        new Date(quizCreationData["quizEndTime"])
-      );
-    }
-
     stepSet(step + 1);
   };
 
@@ -105,13 +92,13 @@ export default function QuizCreateModal({
                       />
                       <div className="flex justify-between">
                         <input
-                          name="quizStartTime"
+                          name="startTime"
                           ref={quizStartTimeInputRef}
                           className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm text-gray-700"
                           type="datetime-local"
                         />
                         <input
-                          name="quizEndTime"
+                          name="endTime"
                           ref={quizEndTimeInputRef}
                           className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm text-gray-700"
                           type="datetime-local"
@@ -143,6 +130,7 @@ export default function QuizCreateModal({
                         JSON.parse(questionsArrRef.current.value)
                       );
                       addQuizCreationData("course", courseId);
+                      console.log(quizCreationData);
                       createQuiz(quizCreationData).then((result) => {
                         if (result.success) {
                           onSuccess(result.payload.quizName);
