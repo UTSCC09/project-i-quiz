@@ -32,36 +32,13 @@ function getFormattedDateStr(time) {
 }
 
 // quizState: available, upcoming, closed
-export default function QuizCard({ quizObject }) {
+export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   const quizName = quizObject.quizName;
   const courseCode = quizObject.courseCode;
   const startTime = new Date(quizObject.startTime);
   const endTime = new Date(quizObject.endTime);
-  const colorList = [
-    colors.pink[500],
-    colors.rose[500],
-    colors.red[500],
-    colors.orange[500],
-    colors.amber[500],
-    colors.yellow[500],
-    colors.lime[500],
-    colors.green[500],
-    colors.emerald[500],
-    colors.teal[500],
-    colors.cyan[500],
-    colors.blue[500],
-    colors.blue[600],
-    colors.indigo[500],
-    colors.violet[500],
-    colors.purple[500],
-  ];
-  const accentColor =
-    quizObject.accentColor ||
-    colorList[Math.floor(Math.random() * colorList.length)];
   const submitted = quizObject.submitted;
-
   const quizState = getQuizState(quizObject);
-
   const startTimeStr = getFormattedDateStr(startTime);
   const endTimeStr = getFormattedDateStr(endTime);
 

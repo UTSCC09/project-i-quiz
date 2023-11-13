@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
@@ -14,18 +14,20 @@ import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { fetchCourseObject } from "api/CourseApi";
-import { getQuizzesForInstructedCourse, getQuizzesForEnrolledCourse } from "api/QuizApi";
+import {
+  getQuizzesForInstructedCourse,
+  getQuizzesForEnrolledCourse,
+} from "api/QuizApi";
 
 export default function CoursePage() {
   const navigate = useNavigate();
-  const filters = ["Active Quizzes", "Upcoming Quizzes", "All Quizzes", "Past Quizzes"];
+  const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
-  const [selection, setSelection] = useState("Upcoming Quizzes");
-  const [quizList, setQuizList] = useState([]);
-  const [filteredQuizList, setFilteredQuizList] = useState([]);
-  const [noQuizzes, setNoQuizzes] = useState(false);
+  const [selection, setSelection] = useState("New Quizzes");
+  const [quizList, setQuizList] = useState();
   const [courseObject, setCourseObject] = useState({});
-  const [courseSettingsDropdownShow, setCourseSettingsDropdownShow] = useState(false);
+  const [courseSettingsDropdownShow, setCourseSettingsDropdownShow] =
+    useState(false);
   const [quizCreateModalShow, quizCreateModalShowSet] = useState(false);
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
@@ -37,6 +39,32 @@ export default function CoursePage() {
   const dropdownRef = useRef();
   const isStudent = isStudentUserType();
 
+  const getFilteredQuizzes = useCallback(
+    (filter) => {
+      if (!quizList) {
+        return;
+      }
+      const currentDateTime = new Date();
+      switch (filter) {
+        case "New Quizzes":
+          return quizList.filter((quiz) => {
+            const endTime = new Date(quiz.endTime);
+            return currentDateTime <= endTime;
+          });
+        case "All Quizzes":
+          return quizList;
+        case "Past Quizzes":
+          return quizList.filter((quiz) => {
+            const endTime = new Date(quiz.endTime);
+            return currentDateTime > endTime;
+          });
+        default:
+          return;
+      }
+    },
+    [quizList]
+  );
+
   function refetchDataAndShowToast(successMessage) {
     fetchCourseObject(courseId).then((result) => {
       if (!result.success) {
@@ -47,13 +75,10 @@ export default function CoursePage() {
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
-          setFilteredQuizList(getFilteredQuizzes(selection));
         });
-      }
-      else {
+      } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
-          setFilteredQuizList(getFilteredQuizzes(selection));
         });
       }
 
@@ -65,37 +90,8 @@ export default function CoursePage() {
     });
   }
 
-  function getFilteredQuizzes(filter) {
-    if (!quizList) { return; }
-
-    const currentDateTime = new Date();
-    switch (filter) {
-      case "Active Quizzes":
-        return quizList.filter((quiz) => {
-          const startTime = new Date(quiz.startTime);
-          const endTime = new Date(quiz.endTime);
-          return currentDateTime >= startTime && currentDateTime <= endTime
-        });
-      case "Upcoming Quizzes":
-        return quizList.filter((quiz) => {
-          const startTime = new Date(quiz.startTime);
-          return currentDateTime < startTime
-        });
-      case "All Quizzes":
-        return quizList;
-      case "Past Quizzes":
-        return quizList.filter((quiz) => {
-          const endTime = new Date(quiz.endTime);
-          return currentDateTime > endTime
-        });
-      default:
-        return;
-    }
-  }
-
   function onSelectionChange(selection) {
     setSelection(selection);
-    setFilteredQuizList(getFilteredQuizzes(selection));
   }
 
   const variants = {
@@ -169,17 +165,14 @@ export default function CoursePage() {
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
-          setFilteredQuizList(getFilteredQuizzes(selection));
         });
-      }
-      else {
+      } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
-          setFilteredQuizList(getFilteredQuizzes(selection));
         });
       }
     });
-  }, [courseId, setCourseObject]);
+  }, [courseId, setQuizList, setCourseObject, isStudent]);
 
   return (
     <>
@@ -288,7 +281,9 @@ export default function CoursePage() {
               {!isStudent && (
                 <button
                   className="btn-outline py-0 text-sm w-28 h-8 sm:h-10 shrink-0"
-                  onClick={() => { quizCreateModalShowSet(true); }}
+                  onClick={() => {
+                    quizCreateModalShowSet(true);
+                  }}
                 >
                   Create Quiz
                 </button>
@@ -306,21 +301,26 @@ export default function CoursePage() {
           </div>
           <AnimatePresence>
             <motion.div
-              key={filteredQuizList}
+              key={getFilteredQuizzes(selection)}
               variants={variants}
               animate={"show"}
               initial={"hide"}
               exit={"hide"}
             >
-              {filteredQuizList.length === 0 ? (
-                selection === "All Quizzes" ? (
-                  <h1>Create quizzes to see them here!</h1>
+              {getFilteredQuizzes(selection) &&
+                (getFilteredQuizzes(selection).length === 0 ? (
+                  selection === "All Quizzes" ? (
+                    <h1>Create quizzes to see them here!</h1>
+                  ) : (
+                    <h1>No {selection} to display</h1>
+                  )
                 ) : (
-                  <h1>No {selection}</h1>
-                )
-              ) : (
-                <QuizList quizArr={filteredQuizList} courseCode={courseObject.courseCode} />
-              )}
+                  <QuizList
+                    accentColor={courseObject.accentColor}
+                    quizArr={getFilteredQuizzes(selection)}
+                    courseCode={courseObject.courseCode}
+                  />
+                ))}
             </motion.div>
           </AnimatePresence>
         </main>
@@ -329,18 +329,25 @@ export default function CoursePage() {
   );
 }
 
-function QuizList({ quizArr, courseCode }) {
+function QuizList({ quizArr, accentColor, courseCode }) {
   return (
     <div className={"flex flex-col w-full gap-4"}>
-      {quizArr.map((currQuizObject, idx) => {
-        return <QuizCard
-          quizObject={{
-            ...currQuizObject,
-            courseCode
-          }}
-          key={idx}
-        />;
-      })}
+      {quizArr
+        .sort((a, b) => {
+          return new Date(a.startTime) - new Date(b.startTime);
+        })
+        .map((currQuizObject, idx) => {
+          return (
+            <QuizCard
+              accentColor={accentColor}
+              quizObject={{
+                ...currQuizObject,
+                courseCode,
+              }}
+              key={idx}
+            />
+          );
+        })}
     </div>
   );
 }
