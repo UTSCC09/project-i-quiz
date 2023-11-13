@@ -46,7 +46,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
 
   switch (quizState) {
     case "available":
-      quizAvailabilityPrompt = "Available until " + startTimeStr;
+      quizAvailabilityPrompt = "Available until " + endTimeStr;
       isAvailable = true;
       break;
     case "upcoming":
