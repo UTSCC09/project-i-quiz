@@ -127,13 +127,13 @@ export default function DashboardPage() {
       "upcoming",
       isStudent ? "student" : "instructor"
     ).then((fetchedPayload) => {
-      upcomingQuizListSet(fetchedPayload);
+      upcomingQuizListSet(fetchedPayload ?? []);
     });
     getQuizzesForDashboard(
       "active",
       isStudent ? "student" : "instructor"
     ).then((fetchedPayload) => {
-      activeQuizListSet(fetchedPayload);
+      activeQuizListSet(fetchedPayload ?? []);
     });
   }, [
     activeCourseListSet,
@@ -282,7 +282,7 @@ export default function DashboardPage() {
                     }
                   />
                 )}
-                {activeQuizList.length !== 0 && (
+                {upcomingQuizList.length !== 0 && (
                   <Accordion
                     sectionName="Upcoming Quizzes"
                     content={
