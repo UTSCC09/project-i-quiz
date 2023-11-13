@@ -128,7 +128,6 @@ export default function QuizCreateModal({
                         JSON.parse(questionsArrRef.current.value)
                       );
                       addQuizCreationData("course", courseId);
-                      console.log(quizCreationData);
                       createQuiz(quizCreationData).then((result) => {
                         if (result.success) {
                           onSuccess(result.payload.quizName);

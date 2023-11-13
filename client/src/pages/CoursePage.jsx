@@ -309,7 +309,7 @@ export default function CoursePage() {
                 </motion.div>
               </div>
             ) : (
-              <div class="animate-pulse w-full">
+              <div className="animate-pulse w-full">
                 <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
                 <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
                 <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>

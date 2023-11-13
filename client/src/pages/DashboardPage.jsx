@@ -20,7 +20,6 @@ import {
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getQuizzesForDashboard } from "api/QuizApi";
-import { AnimatePresence, motion } from "framer-motion";
 
 /* -- API function calls -- */
 
@@ -31,23 +30,6 @@ async function fetchCourses() {
     return fetchInstructedCourses();
   }
 }
-
-const variants = {
-  show: {
-    opacity: 1,
-    scale: 1,
-    height: "auto",
-    transition: {
-      ease: "easeInOut",
-      duration: 0.3,
-    },
-  },
-  hide: {
-    opacity: 0,
-    scale: 0.95,
-    height: 0,
-  },
-};
 
 /* -- React Component -- */
 
@@ -320,7 +302,7 @@ export default function DashboardPage() {
                 )}
               </>
             ) : (
-              <div class="animate-pulse w-full">
+              <div className="animate-pulse w-full">
                 <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
                 <div className="bg-gray-200 h-20 md:h-24 rounded mb-8"></div>
                 <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
@@ -389,7 +371,7 @@ export default function DashboardPage() {
                 )}
               </>
             ) : (
-              <div class="animate-pulse w-full">
+              <div className="animate-pulse w-full">
                 <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
 
                 <div className="md:grid md:grid-cols-2 gap-x-[4%]">

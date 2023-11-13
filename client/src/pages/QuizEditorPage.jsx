@@ -1,6 +1,7 @@
 import { fetchInstructedCourses } from "api/CourseApi";
 import DropdownSelection from "components/elements/DropdownSelection";
 import Toast from "components/elements/Toast";
+import JSONImportModal from "components/page_components/JSONImportModal";
 import NavBar from "components/page_components/NavBar";
 import QuizReleaseModal from "components/page_components/QuizReleaseModal";
 import QuestionEditor from "components/quiz_editor/QuestionEditor";
@@ -16,7 +17,7 @@ export default function QuizEditorPage() {
   const [courseObject, courseObjectSet] = useState(passInCourseObject);
   const [questionList, questionListSet] = useState([
     {
-      id: 0,
+      id: "0",
       type: "MCQ",
       question: {
         prompt: "",
@@ -24,8 +25,9 @@ export default function QuizEditorPage() {
       },
     },
   ]);
-  const [questionCount, questionCountSet] = useState(1);
+  const [questionIdCounter, questionIdCounterSet] = useState(1);
   const [quizReleaseModalShow, quizReleaseModalShowSet] = useState(false);
+  const [jsonImportModalShow, jsonImportModalShowSet] = useState(false);
   const [activeCourseList, activeCourseListSet] = useState();
   const [quizName, quizNameSet] = useState("");
   const [quizCreationData, quizCreationDataSet] = useState({});
@@ -35,7 +37,7 @@ export default function QuizEditorPage() {
     questionListSet([
       ...questionList,
       {
-        id: questionCount,
+        id: String(questionIdCounter),
         type: "MCQ",
         question: {
           prompt: "",
@@ -43,7 +45,7 @@ export default function QuizEditorPage() {
         },
       },
     ]);
-    questionCountSet(questionCount + 1);
+    questionIdCounterSet(questionIdCounter + 1);
   }
 
   function removeQuestion(id) {
@@ -93,6 +95,11 @@ export default function QuizEditorPage() {
           });
         }}
       />
+      <JSONImportModal
+        modalShow={jsonImportModalShow}
+        modalShowSet={jsonImportModalShowSet}
+        questionListSet={questionListSet}
+      />
       <div className="min-h-screen w-full bg-gray-100 -z-50 flex flex-col items-center">
         <div className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6">
           <div className="relative bg-white h-fit py-8 sm:py-12 px-8 sm:px-16 rounded-md shadow-sm">
@@ -130,7 +137,7 @@ export default function QuizEditorPage() {
             return (
               <div
                 className="relative bg-white h-fit py-8 sm:py-12 px-8 sm:px-16 rounded-md shadow-sm"
-                key={idx}
+                key={question.id}
               >
                 <QuestionEditor
                   questionObject={question}
@@ -162,19 +169,28 @@ export default function QuizEditorPage() {
               </div>
             );
           })}
-          <div className="flex gap-4">
-            <button
-              type="button"
-              className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
-              onClick={() => {
-                addQuestion();
-              }}
-            >
-              + Add question
-            </button>
+          <div className="flex justify-between px-2">
+            <div className="flex gap-4">
+              <button
+                type="button"
+                className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
+                onClick={() => {
+                  addQuestion();
+                }}
+              >
+                + Add question
+              </button>
+              <button
+                type="button"
+                className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
+                onClick={() => jsonImportModalShowSet(true)}
+              >
+                Import JSON
+              </button>
+            </div>
             <button
               type="submit"
-              className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
+              className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
               onClick={() => {
                 let flag = true;
                 [...document.querySelectorAll("input")]

@@ -51,7 +51,7 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
               onChange({
                 prompt: questionObject.question.prompt,
                 choices: questionObject.question.choices ?? [
-                  { id: 0, content: "" },
+                  { id: "0", content: "" },
                 ],
               });
             }
@@ -63,12 +63,14 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
           questionBody={questionObject.question}
           onChange={onChange}
         />
-      ) : (
+      ) : questionType === "MCQ" || questionType === "MSQ" ? (
         <MCQEditor
           allowMultipleAnswer={questionType === "MSQ"}
           questionBody={questionObject.question}
           onChange={onChange}
         />
+      ) : (
+        <>Unsupported question type</>
       )}
     </div>
   );

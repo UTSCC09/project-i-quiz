@@ -28,7 +28,6 @@ const QuizPage = () => {
 
   useEffect(() => {
     getQuiz(quizId).then((payload) => {
-      console.log(payload);
       quizObjectSet(payload);
     });
   }, [quizId, quizObjectSet]);

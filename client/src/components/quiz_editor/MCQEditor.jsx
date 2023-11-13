@@ -5,27 +5,27 @@ export default function MCQEditor({
   questionBody,
   onChange,
 }) {
-  const [optionList, optionListSet] = useState(questionBody.choices);
+  const [optionList, optionListSet] = useState(questionBody.choices ?? []);
   const [questionDescription, questionDescriptionSet] = useState(
-    questionBody.prompt
+    questionBody.prompt ?? ""
   );
-  const [optionCount, optionCountSet] = useState(questionBody.choices.length);
-  const [answerIdList, answerIdListSet] = useState([]);
+  const [optionIdCounter, optionIdCounterSet] = useState(optionList.length);
+  const [answerIdList, answerIdListSet] = useState(questionBody.answers ?? []);
 
   function addOption() {
     optionListSet([
       ...optionList,
       {
-        id: String(optionCount),
+        id: String(optionIdCounter),
         content: "",
       },
     ]);
-    optionCountSet(optionCount + 1);
+    optionIdCounterSet(optionIdCounter + 1);
   }
 
   function removeOption(id) {
-    optionListSet(optionList.filter((option) => id !== option.id));
-    onChange({ prompt: questionDescription, choices: optionList });
+    const updatedOptionList = optionList.filter((option) => id !== option.id);
+    optionListSet(updatedOptionList);
   }
 
   function updateOption(id, content) {
@@ -123,7 +123,6 @@ function OptionInput({
         placeholder={placeholder}
         defaultValue={option.content}
         onInput={onInput}
-        autoFocus={option.id !== "0"}
         required
       />
       <div
@@ -152,7 +151,7 @@ function OptionInput({
       </div>
       <div
         title="Remove option"
-        className="absolute h-6 w-6 flex items-center justify-center right-2 top-1/2 -translate-y-1/2 text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all cursor-pointer"
+        className="absolute h-6 w-6 flex items-center justify-center right-2 top-1/2 -translate-y-1/2 text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
         onClick={() => {
           if (removeOption) removeOption(option.id);
         }}

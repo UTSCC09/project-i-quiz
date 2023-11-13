@@ -42,7 +42,6 @@ export default function QuizReleaseModal({
     addQuizCreationData("startTime", quizStartTimeInputRef.current.value);
     addQuizCreationData("endTime", quizEndTimeInputRef.current.value);
 
-    console.log(quizCreationData);
     createQuiz(quizCreationData).then((result) => {
       if (result.success) {
         onSuccess(result.payload.quizName);
