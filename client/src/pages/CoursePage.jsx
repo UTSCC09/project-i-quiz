@@ -25,7 +25,7 @@ export default function CoursePage() {
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
-  const [quizList, setQuizList] = useState();
+  const [quizList, setQuizList] = useState([]);
   const [courseObject, setCourseObject] = useState({});
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
@@ -39,7 +39,7 @@ export default function CoursePage() {
   const getFilteredQuizzes = useCallback(
     (filter) => {
       if (!quizList) {
-        return;
+        return [];
       }
       const currentDateTime = new Date();
       switch (filter) {
@@ -293,30 +293,19 @@ export default function CoursePage() {
               </div>
             </div>
           </div>
-          <AnimatePresence>
-            <motion.div
-              key={getFilteredQuizzes(selection)}
-              variants={variants}
-              animate={"show"}
-              initial={"hide"}
-              exit={"hide"}
-            >
-              {getFilteredQuizzes(selection) &&
-                (getFilteredQuizzes(selection).length === 0 ? (
-                  selection === "All Quizzes" ? (
-                    <h1>Create quizzes to see them here!</h1>
-                  ) : (
-                    <h1>No {selection} to display</h1>
-                  )
-                ) : (
-                  <QuizList
-                    accentColor={courseObject.accentColor}
-                    quizArr={getFilteredQuizzes(selection)}
-                    courseCode={courseObject.courseCode}
-                  />
-                ))}
-            </motion.div>
-          </AnimatePresence>
+          {getFilteredQuizzes(selection).length === 0 ? (
+            <div className=" bg-gray-200 px-6 py-4 rounded-md text-sm sm:text-base">
+              {selection === "All Quizzes"
+                ? `No quizzes available`
+                : `No ${selection.toLowerCase()} available`}
+            </div>
+          ) : (
+            <QuizList
+              accentColor={courseObject.accentColor}
+              quizArr={getFilteredQuizzes(selection)}
+              courseCode={courseObject.courseCode}
+            />
+          )}
         </main>
       </div>
     </>
