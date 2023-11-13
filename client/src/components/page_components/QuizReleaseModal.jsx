@@ -47,7 +47,9 @@ export default function QuizReleaseModal({
         onSuccess(result.payload.quizName);
         modalShowSet(false);
       } else {
-        alertRef.current.setMessage(result.message || "Something went wrong");
+        alertRef.current.setMessage(
+          result.message || "Could not release quiz. Please try again later"
+        );
         alertRef.current.show();
       }
     });
@@ -78,7 +80,7 @@ export default function QuizReleaseModal({
                     <input
                       name="quizStartTime"
                       ref={quizStartTimeInputRef}
-                      className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm w-full"
+                      className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm w-full cursor-pointer hover:bg-gray-50 transition-all"
                       type="datetime-local"
                     />
                   </div>
@@ -87,7 +89,7 @@ export default function QuizReleaseModal({
                     <input
                       name="quizEndTime"
                       ref={quizEndTimeInputRef}
-                      className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm w-full"
+                      className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm w-full cursor-pointer hover:bg-gray-50 transition-all"
                       type="datetime-local"
                     />
                   </div>
