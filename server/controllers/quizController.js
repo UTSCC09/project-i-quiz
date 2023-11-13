@@ -687,6 +687,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
       }
       formattedQuesions.push({
         questionId: question._id,
+        type: quiz.questions[i].type,
         question: question
       });
     } catch (error) {
