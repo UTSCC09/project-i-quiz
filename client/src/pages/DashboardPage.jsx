@@ -348,24 +348,26 @@ export default function DashboardPage() {
                 </div>
               }
             />
-            <Accordion
-              collapsed
-              sectionName={"Archived Courses"}
-              content={
-                <div className="flex flex-wrap gap-x-[4%] gap-y-6 md:gap-y-8">
-                  {archivedCourseList.map((courseObject, idx) => {
-                    return (
-                      <CourseCard
-                        courseObject={courseObject}
-                        targetCourseObjectSet={targetCourseObjectSet}
-                        courseArchiveModalShowSet={courseArchiveModalShowSet}
-                        key={idx}
-                      />
-                    );
-                  })}
-                </div>
-              }
-            />
+            {archivedCourseList.length !== 0 && (
+              <Accordion
+                collapsed
+                sectionName={"Archived Courses"}
+                content={
+                  <div className="flex flex-wrap gap-x-[4%] gap-y-6 md:gap-y-8">
+                    {archivedCourseList.map((courseObject, idx) => {
+                      return (
+                        <CourseCard
+                          courseObject={courseObject}
+                          targetCourseObjectSet={targetCourseObjectSet}
+                          courseArchiveModalShowSet={courseArchiveModalShowSet}
+                          key={idx}
+                        />
+                      );
+                    })}
+                  </div>
+                }
+              />
+            )}
           </div>
         </main>
       </div>
