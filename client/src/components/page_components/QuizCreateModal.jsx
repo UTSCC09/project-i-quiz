@@ -3,7 +3,7 @@ import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
 import SingleLineInput from "components/elements/SingleLineInput";
 import FreeFormInput from "components/elements/FreeFormInput";
-import { DateTimeField } from '@mui/x-date-pickers';
+import { DateTimeField } from "@mui/x-date-pickers";
 import { createQuiz } from "api/QuizApi";
 
 export default function QuizCreateModal({
@@ -45,8 +45,10 @@ export default function QuizCreateModal({
 
     let startTime = Date.parse(quizStartTimeInputRef.current.value);
     let endTime = Date.parse(quizEndTimeInputRef.current.value);
-    if (startTime < Date.now() || endTime < startTime) {
-      alertRef.current.setMessage("Need a future start time and a later end time");
+    if (endTime < startTime) {
+      alertRef.current.setMessage(
+        "The end time must be later than the start time"
+      );
       alertRef.current.show();
       return;
     }
@@ -56,20 +58,24 @@ export default function QuizCreateModal({
     const formData = new FormData(e.target);
     formData.forEach((value, key) => addQuizCreationData(key, value));
     if (quizCreationData["quizStartTime"]) {
-      addQuizCreationData("startTime", new Date(quizCreationData["quizStartTime"]));
+      addQuizCreationData(
+        "startTime",
+        new Date(quizCreationData["quizStartTime"])
+      );
     }
     if (quizCreationData["quizEndTime"]) {
-      addQuizCreationData("endTime", new Date(quizCreationData["quizEndTime"]));
+      addQuizCreationData(
+        "endTime",
+        new Date(quizCreationData["quizEndTime"])
+      );
     }
 
     stepSet(step + 1);
   };
 
-  return(
+  return (
     modalShow && (
-      <div
-        className="fixed z-50 h-screen w-screen"
-      >
+      <div className="fixed z-50 h-screen w-screen">
         <Modal
           modalShow={modalShow}
           modalShowSet={modalShowSet}
@@ -117,7 +123,9 @@ export default function QuizCreateModal({
                         />
                       </div>
                     </div>
-                    <button type="submit" className="btn-primary">Next</button>
+                    <button type="submit" className="btn-primary">
+                      Next
+                    </button>
                   </form>
                 </div>
               )}
@@ -130,7 +138,9 @@ export default function QuizCreateModal({
                     ref={questionsArrRef}
                     name="questionsArr"
                     label="Questions array (JSON)"
-                    onChange={(e) => setQuestionsArrField(JSON.parse(e.target.value))}
+                    onChange={(e) =>
+                      setQuestionsArrField(JSON.parse(e.target.value))
+                    }
                   />
                   <button
                     className="btn-primary"
@@ -144,9 +154,7 @@ export default function QuizCreateModal({
                       console.log(quizCreationData);
                       createQuiz(quizCreationData).then((result) => {
                         if (result.success) {
-                          onSuccess(
-                            result.payload.quizName
-                          );
+                          onSuccess(result.payload.quizName);
                           resetAllStates();
                           modalShowSet(false);
                         } else {
