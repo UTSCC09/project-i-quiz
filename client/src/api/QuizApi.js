@@ -21,33 +21,33 @@ const createQuiz = async (quizData) => {
     });
 };
 
-const getQuiz = async (quizId) => {
-  return fetch(`/api/quizzes/${quizId}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-  })
-    .then(async (response) => {
-      if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
-          window.location.reload();
-        });
-      }
-      return response.json();
-    })
-    .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-        return [];
-      }
-      return result.payload;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
+// const getQuiz = async (quizId) => {
+//   return fetch(`/api/quizzes/${quizId}`, {
+//     method: "GET",
+//     headers: { "Content-Type": "application/json" },
+//     withCredentials: true,
+//   })
+//     .then(async (response) => {
+//       if (response.status === 401) {
+//         await fetch("/api/users/logout", { method: "GET" }).then(() => {
+//           window.location.reload();
+//         });
+//       }
+//       return response.json();
+//     })
+//     .then((result) => {
+//       if (!result.success) {
+//         console.error(result.message);
+//         return [];
+//       }
+//       return result.payload;
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//     });
+// };
 
-const quizObject = async (quizId) => {
+const getQuiz = async (quizId) => {
   return fetch(`/api/quizzes/${quizId}/questions`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -201,5 +201,5 @@ export {
   getQuizzesForEnrolledCourse,
   basicUpdateQuiz,
   updateQuizQuestion,
-  addQuizQuestions
+  addQuizQuestions,
 };
