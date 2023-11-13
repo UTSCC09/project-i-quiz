@@ -16,7 +16,7 @@ export default function MCQEditor({
     optionListSet([
       ...optionList,
       {
-        id: optionCount,
+        id: String(optionCount),
         content: "",
       },
     ]);

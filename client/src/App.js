@@ -59,7 +59,7 @@ const App = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="*" element={<NotFoundPage />} />
-      <Route path="/edit-quiz" element={<QuizEditorPage />} />
+      <Route path="/create-quiz" element={<QuizEditorPage />} />
     </Routes>
   );
 };

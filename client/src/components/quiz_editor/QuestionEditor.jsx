@@ -38,40 +38,38 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
   }
 
   return (
-    <div className="w-full bg-white h-fit py-12 sm:py-16 px-8 sm:px-16 rounded shadow-sm">
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-4">
-          <DropdownSelection
-            selections={questionTypeNames}
-            selection={questionTypeCodeToName(questionType)}
-            width="150px"
-            onSelectionChange={(questionTypeName) => {
-              const newTypeCode = questionTypeNameToCode(questionTypeName);
-              questionTypeSet(newTypeCode);
-              if (newTypeCode) {
-                onChange({
-                  prompt: questionObject.question.prompt,
-                  choices: questionObject.question.choices ?? [
-                    { id: 0, content: "" },
-                  ],
-                });
-              }
-            }}
-          />
-        </div>
-        {questionType === "OEQ" ? (
-          <OEQEditor
-            questionBody={questionObject.question}
-            onChange={onChange}
-          />
-        ) : (
-          <MCQEditor
-            allowMultipleAnswer={questionType === "MSQ"}
-            questionBody={questionObject.question}
-            onChange={onChange}
-          />
-        )}
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-4">
+        <DropdownSelection
+          selections={questionTypeNames}
+          selection={questionTypeCodeToName(questionType)}
+          width="150px"
+          onSelectionChange={(questionTypeName) => {
+            const newTypeCode = questionTypeNameToCode(questionTypeName);
+            questionTypeSet(newTypeCode);
+            if (newTypeCode) {
+              onChange({
+                prompt: questionObject.question.prompt,
+                choices: questionObject.question.choices ?? [
+                  { id: 0, content: "" },
+                ],
+              });
+            }
+          }}
+        />
       </div>
+      {questionType === "OEQ" ? (
+        <OEQEditor
+          questionBody={questionObject.question}
+          onChange={onChange}
+        />
+      ) : (
+        <MCQEditor
+          allowMultipleAnswer={questionType === "MSQ"}
+          questionBody={questionObject.question}
+          onChange={onChange}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
@@ -157,7 +157,6 @@ export default function CoursePage() {
         return;
       }
       setCourseObject(result.payload);
-      document.querySelector("main").classList.remove("hidden");
 
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
@@ -221,17 +220,19 @@ export default function CoursePage() {
       />
       <NavBar />
       <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
-        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem] hidden">
-          <div className="flex items-end justify-between mb-6 md:mb-8">
+        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
+          <div className="flex items-end justify-between mb-6 md:mb-8 h-16">
             <div className="flex flex-col pr-4">
               <div className="flex items-center gap-3">
                 <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
                   {courseObject.courseCode}
                 </span>
-                <Badge
-                  label={courseObject.courseSemester}
-                  accentColor={courseObject.accentColor}
-                />
+                {courseObject.courseSemester && (
+                  <Badge
+                    label={courseObject.courseSemester}
+                    accentColor={courseObject.accentColor}
+                  />
+                )}
               </div>
               <span className="text-gray-500 text-sm ml-0.5">
                 {courseObject.courseName}
@@ -262,14 +263,13 @@ export default function CoursePage() {
                 options={courseEditOptions}
               />
               {!isStudent && (
-                <button
+                <Link
+                  to="/create-quiz"
+                  state={{ passInCourseObject: courseObject }}
                   className="bg-white shadow-sm h-10 px-4 text-sm text-center rounded-md text-gray-700 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  onClick={() => {
-                    quizCreateModalShowSet(true);
-                  }}
                 >
                   Create Quiz
-                </button>
+                </Link>
               )}
               <div className="shadow-sm">
                 <DropdownSelection
