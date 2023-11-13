@@ -23,7 +23,7 @@ const MCQSchema = new mongoose.Schema({
     ],
     required: [true, "Please provide choices"],
   },
-  answer: {
+  answers: {
     type: [String],
   },
 });

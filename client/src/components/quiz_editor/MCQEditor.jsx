@@ -10,7 +10,7 @@ export default function MCQEditor({
     questionBody.prompt
   );
   const [optionCount, optionCountSet] = useState(questionBody.choices.length);
-  const [answerId, answerIdSet] = useState([]);
+  const [answerIdList, answerIdListSet] = useState([]);
 
   function addOption() {
     optionListSet([
@@ -38,26 +38,30 @@ export default function MCQEditor({
     optionListSet(updatedOptionList);
   }
 
-  function addAnswerId(id) {
-    if (allowMultipleAnswer) answerIdSet([...answerId, id]);
-    else answerIdSet([id]);
+  function addanswerIdList(id) {
+    if (allowMultipleAnswer) answerIdListSet([...answerIdList, id]);
+    else answerIdListSet([id]);
   }
 
-  function removeAnswerId(id) {
-    answerIdSet(answerId.filter((aId) => aId !== id));
+  function removeanswerIdList(id) {
+    answerIdListSet(answerIdList.filter((aId) => aId !== id));
   }
 
-  function toggleAnswerId(id) {
-    if (answerId.includes(id)) {
-      removeAnswerId(id);
+  function toggleanswerIdList(id) {
+    if (answerIdList.includes(id)) {
+      removeanswerIdList(id);
     } else {
-      addAnswerId(id);
+      addanswerIdList(id);
     }
   }
 
   useEffect(() => {
-    onChange({ prompt: questionDescription, choices: optionList });
-  }, [onChange, questionDescription, optionList]);
+    onChange({
+      prompt: questionDescription,
+      choices: optionList,
+      answers: answerIdList,
+    });
+  }, [onChange, questionDescription, optionList, answerIdList]);
 
   return (
     <div className="flex flex-col gap-4 text-sm">
@@ -75,8 +79,8 @@ export default function MCQEditor({
           <OptionInput
             option={option}
             placeholder={`Option ${idx + 1}`}
-            isAnswer={answerId.includes(option.id)}
-            toggleAnswerId={toggleAnswerId}
+            isAnswer={answerIdList.includes(option.id)}
+            toggleanswerIdList={toggleanswerIdList}
             removeOption={removeOption}
             onInput={(e) => {
               updateOption(option.id, e.target.value);
@@ -102,7 +106,7 @@ function OptionInput({
   option,
   placeholder,
   isAnswer,
-  toggleAnswerId,
+  toggleanswerIdList,
   removeOption,
   onInput,
 }) {
@@ -149,7 +153,7 @@ function OptionInput({
         title="Set as answer"
         className="absolute h-6 w-6 flex items-center justify-center invisible group-hover:visible peer-checked:visible peer-checked:text-green-600 right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:bg-gray-100 transition-all rounded-lg"
         onClick={() => {
-          toggleAnswerId(option.id);
+          toggleanswerIdList(option.id);
         }}
       >
         {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
