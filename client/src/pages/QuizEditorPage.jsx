@@ -68,8 +68,11 @@ export default function QuizEditorPage() {
 
   useEffect(() => {
     fetchInstructedCourses().then((payload) => {
-      activeCourseListSet(payload);
-      if (!courseObject) courseObjectSet(payload[0]);
+      const filteredPayload = payload.filter(
+        (course) => course.archived === false
+      );
+      activeCourseListSet(filteredPayload);
+      if (!courseObject) courseObjectSet(filteredPayload[0]);
     });
   }, [activeCourseListSet, courseObject, courseObjectSet, location.state]);
 
@@ -136,9 +139,12 @@ export default function QuizEditorPage() {
           {questionList.map((question, idx) => {
             return (
               <div
-                className="relative bg-white h-fit py-8 sm:py-12 px-8 sm:px-16 rounded-md shadow-sm"
+                className="relative bg-white h-fit py-8 sm:py-12 px-8 sm:px-12 lg:px-16 rounded-md shadow-sm flex flex-col"
                 key={question.id}
               >
+                <span className="font-semibold text-xs uppercase text-gray-500 mb-6 ml-1">
+                  Question {idx + 1} / {questionList.length}
+                </span>
                 <QuestionEditor
                   questionObject={question}
                   updateQuestion={updateQuestion}

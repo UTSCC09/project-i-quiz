@@ -290,7 +290,7 @@ export default function CoursePage() {
             {quizList ? (
               <div>
                 {getFilteredQuizzes(selection).length === 0 && (
-                  <div className=" bg-gray-200 px-6 h-16 pt-5 rounded-md text-sm sm:text-base">
+                  <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
                     {selection === "All Quizzes"
                       ? `No quizzes available`
                       : `No ${selection.toLowerCase()} available`}
