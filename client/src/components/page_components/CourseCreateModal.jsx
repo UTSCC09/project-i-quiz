@@ -155,7 +155,7 @@ export default function CourseCreateModal({
                       inputType="number"
                     />
                     <div
-                      className="absolute z-10 text-slate-400 text-center right-0 top-1/2 p-4 -translate-y-1/2 cursor-pointer hover:opacity-50 transition"
+                      className="absolute z-10 text-black text-opacity-30 text-center right-2 top-1/2 p-2.5 -translate-y-1/2 cursor-pointer hover:bg-black hover:bg-opacity-5 rounded-lg transition-all"
                       onClick={() => {
                         helpMessageShowSet(!helpMessageShow);
                       }}
