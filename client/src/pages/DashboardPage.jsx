@@ -104,36 +104,35 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setSelectedTab(selectedTab);
-    fetchCourses().then((fetchedPayload) => {
-      if (fetchedPayload) {
-        activeCourseListSet(
-          fetchedPayload.filter((course) => course.archived === false)
-        );
-        archivedCourseListSet(
-          fetchedPayload.filter((course) => course.archived === true)
-        );
-      }
-      const { passInMessage } = location.state ?? "";
-      if (passInMessage) {
-        toastMessageSet(passInMessage);
-        navigate("", {});
-        setTimeout(() => {
-          toastMessageSet();
-        }, 3000);
-      }
-    });
-
     getQuizzesForDashboard(
       "upcoming",
       isStudent ? "student" : "instructor"
     ).then((fetchedPayload) => {
       upcomingQuizListSet(fetchedPayload ?? []);
-    });
-    getQuizzesForDashboard(
-      "active",
-      isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
-      activeQuizListSet(fetchedPayload ?? []);
+      getQuizzesForDashboard(
+        "active",
+        isStudent ? "student" : "instructor"
+      ).then((fetchedPayload) => {
+        activeQuizListSet(fetchedPayload ?? []);
+        fetchCourses().then((fetchedPayload) => {
+          if (fetchedPayload) {
+            activeCourseListSet(
+              fetchedPayload.filter((course) => course.archived === false)
+            );
+            archivedCourseListSet(
+              fetchedPayload.filter((course) => course.archived === true)
+            );
+          }
+          const { passInMessage } = location.state ?? "";
+          if (passInMessage) {
+            toastMessageSet(passInMessage);
+            navigate("", {});
+            setTimeout(() => {
+              toastMessageSet();
+            }, 3000);
+          }
+        });
+      });
     });
   }, [
     activeCourseListSet,
@@ -146,14 +145,14 @@ export default function DashboardPage() {
   ]);
 
   useEffect(() => {
-    if (
-      activeQuizList &&
-      upcomingQuizList &&
-      activeQuizList.length === 0 &&
-      upcomingQuizList.length === 0
-    ) {
-      quizSectionRef.current.style.display = "none";
-      courseSectionRef.current.style.width = "100%";
+    if (activeQuizList && upcomingQuizList) {
+      if (activeQuizList.length === 0 && upcomingQuizList.length === 0) {
+        quizSectionRef.current.classList.remove("lg:flex");
+        courseSectionRef.current.classList.remove("lg:w-[65%]");
+      } else {
+        quizSectionRef.current.classList.add("lg:flex");
+        courseSectionRef.current.classList.add("lg:w-[65%]");
+      }
     }
   }, [activeQuizList, upcomingQuizList]);
 
@@ -328,7 +327,7 @@ export default function DashboardPage() {
           {/* --- Course Section --- */}
           <div
             ref={courseSectionRef}
-            className="hidden flex flex-col gap-8 lg:flex lg:w-[65%]"
+            className="hidden flex flex-col gap-8 w-full lg:flex lg:w-[65%]"
           >
             {activeCourseList && archivedCourseList ? (
               <>
@@ -385,7 +384,6 @@ export default function DashboardPage() {
             ) : (
               <div className="animate-pulse w-full">
                 <div className="bg-gray-200 h-6 rounded mb-4 w-32"></div>
-
                 <div className="md:grid md:grid-cols-2 gap-x-[4%]">
                   <div className="bg-gray-200 h-24 md:h-36 rounded mb-8"></div>
                   <div className="bg-gray-200 h-24 md:h-36 rounded mb-8"></div>
