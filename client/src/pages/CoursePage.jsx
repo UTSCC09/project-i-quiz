@@ -240,13 +240,13 @@ export default function CoursePage() {
             <div className="flex items-center gap-2 sm:gap-4">
               <DropdownMenu
                 buttonElement={
-                  <button className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-gray-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
+                  <button className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-gray-700 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
                     {/* [Credit]: svg from https://heroicons.dev */}
                     <svg
                       className="h-5"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth={1.5}
+                      strokeWidth={1.3}
                       viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
                       aria-hidden="true"
@@ -261,6 +261,16 @@ export default function CoursePage() {
                 }
                 options={courseEditOptions}
               />
+              {!isStudent && (
+                <button
+                  className="bg-white shadow-sm h-10 px-4 text-sm text-center rounded-md text-gray-700 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
+                  onClick={() => {
+                    quizCreateModalShowSet(true);
+                  }}
+                >
+                  Create Quiz
+                </button>
+              )}
               <div className="shadow-sm">
                 <DropdownSelection
                   selections={filters}

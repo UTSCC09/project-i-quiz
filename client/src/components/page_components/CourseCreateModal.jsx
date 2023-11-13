@@ -47,9 +47,11 @@ export default function CourseCreateModal({
   async function submitCreateCourseForm(e) {
     e.preventDefault();
     let inputsValidated = courseNameInputRef.current.validate("required");
-    inputsValidated = semesterDropdownRef.current.validate() && inputsValidated;
+    inputsValidated =
+      semesterDropdownRef.current.validate() && inputsValidated;
     inputsValidated = yearDropdownRef.current.validate() && inputsValidated;
-    inputsValidated = courseCodeInputRef.current.validate("required") && inputsValidated;
+    inputsValidated =
+      courseCodeInputRef.current.validate("required") && inputsValidated;
 
     if (!inputsValidated) {
       alertRef.current.setMessage("Please fill out all required fields");
@@ -63,8 +65,7 @@ export default function CourseCreateModal({
     formData.forEach((value, key) => addCourseCreationData(key, value));
     if (!courseCreationData["numOfSessions"]) {
       addCourseCreationData("numOfSessions", 1);
-    }
-    else if (courseCreationData["numOfSessions"] < 0) {
+    } else if (courseCreationData["numOfSessions"] < 0) {
       alertRef.current.setMessage("Number of sections cannot be negative");
       alertRef.current.show();
       return;
@@ -148,7 +149,7 @@ export default function CourseCreateModal({
                   </div>
                   <div className="relative">
                     <SingleLineInput
-                      ref={sectionNumInputRef}
+                      ref={sessionNumInputRef}
                       name="numOfSessions"
                       label="Number of sections (Optional)"
                       inputType="number"
