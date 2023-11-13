@@ -601,6 +601,118 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Questions added successfully"));
 });
 
+//@route  GET api/quizzes/course/enrolled
+//@desc   Allow student to get all upcoming quizzes for every course they are enrolled in
+//@access Private
+const getUpcomingQuizzesAllCourses = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let student;
+  try {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+    else if (student.type !== "student") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  const formattedQuizzes = [];
+  //Get quizzes for course
+  for (let i = 0; i < course.quizzes.length; i++) {
+    try {
+      const quiz = await Quiz.findById(course.quizzes[i]);
+      if (!quiz) {
+        return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+      }
+      const currentDateTime = new Date();
+      let currentQuizStatus = "";
+      if (currentDateTime < quiz.startTime ) { currentQuizStatus = "Upcoming"; }
+      else if (currentDateTime > quiz.endTime) { currentQuizStatus = "Past"; }
+      else { currentQuizStatus = "Active"; }
+      formattedQuizzes.push({
+        quizId: quiz._id,
+        quizName: quiz.quizName,
+        status: currentQuizStatus,
+        releaseDate: quiz.startTime,
+        dueDate: quiz.endTime
+      });
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, "Mongoose error finding quizzes for course"));
+    }
+  }
+
+  return res.status(200).json(formatMessage(true, "Quizzes found", formattedQuizzes));
+});
+
+//@route  GET api/quizzes/:quizId/questions
+//@desc   Allow anyone to get the full quiz with questions
+//@access Private
+const getQuizObject = asyncHandler(async (req, res) => {
+  let quiz;
+  try {
+    quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  //Get questions for quiz
+  const formattedQuesions = [];
+  for (let i = 0; i < quiz.questions.length; i++) {
+    try {
+      let question;
+      switch(quiz.questions[i].type) {
+        case "MCQ":
+          question = await MCQ.findById(quiz.questions[i].question);
+          break;
+        case "MSQ":
+          question = await MSQ.findById(quiz.questions[i].question);
+          break;
+        case "CLO":
+          question = await CLO.findById(quiz.questions[i].question);
+          break;
+        case "OEQ":
+          question = await OEQ.findById(quiz.questions[i].question);
+          break;
+        default:
+          return res.status(400).json(formatMessage(false, "Invalid question type"));
+      }
+      if (!question) {
+        return res.status(400).json(formatMessage(false, "Invalid question id"));
+      }
+      formattedQuesions.push({
+        questionId: question._id,
+        question: question
+      });
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, "Mongoose error finding question"));
+    }
+  }
+
+  let course;
+  try {
+    course = await Course.findById(quiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id in quiz"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz course"));
+  }
+
+  return res.status(200).json(formatMessage(true, "Quiz found", {
+    quizName: quiz.quizName,
+    course: course.courseName,
+    startTime: quiz.startTime,
+    endTime: quiz.endTime,
+    questions: formattedQuesions
+  }));
+});
+
 export {
   createQuiz,
   getQuiz,
@@ -608,5 +720,6 @@ export {
   getQuizzesForEnrolledCourse,
   basicUpdateQuiz,
   updateQuizQuestion,
-  addQuizQuestions
+  addQuizQuestions,
+  getQuizObject
 };

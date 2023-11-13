@@ -6,7 +6,8 @@ import {
   getQuizzesForEnrolledCourse,
   basicUpdateQuiz,
   updateQuizQuestion,
-  addQuizQuestions
+  addQuizQuestions,
+  getQuizObject
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -22,6 +23,9 @@ router.route("/question")
 
 router.route("/:quizId")
   .get(protect, getQuiz)
+
+router.route("/:quizId/questions")
+  .get(protect, getQuizObject)
 
 router.route("/course/instructed/:courseId")
   .get(protect, getQuizzesForInstructedCourse);
