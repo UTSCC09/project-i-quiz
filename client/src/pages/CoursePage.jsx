@@ -249,7 +249,7 @@ export default function CoursePage() {
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="relative">
-                <div
+                <button
                   className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
                   onClick={() => {
                     setCourseSettingsDropdownShow(true);
@@ -271,7 +271,7 @@ export default function CoursePage() {
                       d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
                     />
                   </svg>
-                </div>
+                </button>
                 <DropdownMenu
                   options={courseEditOptions}
                   dropdownShow={courseSettingsDropdownShow}
@@ -280,7 +280,7 @@ export default function CoursePage() {
               </div>
               {!isStudent && (
                 <button
-                  className="btn-outline py-0 text-sm w-28 h-8 sm:h-10 shrink-0"
+                  className="bg-white shadow-sm h-10 px-4 text-sm text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
                   onClick={() => {
                     quizCreateModalShowSet(true);
                   }}

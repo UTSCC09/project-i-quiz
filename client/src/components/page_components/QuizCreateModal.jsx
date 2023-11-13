@@ -3,7 +3,6 @@ import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
 import SingleLineInput from "components/elements/SingleLineInput";
 import FreeFormInput from "components/elements/FreeFormInput";
-import { DateTimeField } from "@mui/x-date-pickers";
 import { createQuiz } from "api/QuizApi";
 
 export default function QuizCreateModal({
@@ -83,7 +82,7 @@ export default function QuizCreateModal({
             resetAllStates();
           }}
           content={
-            <div className="sm:w-96">
+            <div className="sm:w-[28rem]">
               {/* --- Step 1 --- */}
               {step === 0 && (
                 <div className="flex flex-col gap-6">
@@ -104,22 +103,18 @@ export default function QuizCreateModal({
                         label="Quiz name"
                         acceptSpace
                       />
-                      <div className="flex gap-2">
-                        <DateTimeField
-                          label="Start time"
+                      <div className="flex justify-between">
+                        <input
                           name="quizStartTime"
-                          inputRef={quizStartTimeInputRef}
-                          format="L HH:mm"
-                          clearable={true}
-                          required={true}
+                          ref={quizStartTimeInputRef}
+                          className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm text-gray-700"
+                          type="datetime-local"
                         />
-                        <DateTimeField
-                          label="End time"
+                        <input
                           name="quizEndTime"
-                          inputRef={quizEndTimeInputRef}
-                          format="L HH:mm"
-                          clearable={true}
-                          required={true}
+                          ref={quizEndTimeInputRef}
+                          className="border outline-none focus:ring ring-blue-200 rounded-md py-3 px-4 text-sm text-gray-700"
+                          type="datetime-local"
                         />
                       </div>
                     </div>

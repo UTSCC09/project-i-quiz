@@ -8,10 +8,8 @@ import NotFoundPage from "pages/NotFoundPage";
 import DashboardPage from "pages/DashboardPage";
 import CoursePage from "pages/CoursePage";
 import ProtectedRoute from "components/ProtectedRoute";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 
-const App = () => {  
+const App = () => {
   const { pathname } = useLocation();
 
   /* Scroll to top on redirects */
@@ -20,37 +18,47 @@ const App = () => {
   }, [pathname]);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Routes>
-        {/* -- Protected Routes -- */}
-        <Route path="/" element={ 
+    <Routes>
+      {/* -- Protected Routes -- */}
+      <Route
+        path="/"
+        element={
           <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
-        } />
+        }
+      />
 
-        <Route path="/quiz/:quizId" element={ 
+      <Route
+        path="/quiz/:quizId"
+        element={
           <ProtectedRoute>
             <QuizPage />
           </ProtectedRoute>
-        } />
-        <Route path="/home" element={ 
+        }
+      />
+      <Route
+        path="/home"
+        element={
           <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
-        } />
-        <Route path="/courses/:courseId" element={ 
+        }
+      />
+      <Route
+        path="/courses/:courseId"
+        element={
           <ProtectedRoute>
             <CoursePage />
           </ProtectedRoute>
-        } />
+        }
+      />
 
-        {/* -- Public Routes -- */}
-        <Route path="/login" element={ <LoginPage /> } />
-        <Route path="/signup" element={ <SignUpPage /> } />
-        <Route path="*" element={ <NotFoundPage />} />
-      </Routes>
-    </LocalizationProvider>
+      {/* -- Public Routes -- */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
-}
+};
 export default App;
