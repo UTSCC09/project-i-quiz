@@ -685,11 +685,11 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
 
   let formattedQuizzes = [];
   //Get quizzes for every enrolled course
-  student.courses.forEach(async (currentCourse) => {
-    const accentColor = currentCourse.accentColor;
+  for (let j = 0; j < student.courses.length; j++) {
+    const accentColor = student.courses[j].accentColor;
     let course;
     try {
-      course = await Course.findById(currentCourse.courseId);
+      course = await Course.findById(student.courses[j].courseId);
       if (!course) {
         return res.status(400).json(formatMessage(false, "Invalid course id in quiz"));
       }
@@ -705,7 +705,6 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
         }
         const currentDateTime = new Date();
         if (currentDateTime < quiz.startTime ) {
-          console.log("in upcoming condition");
           formattedQuizzes.push({
             quizId: quiz._id,
             quizName: quiz.quizName,
@@ -714,14 +713,12 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
             releaseDate: quiz.startTime,
             dueDate: quiz.endTime
           });
-          //console.log("updated formattedQuizzes", formattedQuizzes);
         }
       } catch (error) {
         return res.status(400).json(formatMessage(false, "Mongoose error finding quizzes for course"));
       }
     }
-  });
-  console.log(formattedQuizzes);
+  }
   
   return res.status(200).json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
 });
