@@ -6,7 +6,12 @@ import {
   getQuizzesForEnrolledCourse,
   basicUpdateQuiz,
   updateQuizQuestion,
-  addQuizQuestion
+  addQuizQuestions,
+  getQuizObject,
+  getUpcomingQuizzesForEnrolledCourses,
+  getUpcomingQuizzesForInstructedCourses,
+  getActiveQuizzesForEnrolledCourses,
+  getActiveQuizzesForInstructedCourses,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -17,11 +22,26 @@ router.route("/")
   .patch(protect, basicUpdateQuiz);
 
 router.route("/question")
-  .post(protect, addQuizQuestion)
+  .post(protect, addQuizQuestions)
   .patch(protect, updateQuizQuestion);
+
+router.route("/upcoming/student")
+  .get(protect, getUpcomingQuizzesForEnrolledCourses);
+
+router.route("/upcoming/instructor")
+  .get(protect, getUpcomingQuizzesForInstructedCourses);
+
+router.route("/active/student")
+  .get(protect, getActiveQuizzesForEnrolledCourses);
+
+router.route("/active/instructor")
+  .get(protect, getActiveQuizzesForInstructedCourses);
 
 router.route("/:quizId")
   .get(protect, getQuiz)
+
+router.route("/:quizId/questions")
+  .get(protect, getQuizObject)
 
 router.route("/course/instructed/:courseId")
   .get(protect, getQuizzesForInstructedCourse);

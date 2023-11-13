@@ -18,7 +18,7 @@ export default function CourseCreateModal({
   const semesterDropdownRef = useRef();
   const courseNameInputRef = useRef();
   const courseCodeInputRef = useRef();
-  const sectionNumInputRef = useRef();
+  const sessionNumInputRef = useRef();
   const accessCodeInputRef = useRef();
   const yearDropdownRef = useRef();
 
@@ -47,20 +47,12 @@ export default function CourseCreateModal({
   async function submitCreateCourseForm(e) {
     e.preventDefault();
     let inputsValidated = courseNameInputRef.current.validate("required");
-    inputsValidated =
-      semesterDropdownRef.current.validate() && inputsValidated;
+    inputsValidated = semesterDropdownRef.current.validate() && inputsValidated;
     inputsValidated = yearDropdownRef.current.validate() && inputsValidated;
-    inputsValidated =
-      courseCodeInputRef.current.validate("required") && inputsValidated;
+    inputsValidated = courseCodeInputRef.current.validate("required") && inputsValidated;
 
     if (!inputsValidated) {
       alertRef.current.setMessage("Please fill out all required fields");
-      alertRef.current.show();
-      return;
-    }
-
-    if (courseCreationData["numOfSessions"] < 0) {
-      alertRef.current.setMessage("Number of sections cannot be negative");
       alertRef.current.show();
       return;
     }
@@ -71,6 +63,11 @@ export default function CourseCreateModal({
     formData.forEach((value, key) => addCourseCreationData(key, value));
     if (!courseCreationData["numOfSessions"]) {
       addCourseCreationData("numOfSessions", 1);
+    }
+    else if (courseCreationData["numOfSessions"] < 0) {
+      alertRef.current.setMessage("Number of sections cannot be negative");
+      alertRef.current.show();
+      return;
     }
     checkNewCourseAvailability(
       courseCreationData.courseCode,
@@ -169,7 +166,7 @@ export default function CourseCreateModal({
                       </div>
                       <div className="relative">
                         <SingleLineInput
-                          ref={sectionNumInputRef}
+                          ref={sessionNumInputRef}
                           name="numOfSessions"
                           label="Number of sections (Optional)"
                           inputType="number"
@@ -234,7 +231,7 @@ export default function CourseCreateModal({
                         </AnimatePresence>
                       </div>
                     </div>
-                    <button className="btn-primary">Next</button>
+                    <button type="submit" className="btn-primary">Next</button>
                   </form>
                 </div>
               )}
@@ -277,6 +274,7 @@ export default function CourseCreateModal({
                   </button>
                 </div>
               )}
+              {/* --- Step 3 --- */}
               {step === 2 && (
                 <div className="flex flex-col gap-6">
                   <h1 className="text-2xl font-bold flex items-center gap-2">

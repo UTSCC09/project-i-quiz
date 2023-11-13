@@ -21,15 +21,10 @@ import {
 } from "api/CourseApi";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getQuizzesForDashboard } from "api/QuizApi";
+import { AnimatePresence, motion } from "framer-motion";
 
 /* -- API function calls -- */
-function getAvailableQuizzes() {
-  return QuizDataMock_available.quizList;
-}
-
-function getUpcomingQuizzes() {
-  return QuizDataMock_upcoming.quizList;
-}
 
 async function fetchData() {
   if (isStudentUserType()) {
@@ -38,6 +33,23 @@ async function fetchData() {
     return fetchInstructedCourses();
   }
 }
+
+const variants = {
+  show: {
+    opacity: 1,
+    scale: 1,
+    height: "auto",
+    transition: {
+      ease: "easeInOut",
+      duration: 0.3,
+    },
+  },
+  hide: {
+    opacity: 0,
+    scale: 0.95,
+    height: 0,
+  },
+};
 
 /* -- React Component -- */
 
@@ -51,6 +63,10 @@ export default function DashboardPage() {
 
   const [activeCourseList, activeCourseListSet] = useState([]);
   const [archivedCourseList, archivedCourseListSet] = useState([]);
+
+  const [activeQuizList, activeQuizListSet] = useState();
+  const [upcomingQuizList, upcomingQuizListSet] = useState();
+
   const [selectedTab, _setSelectedTab] = useState(
     localStorage.getItem("selected_tab") ?? "quizzes"
   );
@@ -104,6 +120,18 @@ export default function DashboardPage() {
           fetchedPayload.filter((course) => course.archived === true)
         );
       }
+      getQuizzesForDashboard(
+        "upcoming",
+        isStudent ? "student" : "instructor"
+      ).then((fetchedPayload) => {
+        upcomingQuizListSet(fetchedPayload);
+      });
+      getQuizzesForDashboard(
+        "active",
+        isStudent ? "student" : "instructor"
+      ).then((fetchedPayload) => {
+        activeQuizListSet(fetchedPayload);
+      });
       document.querySelector("main").classList.remove("hidden");
       const { passInMessage } = location.state ?? "";
       if (passInMessage) {
@@ -120,6 +148,8 @@ export default function DashboardPage() {
     toastMessageSet,
     location,
     navigate,
+    selectedTab,
+    isStudent,
   ]);
 
   return (
@@ -240,21 +270,41 @@ export default function DashboardPage() {
             <Accordion
               sectionName="Available Quizzes"
               content={
-                <div className="flex flex-col gap-4 lg:gap-6">
-                  {getAvailableQuizzes().map((quizObject, idx) => {
-                    return <QuizCard quizObject={quizObject} key={idx} />;
-                  })}
-                </div>
+                <AnimatePresence>
+                  {activeQuizList && (
+                    <motion.div
+                      className="flex flex-col gap-4 lg:gap-6"
+                      variants={variants}
+                      animate={"show"}
+                      initial={"hide"}
+                      exit={"hide"}
+                    >
+                      {activeQuizList.map((quizObject, idx) => {
+                        return <QuizCard quizObject={quizObject} key={idx} />;
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               }
             />
             <Accordion
               sectionName="Upcoming Quizzes"
               content={
-                <div className="flex flex-col gap-4 lg:gap-6">
-                  {getUpcomingQuizzes().map((quizObject, idx) => {
-                    return <QuizCard quizObject={quizObject} key={idx} />;
-                  })}
-                </div>
+                <AnimatePresence>
+                  {upcomingQuizList && (
+                    <motion.div
+                      className="flex flex-col gap-4 lg:gap-6"
+                      variants={variants}
+                      animate={"show"}
+                      initial={"hide"}
+                      exit={"hide"}
+                    >
+                      {upcomingQuizList.map((quizObject, idx) => {
+                        return <QuizCard quizObject={quizObject} key={idx} />;
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               }
             />
           </div>
