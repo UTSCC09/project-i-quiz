@@ -665,6 +665,64 @@ const getQuizObject = asyncHandler(async (req, res) => {
   }));
 });
 
+//@route  GET api/quizzes/upcoming/instructor
+//@desc   Allow instructors to get all upcoming quizzes for courses they instruct
+//@access Private
+const getUpcomingQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+    else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  let formattedQuizzes = [];
+  //Get quizzes for every enrolled course
+  for (let j = 0; j < instructor.courses.length; j++) {
+    const accentColor = instructor.courses[j].accentColor;
+    let course;
+    try {
+      course = await Course.findById(instructor.courses[j].courseId);
+      if (!course) {
+        return res.status(400).json(formatMessage(false, "Invalid course id in quiz"));
+      }
+    } catch (error) {
+      return res.status(400).json(formatMessage(false, "Mongoose error finding quiz course"));
+    }
+
+    for (let i = 0; i < course.quizzes.length; i++) {
+      try {
+        const quiz = await Quiz.findById(course.quizzes[i]);
+        if (!quiz) {
+          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+        }
+        const currentDateTime = new Date();
+        if (currentDateTime < quiz.startTime ) {
+          formattedQuizzes.push({
+            quizId: quiz._id,
+            quizName: quiz.quizName,
+            course: course.courseName,
+            accentColor: accentColor,
+            releaseDate: quiz.startTime,
+            dueDate: quiz.endTime
+          });
+        }
+      } catch (error) {
+        return res.status(400).json(formatMessage(false, "Mongoose error finding quizzes for course"));
+      }
+    }
+  }
+  
+  return res.status(200).json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+});
+
 //@route  GET api/quizzes/upcoming/student
 //@desc   Allow students to get all upcoming quizzes for courses they are enrolled in
 //@access Private
@@ -732,5 +790,6 @@ export {
   updateQuizQuestion,
   addQuizQuestions,
   getQuizObject,
-  getUpcomingQuizzesForEnrolledCourses
+  getUpcomingQuizzesForEnrolledCourses,
+  getUpcomingQuizzesForInstructedCourses
 };

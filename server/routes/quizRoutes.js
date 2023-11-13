@@ -8,7 +8,8 @@ import {
   updateQuizQuestion,
   addQuizQuestions,
   getQuizObject,
-  getUpcomingQuizzesForEnrolledCourses
+  getUpcomingQuizzesForEnrolledCourses,
+  getUpcomingQuizzesForInstructedCourses
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -24,6 +25,9 @@ router.route("/question")
 
 router.route("/upcoming/student")
   .get(protect, getUpcomingQuizzesForEnrolledCourses);
+
+router.route("/upcoming/instructor")
+  .get(protect, getUpcomingQuizzesForInstructedCourses);
 
 router.route("/:quizId")
   .get(protect, getQuiz)
