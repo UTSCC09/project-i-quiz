@@ -26,7 +26,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 /* -- API function calls -- */
 
-async function fetchData() {
+async function fetchCourses() {
   if (isStudentUserType()) {
     return fetchEnrolledCourses();
   } else {
@@ -64,8 +64,8 @@ export default function DashboardPage() {
   const [activeCourseList, activeCourseListSet] = useState([]);
   const [archivedCourseList, archivedCourseListSet] = useState([]);
 
-  const [activeQuizList, activeQuizListSet] = useState();
-  const [upcomingQuizList, upcomingQuizListSet] = useState();
+  const [activeQuizList, activeQuizListSet] = useState([]);
+  const [upcomingQuizList, upcomingQuizListSet] = useState([]);
 
   const [selectedTab, _setSelectedTab] = useState(
     localStorage.getItem("selected_tab") ?? "quizzes"
@@ -93,7 +93,7 @@ export default function DashboardPage() {
   }
 
   function refetchDataAndShowToast(successMessage) {
-    fetchData().then((fetchedPayload) => {
+    fetchCourses().then((fetchedPayload) => {
       if (fetchedPayload) {
         activeCourseListSet(
           fetchedPayload.filter((course) => course.archived === false)
@@ -107,11 +107,24 @@ export default function DashboardPage() {
         toastMessageSet();
       }, 3000);
     });
+
+    getQuizzesForDashboard(
+      "upcoming",
+      isStudent ? "student" : "instructor"
+    ).then((fetchedPayload) => {
+      upcomingQuizListSet(fetchedPayload);
+    });
+    getQuizzesForDashboard(
+      "active",
+      isStudent ? "student" : "instructor"
+    ).then((fetchedPayload) => {
+      activeQuizListSet(fetchedPayload);
+    });
   }
 
   useEffect(() => {
     setSelectedTab(selectedTab);
-    fetchData().then((fetchedPayload) => {
+    fetchCourses().then((fetchedPayload) => {
       if (fetchedPayload) {
         activeCourseListSet(
           fetchedPayload.filter((course) => course.archived === false)
@@ -120,18 +133,6 @@ export default function DashboardPage() {
           fetchedPayload.filter((course) => course.archived === true)
         );
       }
-      getQuizzesForDashboard(
-        "upcoming",
-        isStudent ? "student" : "instructor"
-      ).then((fetchedPayload) => {
-        upcomingQuizListSet(fetchedPayload);
-      });
-      getQuizzesForDashboard(
-        "active",
-        isStudent ? "student" : "instructor"
-      ).then((fetchedPayload) => {
-        activeQuizListSet(fetchedPayload);
-      });
       document.querySelector("main").classList.remove("hidden");
       const { passInMessage } = location.state ?? "";
       if (passInMessage) {
@@ -141,6 +142,19 @@ export default function DashboardPage() {
           toastMessageSet();
         }, 3000);
       }
+    });
+
+    getQuizzesForDashboard(
+      "upcoming",
+      isStudent ? "student" : "instructor"
+    ).then((fetchedPayload) => {
+      upcomingQuizListSet(fetchedPayload);
+    });
+    getQuizzesForDashboard(
+      "active",
+      isStudent ? "student" : "instructor"
+    ).then((fetchedPayload) => {
+      activeQuizListSet(fetchedPayload);
     });
   }, [
     activeCourseListSet,
@@ -234,6 +248,8 @@ export default function DashboardPage() {
       />
       <div className="min-h-screen w-full bg-gray-100">
         <main className="h-full px-8 gap-y-8 gap-x-[4%] md:px-24 w-full flex flex-col lg:flex-row py-32 sm:py-36 hidden">
+          {/* Tab bar for mobile device */}
+
           <div className="flex lg:hidden bg-gray-200 rounded-lg w-full justify-between">
             <label className="cursor-pointer w-[49%]">
               <input
@@ -263,6 +279,7 @@ export default function DashboardPage() {
           </div>
 
           {/* --- Quiz Section --- */}
+
           <div
             ref={quizSectionRef}
             className="lg:w-[35%] flex flex-col gap-8 lg:flex"
