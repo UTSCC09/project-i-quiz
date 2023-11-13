@@ -122,28 +122,24 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setSelectedTab(selectedTab);
-    setTimeout(
-      () =>
-        fetchCourses().then((fetchedPayload) => {
-          if (fetchedPayload) {
-            activeCourseListSet(
-              fetchedPayload.filter((course) => course.archived === false)
-            );
-            archivedCourseListSet(
-              fetchedPayload.filter((course) => course.archived === true)
-            );
-          }
-          const { passInMessage } = location.state ?? "";
-          if (passInMessage) {
-            toastMessageSet(passInMessage);
-            navigate("", {});
-            setTimeout(() => {
-              toastMessageSet();
-            }, 3000);
-          }
-        }),
-      1000
-    );
+    fetchCourses().then((fetchedPayload) => {
+      if (fetchedPayload) {
+        activeCourseListSet(
+          fetchedPayload.filter((course) => course.archived === false)
+        );
+        archivedCourseListSet(
+          fetchedPayload.filter((course) => course.archived === true)
+        );
+      }
+      const { passInMessage } = location.state ?? "";
+      if (passInMessage) {
+        toastMessageSet(passInMessage);
+        navigate("", {});
+        setTimeout(() => {
+          toastMessageSet();
+        }, 3000);
+      }
+    });
 
     getQuizzesForDashboard(
       "upcoming",

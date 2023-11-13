@@ -106,24 +106,24 @@ export default function QuizEditorPage() {
                   required
                 />
               </div>
-              {activeCourseList && (
-                <DropdownSelection
-                  width="12rem"
-                  selection={`${courseObject.courseCode} ${courseObject.courseSemester}`}
-                  selections={activeCourseList.map(
-                    (course) => `${course.courseCode} ${course.courseSemester}`
-                  )}
-                  onSelectionChange={(selection) => {
-                    courseObjectSet(
-                      activeCourseList.find(
-                        (course) =>
-                          `${course.courseCode} ${course.courseSemester}` ===
-                          selection
-                      )
-                    );
-                  }}
-                />
-              )}
+              <DropdownSelection
+                width="12rem"
+                height="3rem"
+                selection={`${courseObject.courseCode} ${courseObject.courseSemester}`}
+                label={"Course"}
+                selections={(activeCourseList ?? []).map(
+                  (course) => `${course.courseCode} ${course.courseSemester}`
+                )}
+                onSelectionChange={(selection) => {
+                  courseObjectSet(
+                    activeCourseList.find(
+                      (course) =>
+                        `${course.courseCode} ${course.courseSemester}` ===
+                        selection
+                    )
+                  );
+                }}
+              />
             </div>
           </div>
           {questionList.map((question, idx) => {
@@ -180,11 +180,12 @@ export default function QuizEditorPage() {
                 [...document.querySelectorAll("input")]
                   .concat([...document.querySelectorAll("textarea")])
                   .forEach((input) => {
+                    input.addEventListener("input", (e) => {
+                      e.target.classList.remove("input-invalid-state");
+                    });
                     if (input.value === "") {
                       flag = false;
                       input.classList.add("input-invalid-state");
-                    } else {
-                      input.classList.remove("input-invalid-state");
                     }
                   });
                 if (flag) {
@@ -201,13 +202,13 @@ export default function QuizEditorPage() {
             >
               Release quiz
             </button>
-            <button
+            {/* <button
               type="button"
               className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
               onClick={() => console.log(JSON.stringify(quizCreationData))}
             >
               Print (DEBUG)
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
