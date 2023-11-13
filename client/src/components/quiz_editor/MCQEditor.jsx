@@ -62,7 +62,7 @@ export default function MCQEditor({
   return (
     <div className="flex flex-col gap-4 text-sm">
       <textarea
-        className="border w-full px-5 py-4 rounded-md outline-none resize-none focus:ring ring-blue-200 transition-all hover:bg-gray-50 cursor-pointer focus:cursor-auto focus:bg-white read-only:border-transparent read-only:ring-transparent"
+        className="border w-full px-5 py-4 rounded-md outline-none resize-none focus:ring focus:ring-blue-200 transition-all hover:bg-gray-50 cursor-pointer focus:cursor-auto focus:bg-white read-only:border-transparent read-only:ring-transparent"
         placeholder="Question description"
         defaultValue={questionDescription}
         onInput={(e) => {
@@ -115,7 +115,7 @@ function OptionInput({
         readOnly
       />
       <input
-        className="border rounded-md px-5 py-2 outline-none focus:outline-none focus:ring ring-blue-200 transition-all hover:bg-gray-50 cursor-pointer focus:cursor-auto focus:bg-white read-only:border-transparent read-only:ring-transparent w-full peer-checked:border-green-600"
+        className="border rounded-md px-5 py-2 outline-none focus:outline-none focus:ring focus:ring-blue-200 transition-all hover:bg-gray-50 cursor-pointer focus:cursor-auto focus:bg-white read-only:border-transparent read-only:ring-transparent w-full peer-checked:border-green-600"
         placeholder={placeholder}
         defaultValue={option.content}
         onInput={onInput}

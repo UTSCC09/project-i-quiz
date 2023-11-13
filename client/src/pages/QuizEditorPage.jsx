@@ -2,6 +2,7 @@ import { fetchInstructedCourses } from "api/CourseApi";
 import { createQuiz } from "api/QuizApi";
 import DropdownSelection from "components/elements/DropdownSelection";
 import SingleLineInput from "components/elements/SingleLineInput";
+import Toast from "components/elements/Toast";
 import NavBar from "components/page_components/NavBar";
 import QuizCreateModal from "components/page_components/QuizCreateModal";
 import QuizReleaseModal from "components/page_components/QuizReleaseModal";
@@ -28,6 +29,7 @@ export default function QuizEditorPage() {
   const [activeCourseList, activeCourseListSet] = useState();
   const [quizName, quizNameSet] = useState("");
   const [quizCreationData, quizCreationDataSet] = useState({});
+  const [toastMessage, toastMessageSet] = useState();
 
   function addQuestion() {
     questionListSet([
@@ -84,6 +86,7 @@ export default function QuizEditorPage() {
   return (
     <>
       <NavBar />
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <QuizReleaseModal
         modalShow={quizReleaseModalShow}
         modalShowSet={quizReleaseModalShowSet}
@@ -91,25 +94,18 @@ export default function QuizEditorPage() {
         onSuccess={() => {}}
       />
       <div className="min-h-screen w-full bg-gray-100 -z-50 flex flex-col items-center">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.reportValidity();
-            if (e.checkValidity()) {
-              quizReleaseModalShowSet(true);
-            }
-          }}
-          className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6"
-        >
+        <div className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6">
           <div className="relative bg-white h-fit py-8 sm:py-12 px-8 sm:px-16 rounded-md shadow-sm">
-            <div className="flex justify-between">
-              <input
-                placeholder="Quiz Title"
-                defaultValue={quizName}
-                onInput={(e) => quizNameSet(e.target.value)}
-                className="px-1 py-2 text-lg outline-none border-b focus:border-b-blue-600 w-72"
-                required
-              />
+            <div className="flex flex-col items-end md:flex-row md:justify-between gap-8">
+              <div className="border-b focus-within:border-b-blue-600 transition w-full">
+                <input
+                  placeholder="Quiz Title"
+                  defaultValue={quizName}
+                  onInput={(e) => quizNameSet(e.target.value)}
+                  className="px-2 py-2 text-lg outline-none rounded-md"
+                  required
+                />
+              </div>
               {activeCourseList && (
                 <DropdownSelection
                   width="12rem"
@@ -179,7 +175,29 @@ export default function QuizEditorPage() {
             <button
               type="submit"
               className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
-              onClick={() => {}}
+              onClick={() => {
+                let flag = true;
+                [...document.querySelectorAll("input")]
+                  .concat([...document.querySelectorAll("textarea")])
+                  .forEach((input) => {
+                    if (input.value === "") {
+                      flag = false;
+                      input.classList.add("input-invalid-state");
+                    } else {
+                      input.classList.remove("input-invalid-state");
+                    }
+                  });
+                if (flag) {
+                  quizReleaseModalShowSet(true);
+                } else {
+                  toastMessageSet(
+                    "Please fill out all fields, or remove any unwanted questions and choices"
+                  );
+                  setTimeout(() => {
+                    toastMessageSet();
+                  }, 3000);
+                }
+              }}
             >
               Release quiz
             </button>
@@ -191,7 +209,7 @@ export default function QuizEditorPage() {
               Print (DEBUG)
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </>
   );
