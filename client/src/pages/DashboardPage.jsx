@@ -280,7 +280,13 @@ export default function DashboardPage() {
                       exit={"hide"}
                     >
                       {activeQuizList.map((quizObject, idx) => {
-                        return <QuizCard quizObject={quizObject} key={idx} />;
+                        return (
+                          <QuizCard
+                            accentColor={quizObject.accentColor}
+                            quizObject={quizObject}
+                            key={idx}
+                          />
+                        );
                       })}
                     </motion.div>
                   )}
@@ -300,7 +306,13 @@ export default function DashboardPage() {
                       exit={"hide"}
                     >
                       {upcomingQuizList.map((quizObject, idx) => {
-                        return <QuizCard quizObject={quizObject} key={idx} />;
+                        return (
+                          <QuizCard
+                            accentColor={quizObject.accentColor}
+                            quizObject={quizObject}
+                            key={idx}
+                          />
+                        );
                       })}
                     </motion.div>
                   )}
