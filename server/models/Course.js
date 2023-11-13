@@ -15,14 +15,17 @@ const CourseSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a course name"]
   },
-  semester: {
+  courseSemester: {
     type: String,
-    required: [true, "Please provide a semester"]
+    required: [true, "Please provide a courseSemester"]
   },
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Please provide an instructor"]
+  },
+  accessCode: {
+    type: String,
   },
   sessions: [SessionSchema],
   quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }]

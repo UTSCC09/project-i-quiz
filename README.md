@@ -76,7 +76,7 @@ iQuiz! is an online quiz platform for instructors and students. The platform all
 ### Backend
 
 - Express
-- EmailJS or NodeMailer
+- NodeMailer
 
 ### Database
 

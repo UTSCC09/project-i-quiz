@@ -5,6 +5,7 @@ import formatMessage from "../utils/utils.js";
 import sendEmailVerificationLink from "../utils/emailVerificationUtils.js";
 import sendPasswordResetCode from "../utils/passwordResetUtils.js";
 import crypto from "crypto";
+import mongoose from "mongoose";
 
 const saltRounds = 10;
 

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  background-color: #fff; /* Default color to remain unchanged during scrolling */
+  overflow-y: scroll; /* Always show vertical scrollbar */
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
@@ -11,7 +16,34 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/*---------------------SCROLLING-----------------------*/
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  body {
+    background-color: #d4d4d8;
+    transition: background-color 0.5s;
+  }
+  body::-webkit-scrollbar {
+    width: 8px;
+  }
+  body::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: inherit;
+  }
+}
+/*---------------------------------------*/
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* Hide spin buttons */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* for Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

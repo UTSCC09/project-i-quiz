@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import getUserCookie from "utils/getUserCookie";
+import { getUserCookie } from "utils/CookieUtils";
 
 export default function ProtectedRoute(props) {
   if (!getUserCookie()) {

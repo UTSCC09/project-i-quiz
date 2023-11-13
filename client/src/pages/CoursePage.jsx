@@ -1,48 +1,97 @@
-import React, { useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion"
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
-import CourseArrMock from "mock_data/DashboardPage/CourseDataMock_active.json";
-import QuizDataMock_all from "mock_data/CoursePage/QuizDataMock_all.json";
-import QuizDataMock_new from "mock_data/CoursePage/QuizDataMock_new.json";
-import QuizDataMock_past from "mock_data/CoursePage/QuizDataMock_past.json";
 import NavBar from "components/page_components/NavBar";
-import Dropdown from "components/elements/Dropdown";
-
-function getCourseInfo(courseId) {
-  return CourseArrMock.courseList[0]
-}
-
-function getQuizData(filter) {
-  switch (filter) {
-    case "New Quizzes":
-      return QuizDataMock_new.response;
-    case "All Quizzes":
-      return QuizDataMock_all.response;
-    case "Past Quizzes":
-      return QuizDataMock_past.response;
-    default:
-      return;
-  }
-
-}
+import DropdownSelection from "components/elements/DropdownSelection";
+import DropdownMenu from "components/elements/DropdownMenu";
+import { isStudentUserType } from "utils/CookieUtils";
+import Toast from "components/elements/Toast";
+import QuizCreateModal from "components/page_components/QuizCreateModal";
+import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
+import CourseArchiveModal from "components/page_components/CourseArchiveModal";
+import CourseDropModal from "components/page_components/CourseDropModal";
+import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
+import { fetchCourseObject } from "api/CourseApi";
+import {
+  getQuizzesForInstructedCourse,
+  getQuizzesForEnrolledCourse,
+} from "api/QuizApi";
 
 export default function CoursePage() {
-  const [selection, setSelection] = useState("New Quizzes");
-  const [quizList, setQuizList] = useState(getQuizData(selection));
-  const dropdownRef = useRef(null)
-
+  const navigate = useNavigate();
+  const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
-  const courseInfo = getCourseInfo(courseId);
-  const courseCode = courseInfo.courseCode;
-  const courseSession = courseInfo.courseSession;
-  const courseName = courseInfo.courseName;
-  const accentColor = courseInfo.accentColor;
+  const [selection, setSelection] = useState("New Quizzes");
+  const [quizList, setQuizList] = useState();
+  const [courseObject, setCourseObject] = useState({});
+  const [courseSettingsDropdownShow, setCourseSettingsDropdownShow] =
+    useState(false);
+  const [quizCreateModalShow, quizCreateModalShowSet] = useState(false);
+  const [accentColorModalShow, setAccentColorModalShow] = useState(false);
+  const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
+  const [courseDropModalShow, setCourseDropModalShow] = useState(false);
+  const [accessCodeUpdateModalShow, setAccessCodeUpdateModalShow] =
+    useState(false);
+  const [toastMessage, toastMessageSet] = useState();
+
+  const dropdownRef = useRef();
+  const isStudent = isStudentUserType();
+
+  const getFilteredQuizzes = useCallback(
+    (filter) => {
+      if (!quizList) {
+        return;
+      }
+      const currentDateTime = new Date();
+      switch (filter) {
+        case "New Quizzes":
+          return quizList.filter((quiz) => {
+            const endTime = new Date(quiz.endTime);
+            return currentDateTime <= endTime;
+          });
+        case "All Quizzes":
+          return quizList;
+        case "Past Quizzes":
+          return quizList.filter((quiz) => {
+            const endTime = new Date(quiz.endTime);
+            return currentDateTime > endTime;
+          });
+        default:
+          return;
+      }
+    },
+    [quizList]
+  );
+
+  function refetchDataAndShowToast(successMessage) {
+    fetchCourseObject(courseId).then((result) => {
+      if (!result.success) {
+        console.error(result.message);
+        return;
+      }
+
+      if (isStudent) {
+        getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
+          setQuizList(resultPayload);
+        });
+      } else {
+        getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
+          setQuizList(resultPayload);
+        });
+      }
+
+      setCourseObject(result.payload);
+      toastMessageSet(successMessage);
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+    });
+  }
 
   function onSelectionChange(selection) {
     setSelection(selection);
-    setQuizList(getQuizData(selection));
   }
 
   const variants = {
@@ -53,58 +102,252 @@ export default function CoursePage() {
       transition: {
         ease: "easeInOut",
         duration: 0.3,
-      }
+      },
     },
     hide: {
       opacity: 0,
       scale: 0.95,
       height: 0,
-    }
+    },
   };
+
+  let archived = courseObject.archived;
+  let courseEditOptions = [];
+
+  if (!archived) {
+    courseEditOptions.push({
+      label: "Edit color",
+      onClick: () => {
+        setAccentColorModalShow(true);
+      },
+    });
+
+    courseEditOptions.push({
+      label: "Archive course",
+      onClick: () => {
+        setCourseArchiveModalShow(true);
+      },
+    });
+
+    if (isStudent) {
+      courseEditOptions.push({
+        label: <div className="text-red-600">Drop course</div>,
+        onClick: () => {
+          setCourseDropModalShow(true);
+        },
+      });
+    } else {
+      courseEditOptions.push({
+        label: "Update access code",
+        onClick: () => {
+          setAccessCodeUpdateModalShow(true);
+        },
+      });
+    }
+  } else {
+    courseEditOptions.push({
+      label: "Unarchive course",
+      onClick: () => {
+        setCourseArchiveModalShow(true);
+      },
+    });
+  }
+
+  useEffect(() => {
+    fetchCourseObject(courseId).then((result) => {
+      if (!result.success) {
+        console.error(result.message);
+        return;
+      }
+      setCourseObject(result.payload);
+      document.querySelector("main").classList.remove("hidden");
+
+      if (isStudent) {
+        getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
+          setQuizList(resultPayload);
+        });
+      } else {
+        getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
+          setQuizList(resultPayload);
+        });
+      }
+    });
+  }, [courseId, setQuizList, setCourseObject, isStudent]);
 
   return (
     <>
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
+      <QuizCreateModal
+        modalShow={quizCreateModalShow}
+        modalShowSet={quizCreateModalShowSet}
+        courseId={courseId}
+        onSuccess={(quizName) => {
+          const successMessage = `${quizName} has been created`;
+          refetchDataAndShowToast(successMessage);
+        }}
+      />
+      <CourseAccentColorModal
+        courseObject={courseObject}
+        onSuccess={() => {
+          const successMessage = `New accent color has been set for ${courseObject.courseCode} ${courseObject.courseSemester}`;
+          refetchDataAndShowToast(successMessage);
+        }}
+        modalShow={accentColorModalShow}
+        modalShowSet={setAccentColorModalShow}
+      />
+      <CourseArchiveModal
+        modalShow={courseArchiveModalShow}
+        modalShowSet={setCourseArchiveModalShow}
+        courseObject={courseObject}
+        onSuccess={() => {
+          const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been archived from your course list`;
+          navigate("/", { state: { passInMessage: successMessage } });
+        }}
+      />
+      <CourseDropModal
+        modalShow={courseDropModalShow}
+        modalShowSet={setCourseDropModalShow}
+        courseObject={courseObject}
+        onSuccess={() => {
+          const successMessage = `${courseObject.courseCode} ${courseObject.courseSemester} has been removed from your course list`;
+          navigate("/", { state: { passInMessage: successMessage } });
+        }}
+      />
+      <AccessCodeUpdateModal
+        modalShow={accessCodeUpdateModalShow}
+        modalShowSet={setAccessCodeUpdateModalShow}
+        courseObject={courseObject}
+        onSuccess={(newAccessCode) => {
+          const successMessage = `Access code for ${courseObject.courseCode} ${courseObject.courseSemester} has been updated to ${newAccessCode}`;
+          refetchDataAndShowToast(successMessage);
+        }}
+      />
       <NavBar />
-      <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
+      <div
+        className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
         onClick={() => {
-          if (dropdownRef.current.showDropdown) {
-            dropdownRef.current.setShowDropdown(false);
+          if (dropdownRef.current.dropdownShow) {
+            dropdownRef.current.dropdownShowSet(false);
           }
-        }}>
-        <div className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
+        }}
+      >
+        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem] hidden">
           <div className="flex items-end justify-between mb-6 md:mb-8">
             <div className="flex flex-col pr-4">
-              <Badge label={courseSession} accentColor={accentColor} />
-              <div className="flex items-center">
-                <span className="text-gray-900 font-bold text-3xl md:text-4xl">
-                  {courseCode}
+              <div className="flex items-center gap-3">
+                <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
+                  {courseObject.courseCode}
                 </span>
+                <Badge
+                  label={courseObject.courseSemester}
+                  accentColor={courseObject.accentColor}
+                />
               </div>
-              <span className="text-gray-500 text-xs md:text-sm ml-1 mt-0.5">{courseName}</span>
+              <span className="text-gray-500 text-sm ml-0.5">
+                {courseObject.courseName}
+              </span>
             </div>
-            <Dropdown ref={dropdownRef} selection={selection} onSelectionChange={onSelectionChange} />
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="relative">
+                <button
+                  className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
+                  onClick={() => {
+                    setCourseSettingsDropdownShow(true);
+                  }}
+                >
+                  {/* [Credit]: svg from https://heroicons.dev */}
+                  <svg
+                    className="h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                    />
+                  </svg>
+                </button>
+                <DropdownMenu
+                  options={courseEditOptions}
+                  dropdownShow={courseSettingsDropdownShow}
+                  dropdownShowSet={setCourseSettingsDropdownShow}
+                />
+              </div>
+              {!isStudent && (
+                <button
+                  className="bg-white shadow-sm h-10 px-4 text-sm text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
+                  onClick={() => {
+                    quizCreateModalShowSet(true);
+                  }}
+                >
+                  Create Quiz
+                </button>
+              )}
+              <div className="shadow-sm">
+                <DropdownSelection
+                  ref={dropdownRef}
+                  selections={filters}
+                  selection={selection}
+                  onSelectionChange={onSelectionChange}
+                  height="2.5rem"
+                />
+              </div>
+            </div>
           </div>
-          <AnimatePresence>{
-            <motion.div key={quizList} variants={variants} animate={"show"} initial={"hide"} exit={"hide"}> {
-              <QuizList quizDataArr={quizList} />
-            }
+          <AnimatePresence>
+            <motion.div
+              key={getFilteredQuizzes(selection)}
+              variants={variants}
+              animate={"show"}
+              initial={"hide"}
+              exit={"hide"}
+            >
+              {getFilteredQuizzes(selection) &&
+                (getFilteredQuizzes(selection).length === 0 ? (
+                  selection === "All Quizzes" ? (
+                    <h1>Create quizzes to see them here!</h1>
+                  ) : (
+                    <h1>No {selection} to display</h1>
+                  )
+                ) : (
+                  <QuizList
+                    accentColor={courseObject.accentColor}
+                    quizArr={getFilteredQuizzes(selection)}
+                    courseCode={courseObject.courseCode}
+                  />
+                ))}
             </motion.div>
-          }
           </AnimatePresence>
-        </div >
-      </div >
+        </main>
+      </div>
     </>
-  )
+  );
 }
 
-function QuizList({ quizDataArr }) {
+function QuizList({ quizArr, accentColor, courseCode }) {
   return (
     <div className={"flex flex-col w-full gap-4"}>
-      {
-        quizDataArr.map((quizObject, idx) => {
-          return <QuizCard quizObject={quizObject} key={idx} />
+      {quizArr
+        .sort((a, b) => {
+          return new Date(a.startTime) - new Date(b.startTime);
         })
-      }
+        .map((currQuizObject, idx) => {
+          return (
+            <QuizCard
+              accentColor={accentColor}
+              quizObject={{
+                ...currQuizObject,
+                courseCode,
+              }}
+              key={idx}
+            />
+          );
+        })}
     </div>
-  )
+  );
 }

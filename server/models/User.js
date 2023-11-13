@@ -37,8 +37,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a password"]
   },
-  courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
-  emailVerificationCode: {
+  courses: [{ 
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+    accentColor: String,
+    archived: { type: Boolean, default: false }
+  }],
+  emailConfirmationCode: {
     type: String,
     required: true
   },
