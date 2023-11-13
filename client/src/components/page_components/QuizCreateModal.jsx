@@ -139,7 +139,7 @@ export default function QuizCreateModal({
                       pointerEvents: questionsArrField ? "auto" : "none",
                     }}
                     onClick={() => {
-                      addQuizCreationData("questions", questionsArrRef.current.getValue());
+                      addQuizCreationData("questions", questionsArrField);
                       addQuizCreationData("course", courseId);
                       console.log(quizCreationData);
                       createQuiz(quizCreationData).then((result) => {
