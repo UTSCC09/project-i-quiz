@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -14,6 +15,7 @@ function DropdownSelection(
     onSelectionChange,
     width = "8.5rem",
     height = "100%",
+    showShadow,
   },
   ref
 ) {
@@ -36,6 +38,14 @@ function DropdownSelection(
     validate,
   }));
 
+  useEffect(() => {
+    document.addEventListener("click", (event) => {
+      if (!event.composedPath().includes(selectionRef.current)) {
+        dropdownShowSet(false);
+      }
+    });
+  }, [selectionRef, dropdownShowSet]);
+
   return (
     selections && (
       <div className="relative w-fit select-none">
@@ -44,8 +54,12 @@ function DropdownSelection(
           onClick={() => {
             dropdownShowSet(!dropdownShow);
           }}
-          className="text-slate-500 border bg-white cursor-pointer hover:bg-gray-50 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
-          style={{ width: width, height: height }}
+          className="border bg-white cursor-pointer hover:bg-gray-100 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
+          style={{
+            width: width,
+            height: height,
+            boxShadow: showShadow ? "0 1px 2px 0 rgb(0 0 0 / 0.05)" : "",
+          }}
         >
           <input
             type="checkbox"
@@ -69,11 +83,13 @@ function DropdownSelection(
               </span>
             </div>
           ) : (
-            <div className="w-full text-center mr-4 py-3">{selection}</div>
+            <div className="w-full text-gray-700 justify-center mr-4 h-8 sm:h-10 flex items-center">
+              <div>{selection}</div>
+            </div>
           )}
           {/* [Credit]: svg from https://heroicons.dev */}
           <svg
-            className="absolute right-0.5 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-180 mr-2.5 shrink-0"
+            className="absolute right-0.5 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-180 mr-2.5 shrink-0 text-gray-600"
             fill="currentColor"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +126,7 @@ function DropdownSelection(
                   {selections.map((selection, idx) => {
                     return (
                       <div
-                        onMouseDown={() => {
+                        onClick={() => {
                           selectionListRef.current.classList.add(
                             "pointer-events-none"
                           );

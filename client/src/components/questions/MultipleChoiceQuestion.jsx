@@ -4,7 +4,10 @@ import RadioGroup from "components/elements/RadioGroup";
 const MultipleChoiceQuestion = (props) => {
   return (
     <div className="flex flex-col">
-      <span className="mb-6" dangerouslySetInnerHTML={{ __html: props.questionObject.prompt }}></span>
+      <span
+        className="mb-6 mx-2"
+        dangerouslySetInnerHTML={{ __html: props.questionObject.prompt }}
+      ></span>
       <RadioGroup
         radioGroupId={props.questionObject.qid}
         radioOptions={props.questionObject.choices}
@@ -12,7 +15,7 @@ const MultipleChoiceQuestion = (props) => {
         autoSaveAnswers={props.autoSaveAnswers}
       />
     </div>
-  )
-}
+  );
+};
 
 export default MultipleChoiceQuestion;

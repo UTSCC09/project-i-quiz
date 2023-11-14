@@ -46,7 +46,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
 
   switch (quizState) {
     case "available":
-      quizAvailabilityPrompt = "Available until " + startTimeStr;
+      quizAvailabilityPrompt = "Available until " + endTimeStr;
       isAvailable = true;
       break;
     case "upcoming":
@@ -63,7 +63,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   return (
     <>
       <Link
-        to="/quiz/0"
+        to={"/quiz/" + quizObject.quizId}
         className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer"
         style={{
           borderLeftColor: accentColor,
@@ -71,7 +71,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
           opacity: isAvailable ? 1 : 0.5,
         }}
       >
-        <div className="w-full py-4 md:py-6 h-fit bg-white group-hover:bg-gray-100 rounded-r border px-4 md:px-6 shrink-0 flex items-center transition-all">
+        <div className="w-full py-4 md:py-6 h-20 md:h-24 bg-white group-hover:bg-gray-100 rounded-r border px-4 md:px-6 shrink-0 flex items-center transition-all">
           <div className="flex-col justify-center items-start inline-flex">
             <div className="items-center gap-2.5 inline-flex">
               <div className="md:text-lg font-semibold">{quizName}</div>

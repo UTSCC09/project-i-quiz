@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import QuizCard from "components/page_components/QuizCard";
 import Badge from "components/elements/Badge";
@@ -8,7 +8,6 @@ import DropdownSelection from "components/elements/DropdownSelection";
 import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
-import QuizCreateModal from "components/page_components/QuizCreateModal";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
 import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
@@ -21,14 +20,14 @@ import {
 
 export default function CoursePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { passInCourseObject } = location.state ?? {};
+
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState();
-  const [courseObject, setCourseObject] = useState({});
-  const [courseSettingsDropdownShow, setCourseSettingsDropdownShow] =
-    useState(false);
-  const [quizCreateModalShow, quizCreateModalShowSet] = useState(false);
+  const [courseObject, setCourseObject] = useState(passInCourseObject ?? {});
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
   const [courseDropModalShow, setCourseDropModalShow] = useState(false);
@@ -36,13 +35,12 @@ export default function CoursePage() {
     useState(false);
   const [toastMessage, toastMessageSet] = useState();
 
-  const dropdownRef = useRef();
   const isStudent = isStudentUserType();
 
   const getFilteredQuizzes = useCallback(
     (filter) => {
       if (!quizList) {
-        return;
+        return [];
       }
       const currentDateTime = new Date();
       switch (filter) {
@@ -157,10 +155,10 @@ export default function CoursePage() {
     fetchCourseObject(courseId).then((result) => {
       if (!result.success) {
         console.error(result.message);
+        navigate("/page-not-found");
         return;
       }
       setCourseObject(result.payload);
-      document.querySelector("main").classList.remove("hidden");
 
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
@@ -172,20 +170,22 @@ export default function CoursePage() {
         });
       }
     });
-  }, [courseId, setQuizList, setCourseObject, isStudent]);
+  }, [courseId, setQuizList, setCourseObject, isStudent, navigate]);
+
+  useEffect(() => {
+    const { passInMessage } = location.state ?? "";
+    if (passInMessage) {
+      toastMessageSet(passInMessage);
+      navigate("", {});
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+    }
+  }, [location.state, navigate, toastMessageSet]);
 
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
-      <QuizCreateModal
-        modalShow={quizCreateModalShow}
-        modalShowSet={quizCreateModalShowSet}
-        courseId={courseId}
-        onSuccess={(quizName) => {
-          const successMessage = `${quizName} has been created`;
-          refetchDataAndShowToast(successMessage);
-        }}
-      />
       <CourseAccentColorModal
         courseObject={courseObject}
         onSuccess={() => {
@@ -223,105 +223,98 @@ export default function CoursePage() {
         }}
       />
       <NavBar />
-      <div
-        className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36"
-        onClick={() => {
-          if (dropdownRef.current.dropdownShow) {
-            dropdownRef.current.dropdownShowSet(false);
-          }
-        }}
-      >
-        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem] hidden">
-          <div className="flex items-end justify-between mb-6 md:mb-8">
+      <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
+        <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
+          <div className="flex items-end justify-between mb-6 md:mb-8 h-16">
             <div className="flex flex-col pr-4">
               <div className="flex items-center gap-3">
                 <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
                   {courseObject.courseCode}
                 </span>
-                <Badge
-                  label={courseObject.courseSemester}
-                  accentColor={courseObject.accentColor}
-                />
+                {courseObject.courseSemester && (
+                  <Badge
+                    label={courseObject.courseSemester}
+                    accentColor={courseObject.accentColor}
+                  />
+                )}
               </div>
               <span className="text-gray-500 text-sm ml-0.5">
                 {courseObject.courseName}
               </span>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <div className="relative">
-                <button
-                  className="bg-white shadow-sm h-10 w-10 text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  onClick={() => {
-                    setCourseSettingsDropdownShow(true);
-                  }}
-                >
-                  {/* [Credit]: svg from https://heroicons.dev */}
-                  <svg
-                    className="h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                    />
-                  </svg>
-                </button>
+            <div className="flex items-center gap-2 sm:gap-4 text-gray-700">
+              <div className="flex gap-2 sm:gap-4">
                 <DropdownMenu
+                  buttonElement={
+                    <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
+                      {/* [Credit]: svg from https://heroicons.dev */}
+                      <svg
+                        className="h-[18px] sm:h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.3}
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                        />
+                      </svg>
+                    </button>
+                  }
                   options={courseEditOptions}
-                  dropdownShow={courseSettingsDropdownShow}
-                  dropdownShowSet={setCourseSettingsDropdownShow}
                 />
+                {!isStudent && (
+                  <Link
+                    to="/create-quiz"
+                    title="Create quiz"
+                    state={{ passInCourseObject: courseObject }}
+                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl pb-1.5 sm:pb-2 font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
+                  >
+                    +
+                  </Link>
+                )}
               </div>
-              {!isStudent && (
-                <button
-                  className="bg-white shadow-sm h-10 px-4 text-sm text-center rounded-md text-slate-500 border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  onClick={() => {
-                    quizCreateModalShowSet(true);
-                  }}
-                >
-                  Create Quiz
-                </button>
-              )}
-              <div className="shadow-sm">
-                <DropdownSelection
-                  ref={dropdownRef}
-                  selections={filters}
-                  selection={selection}
-                  onSelectionChange={onSelectionChange}
-                  height="2.5rem"
-                />
-              </div>
+              <DropdownSelection
+                selections={filters}
+                selection={selection}
+                onSelectionChange={onSelectionChange}
+                showShadow
+              />
             </div>
           </div>
-          <AnimatePresence>
-            <motion.div
-              key={getFilteredQuizzes(selection)}
-              variants={variants}
-              animate={"show"}
-              initial={"hide"}
-              exit={"hide"}
-            >
-              {getFilteredQuizzes(selection) &&
-                (getFilteredQuizzes(selection).length === 0 ? (
-                  selection === "All Quizzes" ? (
-                    <h1>Create quizzes to see them here!</h1>
-                  ) : (
-                    <h1>No {selection} to display</h1>
-                  )
-                ) : (
+          <AnimatePresence initial={false}>
+            {quizList ? (
+              <div>
+                {getFilteredQuizzes(selection).length === 0 && (
+                  <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                    {selection === "All Quizzes"
+                      ? `No quizzes available`
+                      : `No ${selection.toLowerCase()} available`}
+                  </div>
+                )}
+                <motion.div
+                  key={getFilteredQuizzes(selection)}
+                  variants={variants}
+                  animate={"show"}
+                >
                   <QuizList
                     accentColor={courseObject.accentColor}
                     quizArr={getFilteredQuizzes(selection)}
                     courseCode={courseObject.courseCode}
                   />
-                ))}
-            </motion.div>
+                </motion.div>
+              </div>
+            ) : (
+              <div className="animate-pulse w-full">
+                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+              </div>
+            )}
           </AnimatePresence>
         </main>
       </div>

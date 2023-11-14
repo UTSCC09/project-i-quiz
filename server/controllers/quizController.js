@@ -259,7 +259,20 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
     if (!quizzes) {
       return res.status(400).json(formatMessage(false, "Invalid course"));
     }
-    return res.status(200).json(formatMessage(true, "Quizzes found", quizzes));
+    return res.status(200).json(
+      formatMessage(
+        true,
+        "Quizzes found",
+        quizzes.map((quiz) => {
+          return {
+            quizId: quiz._id,
+            quizName: quiz.quizName,
+            startTime: quiz.startTime,
+            endTime: quiz.endTime,
+          };
+        })
+      )
+    );
   } catch (error) {
     return res
       .status(400)
