@@ -35,32 +35,42 @@ const QuizPage = () => {
   return (
     <>
       <NavBar />
-      <div className="min-h-screen w-full flex justify-center py-24 md:py-36 bg-gray-100">
+      <div className="min-h-screen w-full flex justify-center py-28 sm:py-36 bg-gray-100">
         {quizObject && (
-          <form>
-            <div className="w-full px-4 md:w-[48rem] flex flex-col items-center text-gray-800">
-              {quizObject.questions.map((questionObj, idx) => {
-                return (
-                  <div
-                    className="h-fit w-full my-4 flex flex-col shadow-sm bg-white rounded py-12"
-                    key={idx}
-                  >
-                    <span className="font-semibold text-xs uppercase ml-12 text-gray-500 mb-4">
-                      Question {idx + 1} / {quizObject.questions.length}
-                    </span>
-                    <div className="border-b h-0 mb-6 mx-10"></div>
-                    <div className="mx-10">
-                      <QuestionWrapper
-                        questionType={questionObj.type}
-                        questionObject={questionObj.question}
-                        savedAnswer={savedAnswers[idx]}
-                        autoSaveAnswers={autoSaveAnswers}
-                      />
-                    </div>
+          <form
+            className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800"
+            onSubmit={(e) => {
+              e.preventDefault();
+              /* TODO: make submit quiz API call */
+            }}
+          >
+            {quizObject.questions.map((questionObj, idx) => {
+              return (
+                <div
+                  className="h-fit w-full flex flex-col shadow-sm bg-white rounded-md py-8 md:py-12 px-8 sm:px-12 lg:px-16 border"
+                  key={idx}
+                >
+                  <span className="font-semibold text-xs uppercase ml-2 text-gray-500 mb-4">
+                    Question {idx + 1} / {quizObject.questions.length}
+                  </span>
+                  <div className="border-b h-0 mb-6"></div>
+                  <div className="">
+                    <QuestionWrapper
+                      questionType={questionObj.type}
+                      questionObject={questionObj.question}
+                      savedAnswer={savedAnswers[idx]}
+                      autoSaveAnswers={autoSaveAnswers}
+                    />
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
+            <button
+              className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
+              onClick={() => console.log(JSON.stringify(savedAnswers))}
+            >
+              Submit
+            </button>
           </form>
         )}
       </div>
