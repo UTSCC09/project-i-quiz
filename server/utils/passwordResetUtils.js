@@ -1,14 +1,14 @@
 import { transporter, defaultMailOptions } from "./mailTransporter.js";
 import PASSWORD_RESET_CONSTANTS from "../constants/passwordResetConstants.js";
 
-const sendPasswordResetCode = async (user) => {
+const sendPasswordResetCode = async (user, code) => {
   const mailOptions = {
     ...defaultMailOptions,
     to: user.email,
     subject: "iQuiz Password Reset",
     html: `
       <p>Reset your iQuiz password using the code below:</p>
-      <p>${user?.passwordReset?.code}>Click here.</p>
+      <p>${code}</p>
       <p><strong>Warning:</strong> Code will expire in ${PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION}<p>
     `
   };

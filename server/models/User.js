@@ -6,8 +6,8 @@ const PasswordResetSchema = new mongoose.Schema({
     default: null
   },
   createdAt: {
-    type: Date,
-    default: Date.now
+    type: Number,
+    default: null
   },
   attemptsMade: {
     type: Number,
@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema({
     accentColor: String,
     archived: { type: Boolean, default: false }
   }],
-  emailConfirmationCode: {
+  emailVerificationCode: {
     type: String,
     required: true
   },
