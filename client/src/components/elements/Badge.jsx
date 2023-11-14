@@ -4,7 +4,7 @@ export default function Badge({ accentColor = "#0366FF", label }) {
   return (
     <>
       <div
-        className="flex relative items-center h-fit w-fit px-1.5 font-medium py-0.5 rounded text-xs"
+        className="flex relative items-center h-fit w-fit px-1.5 font-medium py-0.5 rounded text-xs shrink-0"
         style={{ color: accentColor }}
       >
         {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}

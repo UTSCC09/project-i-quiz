@@ -4,11 +4,10 @@ import ChoiceSchema from "./Choice.js";
 const MSQSchema = new mongoose.Schema({
   image: {
     type: String,
-    required: [true, "Please provide an image"]
   },
   prompt: {
     type: String,
-    required: [true, "Please provide a prompt"]
+    required: [true, "Please provide a prompt"],
   },
   choices: {
     type: [
@@ -26,8 +25,7 @@ const MSQSchema = new mongoose.Schema({
   },
   answers: {
     type: [String],
-    required: [true, "Please provide answers"]
-  }
+  },
 });
 
 const MSQ = mongoose.model("MSQ", MSQSchema);
