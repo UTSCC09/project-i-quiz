@@ -24,6 +24,7 @@ const SignInWindow = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const errorMessageRef = useRef();
+  const [rememberToggle, rememberToggleSet] = useState(false);
 
   function onAuthFormSubmitHandler(e) {
     e.preventDefault();
@@ -121,6 +122,8 @@ const SignInWindow = () => {
                 id="checkboxRemember"
                 name="checkboxRemember"
                 label="Remember me"
+                isChecked={rememberToggle}
+                isCheckedSet={rememberToggleSet}
               />
             </div>
             <div className="mt-8 flex flex-col sm:flex-row sm:justify-between gap-3">

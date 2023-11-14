@@ -1,13 +1,27 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
-export default function DropdownMenu({
-  options,
-  dropdownShow,
-  dropdownShowSet,
-}) {
+export default function DropdownMenu({ buttonElement, options }) {
+  const buttonRef = useRef();
+  const [dropdownShow, dropdownShowSet] = useState(false);
+  useEffect(() => {
+    document.addEventListener("click", (event) => {
+      if (!event.composedPath().includes(buttonRef.current)) {
+        dropdownShowSet(false);
+      }
+    });
+  }, [dropdownShowSet, buttonRef]);
   return (
     options && (
-      <>
+      <div className="relative">
+        <div
+          ref={buttonRef}
+          onClick={() => {
+            dropdownShowSet(!dropdownShow);
+          }}
+        >
+          {buttonElement}
+        </div>
         <AnimatePresence>
           {dropdownShow && (
             <motion.div
@@ -33,13 +47,7 @@ export default function DropdownMenu({
             </motion.div>
           )}
         </AnimatePresence>
-        {dropdownShow && (
-          <div
-            className="fixed z-10 left-0 top-0 w-screen h-screen cursor-default"
-            onClick={() => dropdownShowSet(false)}
-          ></div>
-        )}
-      </>
+      </div>
     )
   );
 }

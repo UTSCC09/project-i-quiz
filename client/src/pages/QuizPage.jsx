@@ -27,8 +27,7 @@ const QuizPage = () => {
   }
 
   useEffect(() => {
-    getQuiz("65516efe61d0adaaff97a16f").then((payload) => {
-      console.log(payload);
+    getQuiz(quizId).then((payload) => {
       quizObjectSet(payload);
     });
   }, [quizId, quizObjectSet]);
@@ -36,17 +35,17 @@ const QuizPage = () => {
   return (
     <>
       <NavBar />
-      {quizObject && (
-        <form>
-          <div className="min-h-screen w-full flex justify-center py-36 bg-gray-100">
-            <div className="w-full px-4 md:w-[48rem] flex flex-col items-center">
+      <div className="min-h-screen w-full flex justify-center py-24 md:py-36 bg-gray-100">
+        {quizObject && (
+          <form>
+            <div className="w-full px-4 md:w-[48rem] flex flex-col items-center text-gray-800">
               {quizObject.questions.map((questionObj, idx) => {
                 return (
                   <div
-                    className="h-fit w-full my-4 flex flex-col md:border drop-shadow-sm bg-white shadow-gray-150 rounded-md py-12"
+                    className="h-fit w-full my-4 flex flex-col shadow-sm bg-white rounded py-12"
                     key={idx}
                   >
-                    <span className="font-bold text-sm uppercase ml-12 text-gray-500 mb-4">
+                    <span className="font-semibold text-xs uppercase ml-12 text-gray-500 mb-4">
                       Question {idx + 1} / {quizObject.questions.length}
                     </span>
                     <div className="border-b h-0 mb-6 mx-10"></div>
@@ -62,9 +61,9 @@ const QuizPage = () => {
                 );
               })}
             </div>
-          </div>
-        </form>
-      )}
+          </form>
+        )}
+      </div>
     </>
   );
 };
