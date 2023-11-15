@@ -3,7 +3,6 @@ import { useNavigate, Link, Navigate } from "react-router-dom";
 import { getUserCookie } from "utils/CookieUtils";
 import iquizLogo from "media/iquiz_logo.svg";
 import { AnimatePresence, motion } from "framer-motion";
-/* import SingleLineInput from "components/elements/SingleLineInput"; */
 import OtpInput from "components/elements/OtpInput";
 import AlertBanner from "components/elements/AlertBanner";
 
@@ -50,7 +49,10 @@ export default function VerifyPasswordResetCodePage() {
   };
 
   return !getUserCookie() ? (
-    <>
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+    >
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <div
           id="container"
@@ -131,13 +133,6 @@ export default function VerifyPasswordResetCodePage() {
           >
             <AlertBanner ref={alertRef} />
             <div className="col-span-6">
-              {/* <SingleLineInput
-                inputType="email"
-                name="email"
-                label="Email address"
-                autoComplete={"email"}
-                ref={emailInputRef}
-              /> */}
               <OtpInput
                 ref={otpInputRef}
               />
@@ -155,7 +150,7 @@ export default function VerifyPasswordResetCodePage() {
           </p>
         </div>
       </div>
-    </>
+    </motion.div>
   ) : (
     <Navigate to="/" />
   );

@@ -62,7 +62,10 @@ export default function ResetPasswordPage() {
   };
 
   return !getUserCookie() ? (
-    <>
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+    >
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <div
           id="container"
@@ -178,7 +181,7 @@ export default function ResetPasswordPage() {
           </p>
         </div>
       </div>
-    </>
+    </motion.div>
   ) : (
     <Navigate to="/" />
   );
