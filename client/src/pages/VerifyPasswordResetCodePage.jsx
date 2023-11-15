@@ -1,17 +1,28 @@
-import { useState, useRef } from "react";
-import { useNavigate, Link, Navigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation, Link, Navigate } from "react-router-dom";
 import { getUserCookie } from "utils/CookieUtils";
 import iquizLogo from "media/iquiz_logo.svg";
 import { AnimatePresence, motion } from "framer-motion";
+import Toast from "components/elements/Toast";
 import OtpInput from "components/elements/OtpInput";
 import AlertBanner from "components/elements/AlertBanner";
 
 export default function VerifyPasswordResetCodePage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [helpMessageShow, helpMessageShowSet] = useState(false);
+  const [toastMessage, toastMessageSet] = useState("");
+
   const alertRef = useRef();
   const otpInputRef = useRef();
+
+  const toastMessageShow = (successMessage) => {
+    toastMessageSet(successMessage);
+    setTimeout(() => {
+      toastMessageSet("");
+    }, 3000);
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -21,8 +32,6 @@ export default function VerifyPasswordResetCodePage() {
       alertRef.current.show();
       return;
     }
-
-    const formData = new FormData(e.target);
 
     fetch("/api/users/verifypasswordresetcode", {
       method: "POST",
@@ -48,11 +57,23 @@ export default function VerifyPasswordResetCodePage() {
       });
   };
 
+  useEffect(() => {
+    const { passInMessage } = location.state ?? "";
+    if (passInMessage) {
+      toastMessageShow(passInMessage);
+      navigate("", {});
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+    }
+  });
+
   return !getUserCookie() ? (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
     >
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <div
           id="container"

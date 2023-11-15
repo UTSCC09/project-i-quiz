@@ -48,7 +48,10 @@ export default function ResetPasswordPage() {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/home");
+          navigate(
+            "/login",
+            { state: { passInMessage: "Your password has been reset" } }
+          );
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();

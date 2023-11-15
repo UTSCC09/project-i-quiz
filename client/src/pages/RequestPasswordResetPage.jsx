@@ -10,6 +10,7 @@ export default function RequestPasswordResetPage() {
   const navigate = useNavigate();
 
   const [helpMessageShow, helpMessageShowSet] = useState(false);
+
   const alertRef = useRef();
   const emailInputRef = useRef();
 
@@ -39,7 +40,10 @@ export default function RequestPasswordResetPage() {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/verifypasswordresetcode");
+          navigate(
+            "/verifypasswordresetcode",
+            { state: { passInMessage: "Code has been sent to your email" } }
+          );
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();
