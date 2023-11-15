@@ -141,12 +141,13 @@ export default function ResetPasswordPage() {
 
           <form
             onSubmit={onSubmit}
-            className="grid grid-cols-3 gap-4 sm:w-96"
+            className="grid grid-cols-6 gap-4 sm:w-96"
             autoComplete="off"
             noValidate
           >
+            {/* AlertBanner is always col-span-6 */}
             <AlertBanner ref={alertRef} />
-            <div className="col-span-3">
+            <div className="col-span-6">
               <SingleLineInput
                 id="newPassword"
                 inputType="password"
@@ -156,7 +157,7 @@ export default function ResetPasswordPage() {
                 ref={newPasswordInputRef}
               />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-6">
               <SingleLineInput
                 id="confirmNewPassword"
                 inputType="password"
@@ -165,7 +166,7 @@ export default function ResetPasswordPage() {
                 ref={confirmNewPasswordInputRef}
               />
             </div>
-            <div className="mt-4 col-span-3 flex flex-col items-center">
+            <div className="mt-4 col-span-6 flex flex-col items-center">
               <button className="btn-primary">Send code</button>
             </div>
           </form>

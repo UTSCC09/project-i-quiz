@@ -20,6 +20,10 @@ export default function RequestPasswordResetPage() {
       alertRef.current.setMessage("Please enter your email address");
       alertRef.current.show();
       return;
+    } else if (!emailInputRef.current.validate("email")) {
+      alertRef.current.setMessage("Invalid email address format");
+      alertRef.current.show();
+      return;
     }
 
     const formData = new FormData(e.target);
@@ -129,10 +133,11 @@ export default function RequestPasswordResetPage() {
 
           <form
             onSubmit={onSubmit}
-            className="grid grid-cols-1 gap-4 sm:w-96"
+            className="grid grid-cols-6 gap-4 sm:w-96"
             autoComplete="off"
             noValidate
           >
+            {/* AlertBanner is always col-span-6 */}
             <AlertBanner ref={alertRef} />
             <div className="col-span-6">
               <SingleLineInput
