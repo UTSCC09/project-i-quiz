@@ -32,9 +32,9 @@ router.route("/requestpasswordreset")
   .post(requestPasswordReset);
 
 router.route("/verifypasswordresetcode")
-  .post(extractJwt(SCOPES.PASSWORD_RESET), verifyPasswordResetCode);
+  .post(extractJwt(SCOPES.VERIFY_PASSWORD_RESET_CODE), verifyPasswordResetCode);
 
 router.route("/resetpassword")
-  .post(extractJwt(SCOPES.PASSWORD_RESET), resetPassword);
+  .post(extractJwt(SCOPES.RESET_PASSWORD), resetPassword);
 
 export default router;

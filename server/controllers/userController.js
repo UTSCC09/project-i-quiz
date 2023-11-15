@@ -238,9 +238,10 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
   user.passwordReset.attemptsMade = 0;
   await user.save(); // Only store if sending email is successful
 
+  //Token to verify password reset code
   res.cookie(
     "passwordResetToken",
-    generateToken(user._id, SCOPES.PASSWORD_RESET),
+    generateToken(user._id, SCOPES.VERIFY_PASSWORD_RESET_CODE),
     {
       httpOnly: true,
       secure: true,
@@ -293,6 +294,19 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Incorrect/expired password reset code"));
   }
 
+  //Clear password reset token cookie
+  res.clearCookie("passwordResetToken");
+
+  //Token to reset password
+  res.cookie(
+    "passwordResetToken",
+    generateToken(user._id, SCOPES.RESET_PASSWORD),
+    {
+      httpOnly: true,
+      secure: true,
+      sameSite: true
+    }
+  );
   return res.status(200).json(formatMessage(true, "Password reset code is valid"));
 });
 
