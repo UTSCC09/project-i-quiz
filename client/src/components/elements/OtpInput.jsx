@@ -1,7 +1,7 @@
 import React, {
   forwardRef,
   useImperativeHandle,
-  useEffect,
+  useRef,
   useState
 } from "react";
 
@@ -11,6 +11,8 @@ function OtpInput(
     baseName = "otp",
   }, ref) {
   const [characters, setCharacters] = useState(Array.from({ length: numOfCharacters }, () => ""));
+
+  const inputRefs = useRef([]);
 
   const handleChange = (index, event) => {
     const inputCharacter = event.target.value;
@@ -43,8 +45,22 @@ function OtpInput(
   };
 
   const validate = () => {
-    // Assume the only check is that all inputs are filled
-    return characters.every((character) => character !== "");
+    console.log("validate");
+
+    let flag = true;
+
+    // Assume that otp is required
+    for (let i = 0; i < numOfCharacters; i++) {
+      console.log(inputRefs.current[i].value);
+      if (inputRefs.current[i].value === "") {
+        inputRefs.current[i].classList.add("input-invalid-state");
+        flag = false;
+      } else {
+        inputRefs.current[i].classList.remove("input-invalid-state");
+      }
+    }
+
+    return flag;
   };
 
   useImperativeHandle(ref, () => ({
@@ -60,6 +76,7 @@ function OtpInput(
     <div id="otp-container" className="flex flex-row gap-x-3">
       {characters.map((character, index) => (
         <input
+          ref={(elmt) => (inputRefs.current[index] = elmt)}
           key={index}
           name={`${baseName}${index}`}
           type="text"
