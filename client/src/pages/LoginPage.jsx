@@ -125,6 +125,12 @@ const SignInWindow = () => {
                 isChecked={rememberToggle}
                 isCheckedSet={rememberToggleSet}
               />
+              <p className="mt-6 text-sm text-gray-500">
+                Forgot password?{" "}
+                <Link to="/requestpasswordreset" className="text-gray-700 underline">
+                  Reset it
+                </Link>
+              </p>
             </div>
             <div className="mt-8 flex flex-col sm:flex-row sm:justify-between gap-3">
               <button type="submit" className="btn-primary">

@@ -1,17 +1,15 @@
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import formatMessage from "../utils/utils.js";
 
 const extractJwt =  (requiredScope) => asyncHandler(async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
+  if (req.cookies.passwordResetToken) {
     try {
-      // Get token from header
-      token = req.headers.authorization.split(" ")[1];
+      // Get token from cookie
+      token = req.cookies.passwordResetToken;
 
       //Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -44,8 +42,9 @@ const extractJwt =  (requiredScope) => asyncHandler(async (req, res, next) => {
   }
 
   if (!token) {
-    res.status(401);
-    throw new Error("Not authorized");
+    return res
+      .status(401)
+      .json(formatMessage(false, "Not authorized"));
   }
 });
 

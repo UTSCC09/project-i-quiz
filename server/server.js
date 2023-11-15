@@ -4,8 +4,8 @@ import mongoose from "mongoose";
 import { createServer } from "http";
 import cors from "cors";
 import session from "express-session";
-import { readFileSync } from "fs";
-import { parse, serialize } from "cookie";
+import cookieParser from "cookie-parser";
+import { parse } from "cookie";
 import errorHandler from "./middleware/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
@@ -53,6 +53,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(cookieParser());
 
 // Cookie.user checking
 app.use(function (req, res, next) {

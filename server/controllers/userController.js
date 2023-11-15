@@ -231,13 +231,22 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
   }
 
   //Generate, store and send password reset code
-  const code = crypto.randomUUID().slice(0, 8);
+  const code = crypto.randomUUID().slice(0, PASSWORD_RESET_CONSTANTS.CODE_LENGTH);
   await sendPasswordResetCode(user, code);
   user.passwordReset.code = code;
   user.passwordReset.createdAt = Date.now();
   user.passwordReset.attemptsMade = 0;
   await user.save(); // Only store if sending email is successful
 
+  res.cookie(
+    "passwordResetToken",
+    generateToken(user._id, SCOPES.PASSWORD_RESET),
+    {
+      httpOnly: true,
+      secure: true,
+      sameSite: true
+    }
+  );
   return res.status(200).json(formatMessage(true, "Password reset request accepted"));
 });
 
@@ -246,21 +255,21 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
 //        then validates the code and returns a jwt if valid.
 //@access Public
 const verifyPasswordResetCode = asyncHandler(async (req, res) => {
-  const { email, code } = req.body;
+  const { code } = req.body;
 
   //Verify all fields exist.
-  if (!email || !code) {
+  if (!code) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
   //Verify valid email
   let user;
   try {
-    user = await User.findOne({ email });
+    user = await User.findById(req.userId);
     if (!user) {
       return res
         .status(400)
-        .json(formatMessage(false, "Email is not registered"));
+        .json(formatMessage(false, "Invalid user id in token"));
     }
     if (!user.verified) {
       return res
@@ -273,10 +282,7 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
     .json(formatMessage(false, "Mongoose error finding user"));    
   }
 
-  //Verify.passwordReset
-  console.log("code created at: " + user.passwordReset.createdAt);
-  console.log("code expiration: " + PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION);
-  console.log("current time: " + Date.now());
+  //Verify code
   if (user.passwordReset.code !== code ||
     user.passwordReset.createdAt + PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION <= Date.now()) {
     //TODO: Check max attempts and add locking mechanism
@@ -287,25 +293,18 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Incorrect/expired password reset code"));
   }
 
-  return res.status(200).json(formatMessage(true, "Password reset code is valid", {
-    token: generateToken(user._id, SCOPES.PASSWORD_RESET)
-  }));
+  return res.status(200).json(formatMessage(true, "Password reset code is valid"));
 });
 
 //@route  POST api/users/resetpassword
 //@desc   Takes a new password and set user's (decides user from jwt) password to the new password.
 //@access Semi-private (requires jwt)
 const resetPassword = asyncHandler(async (req, res) => {
-  const { newPassword, confirmNewPassword } = req.body;
+  const { newPassword } = req.body;
 
   //Verify all fields exist.
-  if (!newPassword || !confirmNewPassword) {
+  if (!newPassword) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
-  }
-
-  //Verify valid password
-  if (newPassword !== confirmNewPassword) {
-    return res.status(400).json(formatMessage(false, "Passwords do not match"));
   }
 
   //Verify valid user
