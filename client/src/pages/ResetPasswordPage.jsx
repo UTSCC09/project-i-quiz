@@ -12,7 +12,7 @@ export default function ResetPasswordPage() {
   const [helpMessageShow, helpMessageShowSet] = useState(false);
   const alertRef = useRef();
   const newPasswordInputRef = useRef();
-  const confirmPasswordInputRef = useRef();
+  const confirmNewPasswordInputRef = useRef();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -23,13 +23,13 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (!confirmPasswordInputRef.current.validate("required")) {
+    if (!confirmNewPasswordInputRef.current.validate("required")) {
       alertRef.current.setMessage("Please confirm your new password");
       alertRef.current.show();
       return;
     }
 
-    if (confirmPasswordInputRef.current.getValue() !== newPasswordInputRef.current.getValue()) {
+    if (confirmNewPasswordInputRef.current.getValue() !== newPasswordInputRef.current.getValue()) {
       alertRef.current.setMessage("Passwords doesn't match");
       alertRef.current.show();
       return;
@@ -141,27 +141,31 @@ export default function ResetPasswordPage() {
 
           <form
             onSubmit={onSubmit}
-            className="grid grid-cols-1 gap-4 sm:w-96"
+            className="grid grid-cols-3 gap-4 sm:w-96"
             autoComplete="off"
             noValidate
           >
             <AlertBanner ref={alertRef} />
-            <div className="col-span-6">
+            <div className="col-span-3">
               <SingleLineInput
+                id="newPassword"
                 inputType="password"
                 name="password"
                 label="New password"
                 autoComplete="new-password"
                 ref={newPasswordInputRef}
               />
+            </div>
+            <div className="col-span-3">
               <SingleLineInput
+                id="confirmNewPassword"
                 inputType="password"
                 label="Confirm new password"
                 autoComplete="new-password"
-                ref={confirmPasswordInputRef}
+                ref={confirmNewPasswordInputRef}
               />
             </div>
-            <div className="mt-4 col-span-6 flex flex-col items-center">
+            <div className="mt-4 col-span-3 flex flex-col items-center">
               <button className="btn-primary">Send code</button>
             </div>
           </form>
