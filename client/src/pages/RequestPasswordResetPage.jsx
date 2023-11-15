@@ -27,7 +27,6 @@ export default function RequestPasswordResetPage() {
     }
 
     const formData = new FormData(e.target);
-    console.log(formData);
 
     fetch("/api/users/requestpasswordreset", {
       method: "POST",

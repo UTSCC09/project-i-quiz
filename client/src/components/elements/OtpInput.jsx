@@ -41,17 +41,26 @@ function OtpInput(
       if (prev >= 0) {
         event.target.form.elements[prev].focus();
       }
+    } else if (event.key === "Tab" && event.shiftKey) {
+      const prev = index - 1;
+      if (prev >= 0) {
+        event.preventDefault();
+        event.target.form.elements[prev].focus();
+      }
+    } else if (event.key === "Tab") {
+      const next = index + 1;
+      if (next < numOfCharacters) {
+        event.preventDefault(); // Prevents the default tab behavior
+        event.target.form.elements[next].focus();
+      }
     }
   };
-
+  
   const validate = () => {
-    console.log("validate");
-
     let flag = true;
 
     // Assume that otp is required
     for (let i = 0; i < numOfCharacters; i++) {
-      console.log(inputRefs.current[i].value);
       if (inputRefs.current[i].value === "") {
         inputRefs.current[i].classList.add("input-invalid-state");
         flag = false;

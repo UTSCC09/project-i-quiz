@@ -24,7 +24,6 @@ export default function VerifyPasswordResetCodePage() {
     }
 
     const formData = new FormData(e.target);
-    console.log(formData);
 
     fetch("/api/users/verifypasswordresetcode", {
       method: "POST",

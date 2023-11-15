@@ -36,7 +36,6 @@ export default function ResetPasswordPage() {
     }
 
     const formData = new FormData(e.target);
-    console.log(formData);
 
     fetch("/api/users/resetpassword", {
       method: "POST",
