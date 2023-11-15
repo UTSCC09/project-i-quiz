@@ -334,6 +334,10 @@ const resetPassword = asyncHandler(async (req, res) => {
       user.passwordReset.createdAt = null;
       user.passwordReset.attemptsMade = 0;
       await user.save();
+
+      //Clear password reset token cookie
+      res.clearCookie("passwordResetToken");
+
       return res.status(200).json(formatMessage(true, "Password reset successfully"));
     });
   });
@@ -348,7 +352,7 @@ const generateToken = (id, scope) => {
       scope: [scope]
     },
     process.env.JWT_SECRET,
-    {expiresIn: "30000s",}
+    {expiresIn: "1000s",}
   );
 };
 
