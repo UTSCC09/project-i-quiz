@@ -79,7 +79,7 @@ export default function CourseEnrollModal({
                     }
                     fetch(
                       "/api/courses/enroll_info/" +
-                        courseAccessCodeInputRef.current.getValue(),
+                      courseAccessCodeInputRef.current.getValue(),
                       {
                         method: "GET",
                         withCredentials: true,
@@ -105,7 +105,7 @@ export default function CourseEnrollModal({
               </form>
             </div>
           )}
-          {step === 1 && (
+          {(step === 1 && enrollInfo) && (
             <div className="flex flex-col gap-6 w-96">
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold">
