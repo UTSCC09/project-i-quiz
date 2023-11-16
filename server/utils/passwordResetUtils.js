@@ -9,7 +9,7 @@ const sendPasswordResetCode = async (user, code) => {
     html: `
       <p>Reset your iQuiz password using the code below:</p>
       <p>${code}</p>
-      <p><strong>Warning:</strong> Code will expire in ${PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION}<p>
+      <p><strong>Warning:</strong> Code will expire in ${PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION / 1000} second(s)<p>
     `
   };
 

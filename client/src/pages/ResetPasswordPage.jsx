@@ -21,10 +21,22 @@ export default function ResetPasswordPage() {
       alertRef.current.setMessage("Please enter a new password");
       alertRef.current.show();
       return;
+    } else if (!newPasswordInputRef.current.validate("password")) {
+      alertRef.current.setMessage(
+        "Passwords must be at least 8 characters and contain at least one letter and one number"
+      );
+      alertRef.current.show();
+      return;
     }
 
     if (!confirmNewPasswordInputRef.current.validate("required")) {
       alertRef.current.setMessage("Please confirm your new password");
+      alertRef.current.show();
+      return;
+    } else if (!confirmNewPasswordInputRef.current.validate("password")) {
+      alertRef.current.setMessage(
+        "Passwords must be at least 8 characters and contain at least one letter and one number"
+      );
       alertRef.current.show();
       return;
     }
