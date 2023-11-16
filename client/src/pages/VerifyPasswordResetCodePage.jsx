@@ -1,27 +1,14 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation, Link, Navigate } from "react-router-dom";
-import { getUserCookie } from "utils/CookieUtils";
+import { useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import Toast from "components/elements/Toast";
 import OtpInput from "components/elements/OtpInput";
 import AlertBanner from "components/elements/AlertBanner";
 
 export default function VerifyPasswordResetCodePage({ stepSet }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   const [helpMessageShow, helpMessageShowSet] = useState(false);
-  const [toastMessage, toastMessageSet] = useState("");
 
   const alertRef = useRef();
   const otpInputRef = useRef();
-
-  const toastMessageShow = (successMessage) => {
-    toastMessageSet(successMessage);
-    setTimeout(() => {
-      toastMessageSet("");
-    }, 3000);
-  };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -56,24 +43,12 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
       });
   };
 
-  useEffect(() => {
-    const { passInMessage } = location.state ?? "";
-    if (passInMessage) {
-      toastMessageShow(passInMessage);
-      navigate("", {});
-      setTimeout(() => {
-        toastMessageSet();
-      }, 3000);
-    }
-  });
-
-  return !getUserCookie() ? (
+  return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       className="w-full flex justify-center"
     >
-      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <div
         id="container"
         className="bg-white h-full sm:h-fit sm:min-h-[28rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 mt-24 sm:mt-0 sm:place-self-center py-16 sm:rounded-md pt-24"
@@ -83,7 +58,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
             Reset your password
           </h1>
           <div className="flex items-center relative ml-0.5 text-sm text-gray-500">
-            Please enter the password reset code you received
+            Please enter the verification code you received
             <div
               className="ml-2 mt-1 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:bg-black hover:bg-opacity-5 rounded-lg transition-all"
               onClick={() => {
@@ -113,7 +88,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
                   className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg w-80 rounded-lg right-[min(calc(100vw - 12rem), 12rem)] top-full"
                 >
                   <span>
-                    If you do not see the password reset email, please check your spam/junk folder.
+                    If you do not see the password reset email, please check your spam / junk folder.
                   </span>
                 </motion.div>
               )}
@@ -162,7 +137,5 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
         </span>
       </div>
     </motion.div>
-  ) : (
-    <Navigate to="/" />
-  );
+  )
 }

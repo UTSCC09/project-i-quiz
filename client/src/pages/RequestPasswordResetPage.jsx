@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import SingleLineInput from "components/elements/SingleLineInput";
 import AlertBanner from "components/elements/AlertBanner";
 
-export default function RequestPasswordResetPage({ stepSet }) {
+export default function RequestPasswordResetPage({ stepSet, toastMessageSet }) {
   const [helpMessageShow, helpMessageShowSet] = useState(false);
 
   const alertRef = useRef();
@@ -37,6 +37,10 @@ export default function RequestPasswordResetPage({ stepSet }) {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
+          toastMessageSet("The verification code has been sent to your email");
+          setTimeout(() => {
+            toastMessageSet();
+          }, 3000)
           stepSet(2);
         } else {
           alertRef.current.setMessage(result.message);
