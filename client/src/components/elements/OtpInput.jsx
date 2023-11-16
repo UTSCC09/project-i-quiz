@@ -8,6 +8,7 @@ import React, {
 function OtpInput(
   {
     numOfCharacters = 6,
+    toUpperCase = true,
     baseName = "otp",
   }, ref) {
   const [characters, setCharacters] = useState(Array.from({ length: numOfCharacters }, () => ""));
@@ -34,7 +35,15 @@ function OtpInput(
   };
 
   const handlePaste = (event) => {
-    setCharacters(event.clipboardData.getData("Text").split("").slice(0, 6))
+    let clipboardText = event.clipboardData.getData("Text");
+    if (toUpperCase) {
+      clipboardText = clipboardText.toUpperCase()
+    }
+    const newCharacters = Array.from({ length: numOfCharacters }, () => "");
+    clipboardText.split("").slice(0, 6).forEach((char, idx) => {
+      newCharacters[idx] = char;
+    })
+    setCharacters(newCharacters);
   };
 
   const inputFocus = (index, event) => {

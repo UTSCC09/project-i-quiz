@@ -231,7 +231,7 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
   }
 
   //Generate, store and send password reset code
-  const code = crypto.randomUUID().slice(0, PASSWORD_RESET_CONSTANTS.CODE_LENGTH);
+  const code = crypto.randomUUID().slice(0, PASSWORD_RESET_CONSTANTS.CODE_LENGTH).toUpperCase();
   await sendPasswordResetCode(user, code);
   user.passwordReset.code = code;
   user.passwordReset.createdAt = Date.now();
