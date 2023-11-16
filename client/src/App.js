@@ -57,6 +57,14 @@ const App = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/create-quiz"
+        element={
+          <ProtectedRoute>
+            <QuizEditorPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* -- Public Routes -- */}
       <Route path="/login" element={<LoginPage />} />
@@ -65,7 +73,6 @@ const App = () => {
       <Route path="/verifypasswordresetcode" element={<VerifyPasswordResetCodePage />} />
       <Route path="/resetpassword" element={<ResetPasswordPage />} />
       <Route path="*" element={<NotFoundPage />} />
-      <Route path="/create-quiz" element={<QuizEditorPage />} />
     </Routes>
   );
 };
