@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation, Link, Navigate } from "react-router-dom";
 import { getUserCookie } from "utils/CookieUtils";
-import iquizLogo from "media/iquiz_logo.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import Toast from "components/elements/Toast";
 import OtpInput from "components/elements/OtpInput";
 import AlertBanner from "components/elements/AlertBanner";
 
-export default function VerifyPasswordResetCodePage() {
+export default function VerifyPasswordResetCodePage({ stepSet }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,7 +43,7 @@ export default function VerifyPasswordResetCodePage() {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/resetpassword");
+          stepSet(3);
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();

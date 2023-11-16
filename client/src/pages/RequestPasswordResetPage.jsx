@@ -5,9 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import SingleLineInput from "components/elements/SingleLineInput";
 import AlertBanner from "components/elements/AlertBanner";
 
-export default function RequestPasswordResetPage() {
-  const navigate = useNavigate();
-
+export default function RequestPasswordResetPage({ stepSet }) {
   const [helpMessageShow, helpMessageShowSet] = useState(false);
 
   const alertRef = useRef();
@@ -39,10 +37,7 @@ export default function RequestPasswordResetPage() {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate(
-            "/verifypasswordresetcode",
-            { state: { passInMessage: "Code has been sent to your email" } }
-          );
+          stepSet(2);
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();
