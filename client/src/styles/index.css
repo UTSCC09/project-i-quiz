@@ -47,3 +47,16 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* Date picker calendar icon */
+::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  background-color: #d1d5db;
+}

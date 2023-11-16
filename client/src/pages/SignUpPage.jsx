@@ -113,24 +113,23 @@ function SignUpForm({ email, userType }) {
         flag = false;
         alertRef.current.setMessage("Invalid email address format");
       }
+      // Validate password input (inputRefs[3])
+      if (
+        idx === 3 &&
+        inputElmt.validate("required") &&
+        !inputElmt.validate("password")
+      ) {
+        flag = false;
+        alertRef.current.setMessage(
+          "Passwords must be at least 8 characters and contain at least one letter and one number"
+        );
+      }
     });
 
     // If the above validation failed, show alert banner and return
     if (!flag) {
       alertRef.current.show();
       return;
-    }
-
-    // Validate password format
-    // (at least 8 characters and contain at least one letter and one number)
-    if (
-      !inputRefs.current[3].getValue().match(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/)
-    ) {
-      flag = false;
-      inputRefs.current[3].setValidationState(false);
-      alertRef.current.setMessage(
-        "Passwords must be at least 8 characters and contain at least one letter and one number"
-      );
     }
 
     // Check passwords match

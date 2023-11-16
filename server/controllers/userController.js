@@ -2,18 +2,21 @@ import asyncHandler from "express-async-handler";
 import { compare, genSalt, hash } from "bcrypt";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
-import sendEmailConfirmation from "../utils/emailVerification.js";
-import { parse, serialize } from "cookie";
+import sendEmailVerificationLink from "../utils/emailVerificationUtils.js";
+import sendPasswordResetCode from "../utils/passwordResetUtils.js";
 import crypto from "crypto";
 import mongoose from "mongoose";
-
-const saltRounds = 10;
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import PASSWORD_RESET_CONSTANTS from "../constants/passwordResetConstants.js";
+import SCOPES from "../constants/scopes.js";
 
 //@route  POST api/users
 //@desc   Registers a new iQuiz user
 //@access Public
 const registerUser = asyncHandler(async (req, res) => {
   const { type, firstName, lastName, email, password } = req.body;
+
   //Verify all fields exist.
   if (!firstName || !lastName || !email || !password || !type) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
@@ -33,6 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   //Salting password.
+  const saltRounds = 10;
   genSalt(saltRounds, async function (err, salt) {
     hash(password, salt, async function (err, hashedPassword) {
       if (err) return res.status(500).end(err);
@@ -44,15 +48,14 @@ const registerUser = asyncHandler(async (req, res) => {
         lastName: lastName,
         email: email,
         password: hashedPassword,
-        emailConfirmationCode: crypto.randomUUID().slice(0, 8),
+        emailVerificationCode: crypto.randomUUID().slice(0, 8),
+        passwordReset: {} //Use all default values
       });
 
       //Return user object
       if (user) {
-        sendEmailConfirmation(user);
-        return res
-          .status(200)
-          .json(formatMessage(true, "Registered Successfully"));
+        await sendEmailVerificationLink(user);
+        return res.status(200).json(formatMessage(true, "Registered Successfully"));
       }
     });
   });
@@ -154,14 +157,13 @@ const logoutUser = asyncHandler(async (req, res) => {
   });
 });
 
-
-//@route  POST api/users/verify/:userID/:emailConfirmationCode
-//@desc   Takes a confirmation code and verifys user if same emailConfirmationCode stored in db.
+//@route  POST api/users/verifyemail/:userID/:emailVerificationCode
+//@desc   Takes a code and verifies user's email if the code matches the generated verification code for that user.
 //@access Public
-const verifyUser = asyncHandler(async (req, res) => {
-  const { userId, emailConfirmationCode } = req.params;
+const verifyUserEmail = asyncHandler(async (req, res) => {
+  const { userId, emailVerificationCode } = req.params;
 
-  if (!userId || !emailConfirmationCode) {
+  if (!userId || !emailVerificationCode) {
     return res.status(400).json(formatMessage(false, "Missing arguments"));
   }
 
@@ -180,7 +182,7 @@ const verifyUser = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "User is already verified"));
   }
 
-  if (user.emailConfirmationCode === emailConfirmationCode) {
+  if (user.emailVerificationCode === emailVerificationCode) {
     user.verified = true;
     const updateUser = await User.updateOne({ _id: userId }, user);
 
@@ -193,7 +195,188 @@ const verifyUser = asyncHandler(async (req, res) => {
   }
   return res
     .status(400)
-    .json(formatMessage(false, "Invalid confirmation code"));
+    .json(formatMessage(false, "Invalid verification code"));
 });
 
-export { registerUser, getUsers, loginUser, logoutUser, verifyUser };
+//@route  POST api/users/requestpasswordreset
+//@desc   Takes an email address, checks if registered and verified,
+//        then generates and sends password reset code to their email address.
+//@access Public
+const requestPasswordReset = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  //Verify all fields exist.
+  if (!email) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Verify valid email
+  let user;
+  try {
+    user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Email is not registered"));
+    }
+    if (!user.verified) {
+      return res
+        .status(400)
+        .json(formatMessage(false,"Email is not verified"));
+    }
+  } catch (error) {
+    return res
+    .status(400)
+    .json(formatMessage(false, "Mongoose error finding user"));    
+  }
+
+  //Generate, store and send password reset code
+  const code = crypto.randomUUID().slice(0, PASSWORD_RESET_CONSTANTS.CODE_LENGTH);
+  await sendPasswordResetCode(user, code);
+  user.passwordReset.code = code;
+  user.passwordReset.createdAt = Date.now();
+  user.passwordReset.attemptsMade = 0;
+  await user.save(); // Only store if sending email is successful
+
+  //Token to verify password reset code
+  res.cookie(
+    "passwordResetToken",
+    generateToken(user._id, SCOPES.VERIFY_PASSWORD_RESET_CODE),
+    {
+      httpOnly: true,
+      secure: true,
+      sameSite: true
+    }
+  );
+  return res.status(200).json(formatMessage(true, "Password reset request accepted"));
+});
+
+//@route  POST api/users/verifypasswordresetcode
+//@desc   Takes an email address and a code, checks if email is registered and verified,
+//        then validates the code and returns a jwt if valid.
+//@access Public
+const verifyPasswordResetCode = asyncHandler(async (req, res) => {
+  const { code } = req.body;
+
+  //Verify all fields exist.
+  if (!code) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Verify valid email
+  let user;
+  try {
+    user = await User.findById(req.userId);
+    if (!user) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Invalid user id in token"));
+    }
+    if (!user.verified) {
+      return res
+        .status(400)
+        .json(formatMessage(false,"Email is not verified"));
+    }
+  } catch (error) {
+    return res
+    .status(400)
+    .json(formatMessage(false, "Mongoose error finding user"));    
+  }
+
+  //Verify code
+  if (user.passwordReset.code !== code ||
+    user.passwordReset.createdAt + PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION <= Date.now()) {
+    //TODO: Check max attempts and add locking mechanism
+    user.passwordReset.attemptsMade += 1;
+    await user.save();
+    return res
+      .status(400)
+      .json(formatMessage(false, "Incorrect/expired password reset code"));
+  }
+
+  //Clear password reset token cookie
+  res.clearCookie("passwordResetToken");
+
+  //Token to reset password
+  res.cookie(
+    "passwordResetToken",
+    generateToken(user._id, SCOPES.RESET_PASSWORD),
+    {
+      httpOnly: true,
+      secure: true,
+      sameSite: true
+    }
+  );
+  return res.status(200).json(formatMessage(true, "Password reset code is valid"));
+});
+
+//@route  POST api/users/resetpassword
+//@desc   Takes a new password and set user's (decides user from jwt) password to the new password.
+//@access Semi-private (requires jwt)
+const resetPassword = asyncHandler(async (req, res) => {
+  const { newPassword } = req.body;
+
+  //Verify all fields exist.
+  if (!newPassword) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Verify valid user
+  let user;
+  try {
+    user = await User.findById(req.userId);
+    if (!user) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Invalid user id in token"));
+    }
+  } catch (error) {
+    return res
+    .status(400)
+    .json(formatMessage(false, "Mongoose error finding user"));    
+  }
+
+  //Salt and hash new password
+  const saltRounds = 10;
+  genSalt(saltRounds, async (err, salt) => {
+    hash(newPassword, salt, async (err, hashedPassword) => {
+      if (err) return res.status(500).end(err);
+
+      //Update password
+      user.password = hashedPassword;
+      user.passwordReset.code = null;
+      user.passwordReset.createdAt = null;
+      user.passwordReset.attemptsMade = 0;
+      await user.save();
+
+      //Clear password reset token cookie
+      res.clearCookie("passwordResetToken");
+
+      return res.status(200).json(formatMessage(true, "Password reset successfully"));
+    });
+  });
+
+});
+
+// generate jwt
+const generateToken = (id, scope) => {
+  dotenv.config();
+  return jwt.sign(
+    { id,
+      scope: [scope]
+    },
+    process.env.JWT_SECRET,
+    {expiresIn: "1000s",}
+  );
+};
+
+export {
+  registerUser,
+  getUsers,
+  loginUser,
+  logoutUser,
+  verifyUserEmail,
+  requestPasswordReset,
+  verifyPasswordResetCode,
+  resetPassword
+};
