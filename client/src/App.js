@@ -4,9 +4,9 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import QuizPage from "pages/QuizPage";
 import SignUpPage from "pages/SignUpPage";
-import RequestPasswordResetPage from "pages/RequestPasswordResetPage";
-import VerifyPasswordResetCodePage from "pages/VerifyPasswordResetCodePage";
-import ResetPasswordPage from "pages/ResetPasswordPage";
+import RequestPasswordResetWindow from "components/page_components/RequestPasswordResetWindow";
+import VerifyPasswordResetCodeWindow from "components/page_components/VerifyPasswordResetCodeWindow";
+import ResetPasswordWindow from "components/page_components/ResetPasswordWindow";
 import NotFoundPage from "pages/NotFoundPage";
 import DashboardPage from "pages/DashboardPage";
 import CoursePage from "pages/CoursePage";
@@ -71,8 +71,8 @@ const App = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/reset-password" element={<PasswordResetPage />} />
-      <Route path="/verifypasswordresetcode" element={<VerifyPasswordResetCodePage />} />
-      <Route path="/resetpassword" element={<ResetPasswordPage />} />
+      <Route path="/verifypasswordresetcode" element={<VerifyPasswordResetCodeWindow />} />
+      <Route path="/resetpassword" element={<ResetPasswordWindow />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
