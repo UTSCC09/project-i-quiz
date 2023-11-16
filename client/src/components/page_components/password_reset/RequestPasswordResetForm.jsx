@@ -10,6 +10,7 @@ export default function RequestPasswordResetPage({ stepSet, toastMessageSet }) {
 
   const alertRef = useRef();
   const emailInputRef = useRef();
+  const buttonRef = useRef();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -23,6 +24,8 @@ export default function RequestPasswordResetPage({ stepSet, toastMessageSet }) {
       alertRef.current.show();
       return;
     }
+
+    buttonRef.current.classList.add("button-loading");
 
     const formData = new FormData(e.target);
 
@@ -45,12 +48,14 @@ export default function RequestPasswordResetPage({ stepSet, toastMessageSet }) {
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();
+          buttonRef.current.classList.remove("button-loading");
         }
       })
       .catch((err) => {
         console.error(err);
         alertRef.current.setMessage("Could not connect to the server");
         alertRef.current.show();
+        buttonRef.current.classList.remove("button-loading");
       });
   };
 
@@ -143,7 +148,7 @@ export default function RequestPasswordResetPage({ stepSet, toastMessageSet }) {
             />
           </div>
           <div className="mt-4 col-span-6 flex flex-col items-center">
-            <button className="btn-primary">Send code</button>
+            <button ref={buttonRef} className="btn-primary">Send code</button>
           </div>
         </form>
         <span className="mt-6 text-sm text-gray-500">

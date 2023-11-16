@@ -172,7 +172,7 @@ export default function ResetPasswordWindow() {
           />
         </div>
         <div className="mt-4 col-span-6 flex flex-col items-center">
-          <button className="btn-primary">Send code</button>
+          <button className="btn-primary">Save password</button>
         </div>
       </form>
 

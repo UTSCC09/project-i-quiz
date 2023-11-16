@@ -15,6 +15,9 @@
   .input-invalid-state {
     @apply ring ring-red-200;
   }
+  .button-loading {
+    @apply pointer-events-none opacity-60 animate-pulse;
+  }
 }
 
 @layer base {

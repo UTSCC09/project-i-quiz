@@ -9,6 +9,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
 
   const alertRef = useRef();
   const otpInputRef = useRef();
+  const buttonRef = useRef();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -18,6 +19,9 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
       alertRef.current.show();
       return;
     }
+
+    buttonRef.current.classList.add("button-loading");
+    alertRef.current.hide();
 
     fetch("/api/users/verifypasswordresetcode", {
       method: "POST",
@@ -34,12 +38,14 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();
+          buttonRef.current.classList.remove("button-loading");
         }
       })
       .catch((err) => {
         console.error(err);
         alertRef.current.setMessage("Could not connect to the server");
         alertRef.current.show();
+        buttonRef.current.classList.remove("button-loading");
       });
   };
 
@@ -122,7 +128,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
           />
         </div>
         <div className="mt-4 col-span-6 flex flex-col items-center">
-          <button className="btn-primary">Verify code</button>
+          <button ref={buttonRef} className="btn-primary">Verify code</button>
         </div>
       </form>
 
