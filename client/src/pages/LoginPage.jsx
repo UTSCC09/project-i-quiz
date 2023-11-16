@@ -1,14 +1,39 @@
-import React, { useRef, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import "styles/components.css";
 import logo from "media/iquiz_logo.svg";
+import Toast from "components/elements/Toast";
 import SingleLineInput from "components/elements/SingleLineInput";
 import SimpleCheckBox from "components/elements/SimpleCheckBox";
 import { getUserCookie } from "utils/CookieUtils";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [toastMessage, toastMessageSet] = useState("");
+
+  const toastMessageShow = (successMessage) => {
+    toastMessageSet(successMessage);
+    setTimeout(() => {
+      toastMessageSet("");
+    }, 3000);
+  };
+
+  useEffect(() => {
+    const { passInMessage } = location.state ?? "";
+    if (passInMessage) {
+      toastMessageShow(passInMessage);
+      navigate("", {});
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+    }
+  });
+
   return !getUserCookie() ? (
     <>
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <div className="h-screen w-full flex flex-col items-center justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <SignInWindow />
       </div>
@@ -134,6 +159,12 @@ const SignInWindow = () => {
                 Sign up
               </Link>
             </div>
+            <p className="mt-6 text-sm text-gray-500 self-center">
+              Forgot password?{" "}
+              <Link to="/requestpasswordreset" className="text-gray-700 underline">
+                Reset it
+              </Link>
+            </p>
             {/* <span className="text-sm text-gray-500 mt-4 self-center pr-1">Can't remember password? <Link className="underline" to="/">Reset</Link></span> */}
           </form>
         </div>

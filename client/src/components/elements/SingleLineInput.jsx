@@ -49,6 +49,10 @@ function SingleLineInput(
     return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);
   }
 
+  function validatePasswordFormat(stringVal) {
+    return stringVal.match(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/);
+  }
+
   function validate(checks = inputType) {
     const innerInput = innerInputRef.current;
     const innerLabel = innerLabelRef.current;
@@ -59,6 +63,11 @@ function SingleLineInput(
     }
 
     if (checks.includes("email") && !validateEmailFormat(innerInput.value)) {
+      innerLabel.classList.add("input-invalid-state");
+      return false;
+    }
+
+    if (checks.includes("password") && !validatePasswordFormat(innerInput.value)) {
       innerLabel.classList.add("input-invalid-state");
       return false;
     }

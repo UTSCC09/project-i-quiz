@@ -12,10 +12,10 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const mailOptions = {
+const defaultMailOptions = {
   from: process.env.AUTH_EMAIL
 };
 
 const backendUrl = process.env.SERVER_BASE_URL + "/";
 
-export { transporter, mailOptions, backendUrl };
+export { transporter, defaultMailOptions, backendUrl };
