@@ -2,43 +2,44 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function CheckBoxGroup(props) {
-  const optionDictInit = {}
+  const optionDictInit = {};
   props.options.forEach((option) => {
     optionDictInit[option.id] = props.checkedOptions.includes(option.id);
-  })
+  });
 
   const [optionDict, setOptionDict] = useState(optionDictInit);
 
   function onOptionChange(oid) {
-    setOptionDict(prevDict => ({ ...prevDict, [oid]: !prevDict[oid] }))
+    setOptionDict((prevDict) => ({ ...prevDict, [oid]: !prevDict[oid] }));
     props.autoSaveAnswers();
   }
 
   return (
     <div className="flex flex-col gap-3">
-      {
-        props.options.map((option) => {
-          return <CheckOption
+      {props.options.map((option) => {
+        return (
+          <CheckOption
             checkBoxGroupName={props.checkBoxGroupName}
             oid={option.id}
             text={option.content}
             key={option.id}
             optionDict={optionDict}
-            onOptionChange={onOptionChange}></CheckOption>
-        })
-      }
+            onOptionChange={onOptionChange}
+          ></CheckOption>
+        );
+      })}
     </div>
-  )
+  );
 }
 
 function CheckOption(props) {
   const checkIconVariants = {
     unchecked: { pathLength: 0, opacity: 0, transition: { duration: 0.1 } },
-    checked: { pathLength: 1, opacity: 1, transition: { duration: 0.2 } }
+    checked: { pathLength: 1, opacity: 1, transition: { duration: 0.2 } },
   };
   const labelTextVariant = {
     unchecked: { x: 0, transition: { duration: 0.1 } },
-    checked: { x: "14px", transition: { duration: 0.2 } }
+    checked: { x: "14px", transition: { duration: 0.2 } },
   };
 
   return (
@@ -81,10 +82,13 @@ function CheckOption(props) {
           <motion.div
             animate={props.optionDict[props.oid] ? "checked" : "unchecked"}
             variants={labelTextVariant}
-            className="text-sm sm:text-base"
-            dangerouslySetInnerHTML={{ __html: props.text }}></motion.div>
+            className="text-sm sm:text-base break-words pr-4"
+            dangerouslySetInnerHTML={{
+              __html: props.text,
+            }}
+          ></motion.div>
         </label>
       </AnimatePresence>
-    </div >
-  )
+    </div>
+  );
 }

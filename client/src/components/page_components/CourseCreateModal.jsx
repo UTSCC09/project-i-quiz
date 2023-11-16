@@ -30,9 +30,9 @@ export default function CourseCreateModal({
   const [courseCreationData, courseCreationDataSet] = useState({});
 
   function addCourseCreationData(key, value) {
-    let newData = courseCreationData;
-    newData[key] = value;
-    courseCreationDataSet(newData);
+    courseCreationDataSet((prevData) => {
+      return { ...prevData, [key]: value }
+    });
   }
 
   function resetAllStates() {
@@ -62,18 +62,26 @@ export default function CourseCreateModal({
     alertRef.current.hide();
 
     const formData = new FormData(e.target);
-    formData.forEach((value, key) => addCourseCreationData(key, value));
-    if (!courseCreationData["numOfSessions"]) {
-      addCourseCreationData("numOfSessions", 1);
-    } else if (courseCreationData["numOfSessions"] < 0) {
+
+    let courseAvailabilityCheckData = {}
+    formData.forEach((value, key) => {
+      courseAvailabilityCheckData[key] = value;
+    });
+
+    if (!courseAvailabilityCheckData["numOfSessions"]) {
+      courseAvailabilityCheckData["numOfSessions"] = 1;
+    } else if (courseAvailabilityCheckData["numOfSessions"] < 0) {
       alertRef.current.setMessage("Number of sections cannot be negative");
       alertRef.current.show();
       return;
     }
+
+    courseCreationDataSet(courseAvailabilityCheckData);
+
     checkNewCourseAvailability(
-      courseCreationData.courseCode,
-      courseCreationData.courseName,
-      courseCreationData.courseSemester
+      courseAvailabilityCheckData.courseCode,
+      courseAvailabilityCheckData.courseName,
+      courseAvailabilityCheckData.courseSemester
     ).then((result) => {
       if (result.success) {
         alertRef.current.hide();
