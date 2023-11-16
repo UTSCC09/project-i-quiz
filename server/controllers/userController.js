@@ -291,7 +291,7 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
     await user.save();
     return res
       .status(400)
-      .json(formatMessage(false, "Incorrect/expired password reset code"));
+      .json(formatMessage(false, "Invalid or expired password reset code"));
   }
 
   //Clear password reset token cookie

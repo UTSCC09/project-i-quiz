@@ -14,7 +14,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
     e.preventDefault();
 
     if (!otpInputRef.current.validate()) {
-      alertRef.current.setMessage("Please enter all the characters in the code");
+      alertRef.current.setMessage("Please enter all characters of the verification code");
       alertRef.current.show();
       return;
     }

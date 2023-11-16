@@ -106,7 +106,7 @@ function OtpInput(
           name={`${baseName}${index}`}
           type="text"
           autoComplete="off"
-          className="flex-1 text-center w-0 h-12 text-xl border border-gray-300 rounded hover:border-blue-600 transition group focus:outline-none focus:ring focus:ring-blue-200 uppercase hover:bg-gray-50 cursor-pointer"
+          className="flex-1 text-center w-0 h-12 text-xl border border-gray-300 rounded hover:border-blue-600 transition group focus:outline-none focus:ring focus:ring-blue-200 uppercase hover:bg-gray-50 cursor-pointer font-semibold"
           value={character}
           onChange={(e) => handleChange(index, e)}
           onKeyDown={(e) => inputFocus(index, e)}
