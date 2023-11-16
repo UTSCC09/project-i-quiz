@@ -4,12 +4,17 @@ import VerifyPasswordResetCodeForm from "../components/page_components/password_
 import RequestPasswordResetForm from "../components/page_components/password_reset/RequestPasswordResetForm";
 import CreateNewPasswordForm from "../components/page_components/password_reset/CreateNewPasswordForm";
 import Toast from "components/elements/Toast";
+import { useNavigate } from "react-router-dom";
 
 export default function PasswordResetPage() {
+  const navigate = useNavigate();
+  if (getUserCookie()) {
+    navigate("/");
+  }
   const [step, stepSet] = useState(1);
   const [toastMessage, toastMessageSet] = useState();
 
-  return !getUserCookie() ? (
+  return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
@@ -23,7 +28,5 @@ export default function PasswordResetPage() {
         </div>
       </div>
     </>
-  ) : (
-    <Navigate to="/" />
-  );
+  )
 }
