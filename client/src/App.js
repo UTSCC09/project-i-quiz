@@ -71,8 +71,6 @@ const App = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/reset-password" element={<PasswordResetPage />} />
-      <Route path="/verifypasswordresetcode" element={<VerifyPasswordResetCodeForm />} />
-      <Route path="/resetpassword" element={<CreateNewPasswordForm />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
