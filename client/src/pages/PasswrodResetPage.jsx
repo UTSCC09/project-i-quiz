@@ -1,4 +1,4 @@
-import { useState, Navigate } from "react";
+import { useState } from "react";
 import { getUserCookie } from "utils/CookieUtils";
 import VerifyPasswordResetCodeForm from "../components/page_components/password_reset/VerifyPasswordResetCodeForm";
 import RequestPasswordResetForm from "../components/page_components/password_reset/RequestPasswordResetForm";
