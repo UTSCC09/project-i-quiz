@@ -23,8 +23,8 @@ export default function PasswordResetPage() {
           className="bg-white h-full mt-24 sm:mt-0 sm:h-fit sm:min-h-[28rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 sm:place-self-center py-16 sm:rounded-md pt-24 transition-all"
         >
           {step === 1 && <RequestPasswordResetForm stepSet={stepSet} toastMessageSet={toastMessageSet} />}
-          {step == 2 && <VerifyPasswordResetCodeForm stepSet={stepSet} />}
-          {step == 3 && <CreateNewPasswordForm />}
+          {step === 2 && <VerifyPasswordResetCodeForm stepSet={stepSet} />}
+          {step === 3 && <CreateNewPasswordForm />}
         </div>
       </div>
     </>

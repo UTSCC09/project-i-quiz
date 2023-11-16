@@ -43,9 +43,6 @@ function OtpInput(
   };
 
   const inputFocus = (index, event) => {
-    if ((event.metaKey || event.ctrlKey) && event.key == "V") {
-      setCharacters()
-    }
     if (/^[a-zA-Z0-9]$/.test(event.key)) {
       if (event.target.value.length > 0) {
         event.target.value = event.key;
@@ -57,7 +54,7 @@ function OtpInput(
       if (prev >= 0) {
         event.target.form.elements[prev].focus();
       }
-    } else if (event.key === "Tab" && event.shiftKey || event.key === "ArrowLeft") {
+    } else if ((event.key === "Tab" && event.shiftKey) || event.key === "ArrowLeft") {
       const prev = index - 1;
       if (prev >= 0) {
         event.preventDefault();
