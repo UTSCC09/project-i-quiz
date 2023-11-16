@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate, Link, Navigate } from "react-router-dom";
 import { getUserCookie } from "utils/CookieUtils";
-import iquizLogo from "media/iquiz_logo.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import SingleLineInput from "components/elements/SingleLineInput";
 import AlertBanner from "components/elements/AlertBanner";

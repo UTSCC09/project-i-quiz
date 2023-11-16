@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate, Link, Navigate } from "react-router-dom";
 import { getUserCookie } from "utils/CookieUtils";
-import iquizLogo from "media/iquiz_logo.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import SingleLineInput from "components/elements/SingleLineInput";
 import AlertBanner from "components/elements/AlertBanner";
@@ -84,19 +83,11 @@ export default function ResetPasswordPage() {
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
         <div
           id="container"
-          className="bg-white h-full sm:h-fit sm:min-h-[41rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 mt-24 sm:mt-0 sm:place-self-center py-16 sm:rounded-md pt-24"
+          className="bg-white h-full sm:h-fit sm:min-h-[28rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 mt-24 sm:mt-0 sm:place-self-center py-16 sm:rounded-md pt-24"
         >
-          <div className="mb-7 flex flex-col gap-2">
+          <div className="mb-7 flex flex-col gap-2 w-full">
             <h1 className="self-start text-3xl font-bold">
-              Reset your
-              <Link to="/">
-                <img
-                  src={iquizLogo}
-                  alt="iquiz! logo"
-                  className="ml-2.5 h-6 sm:h-6 mb-0.5 inline self-baseline"
-                />
-              </Link>
-              {" "}password
+              Reset your password
             </h1>
             <div className="flex items-center relative ml-0.5 text-sm text-gray-500">
               Please create a new password
@@ -158,7 +149,7 @@ export default function ResetPasswordPage() {
 
           <form
             onSubmit={onSubmit}
-            className="grid grid-cols-6 gap-4 sm:w-96"
+            className="grid grid-cols-6 gap-4 w-full sm:w-96"
             autoComplete="off"
             noValidate
           >
