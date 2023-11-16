@@ -13,9 +13,14 @@ export default function PasswordResetPage() {
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
-        {step === 1 && <RequestPasswordResetWindow stepSet={stepSet} toastMessageSet={toastMessageSet} />}
-        {step == 2 && <VerifyPasswordResetCodeWindow stepSet={stepSet} />}
-        {step == 3 && <ResetPasswordWindow />}
+        <div
+          id="container"
+          className="bg-white h-full mt-24 sm:mt-0 sm:h-fit sm:min-h-[28rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 sm:place-self-center py-16 sm:rounded-md pt-24 transition-all"
+        >
+          {step === 1 && <RequestPasswordResetWindow stepSet={stepSet} toastMessageSet={toastMessageSet} />}
+          {step == 2 && <VerifyPasswordResetCodeWindow stepSet={stepSet} />}
+          {step == 3 && <ResetPasswordWindow />}
+        </div>
       </div>
     </>
   ) : (
