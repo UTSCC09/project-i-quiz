@@ -1,8 +1,8 @@
 import { useState, Navigate } from "react";
 import { getUserCookie } from "utils/CookieUtils";
-import VerifyPasswordResetCodeWindow from "../components/page_components/VerifyPasswordResetCodeWindow";
-import RequestPasswordResetWindow from "../components/page_components/RequestPasswordResetWindow";
-import ResetPasswordWindow from "../components/page_components/ResetPasswordWindow";
+import VerifyPasswordResetCodeForm from "../components/page_components/password_reset/VerifyPasswordResetCodeForm";
+import RequestPasswordResetForm from "../components/page_components/password_reset/RequestPasswordResetForm";
+import CreateNewPasswordForm from "../components/page_components/password_reset/CreateNewPasswordForm";
 import Toast from "components/elements/Toast";
 
 export default function PasswordResetPage() {
@@ -17,9 +17,9 @@ export default function PasswordResetPage() {
           id="container"
           className="bg-white h-full mt-24 sm:mt-0 sm:h-fit sm:min-h-[28rem] w-full sm:w-fit shadow-lg flex flex-col items-center px-12 sm:px-28 sm:place-self-center py-16 sm:rounded-md pt-24 transition-all"
         >
-          {step === 1 && <RequestPasswordResetWindow stepSet={stepSet} toastMessageSet={toastMessageSet} />}
-          {step == 2 && <VerifyPasswordResetCodeWindow stepSet={stepSet} />}
-          {step == 3 && <ResetPasswordWindow />}
+          {step === 1 && <RequestPasswordResetForm stepSet={stepSet} toastMessageSet={toastMessageSet} />}
+          {step == 2 && <VerifyPasswordResetCodeForm stepSet={stepSet} />}
+          {step == 3 && <CreateNewPasswordForm />}
         </div>
       </div>
     </>
