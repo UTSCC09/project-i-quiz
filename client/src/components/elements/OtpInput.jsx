@@ -31,23 +31,34 @@ function OtpInput(
         }
       }
     }
+  };
 
-    validate();
+  const handlePaste = (event) => {
+    setCharacters(event.clipboardData.getData("Text").split("").slice(0, 6))
   };
 
   const inputFocus = (index, event) => {
-    if ((event.key === "Delete" || event.key === "Backspace") && event.target.value === "") {
+    if ((event.metaKey || event.ctrlKey) && event.key == "V") {
+      setCharacters()
+    }
+    if (/^[a-zA-Z0-9]$/.test(event.key)) {
+      if (event.target.value.length > 0) {
+        event.target.value = event.key;
+        handleChange(index, event);
+      }
+    }
+    else if ((event.key === "Delete" || event.key === "Backspace") && event.target.value === "") {
       const prev = index - 1;
       if (prev >= 0) {
         event.target.form.elements[prev].focus();
       }
-    } else if (event.key === "Tab" && event.shiftKey) {
+    } else if (event.key === "Tab" && event.shiftKey || event.key === "ArrowLeft") {
       const prev = index - 1;
       if (prev >= 0) {
         event.preventDefault();
         event.target.form.elements[prev].focus();
       }
-    } else if (event.key === "Tab") {
+    } else if (event.key === "Tab" || event.key === "ArrowRight") {
       const next = index + 1;
       if (next < numOfCharacters) {
         event.preventDefault(); // Prevents the default tab behavior
@@ -55,7 +66,7 @@ function OtpInput(
       }
     }
   };
-  
+
   const validate = () => {
     let flag = true;
 
@@ -94,8 +105,9 @@ function OtpInput(
           value={character}
           onChange={(e) => handleChange(index, e)}
           onKeyDown={(e) => inputFocus(index, e)}
+          onPaste={handlePaste}
           tabIndex={index}
-          maxLength="1"
+          maxLength={1}
         />
       ))}
     </div>
