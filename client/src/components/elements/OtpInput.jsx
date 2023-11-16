@@ -8,7 +8,6 @@ import React, {
 function OtpInput(
   {
     numOfCharacters = 6,
-    toUpperCase = true,
     baseName = "otp",
   }, ref) {
   const [characters, setCharacters] = useState(Array.from({ length: numOfCharacters }, () => ""));
@@ -35,12 +34,9 @@ function OtpInput(
   };
 
   const handlePaste = (event) => {
-    let clipboardText = event.clipboardData.getData("Text");
-    if (toUpperCase) {
-      clipboardText = clipboardText.toUpperCase()
-    }
+    const clipboardCharacters = event.clipboardData.getData("Text").split("").slice(0, 6);
     const newCharacters = Array.from({ length: numOfCharacters }, () => "");
-    clipboardText.split("").slice(0, 6).forEach((char, idx) => {
+    clipboardCharacters.forEach((char, idx) => {
       newCharacters[idx] = char;
     })
     setCharacters(newCharacters);
@@ -94,7 +90,7 @@ function OtpInput(
 
   useImperativeHandle(ref, () => ({
     validate,
-    getValue: () => characters.join(""),
+    getValue: () => characters.join("").toUpperCase(),
     setValue: (otp) => {
       const newCharacters = otp.split("").slice(0, numOfCharacters);
       setCharacters(newCharacters);
@@ -110,7 +106,7 @@ function OtpInput(
           name={`${baseName}${index}`}
           type="text"
           autoComplete="off"
-          className="flex-1 text-center w-0 h-12 text-xl border border-gray-300 rounded hover:border-blue-600 transition group focus:outline-none focus:ring focus:ring-blue-200"
+          className="flex-1 text-center w-0 h-12 text-xl border border-gray-300 rounded hover:border-blue-600 transition group focus:outline-none focus:ring focus:ring-blue-200 uppercase hover:bg-gray-50 cursor-pointer"
           value={character}
           onChange={(e) => handleChange(index, e)}
           onKeyDown={(e) => inputFocus(index, e)}
