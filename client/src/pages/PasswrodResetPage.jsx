@@ -8,11 +8,11 @@ export default function PasswordResetPage() {
   const [step, stepSet] = useState(1);
 
   return !getUserCookie() ? (
-    <>
+    <div className="h-screen w-full flex flex-col justify-center bg-center bg-cover bg-[url('/src/media/iquiz_logo_tiles.svg')] bg-gray-50">
       {step === 1 && <RequestPasswordResetPage stepSet={stepSet} />}
       {step == 2 && <VerifyPasswordResetCodePage stepSet={stepSet} />}
       {step == 3 && <ResetPasswordPage />}
-    </>
+    </div>
   ) : (
     <Navigate to="/" />
   );
