@@ -59,11 +59,11 @@ export default function RequestPasswordResetPage({ stepSet, toastMessageSet }) {
       initial={{ opacity: 0.5, x: 30 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 30 }}
-      className="w-full flex justify-center"
+      className="w-full h-full pt-24 sm:pt-0 flex justify-center"
     >
       <div
         id="container"
-        className="bg-white h-full sm:h-fit sm:min-h-[28rem] w-full sm:w-fit shadow-lg px-12 sm:px-28 mt-24 sm:mt-0 sm:place-self-center pb-16 sm:rounded-md pt-24"
+        className="bg-white h-full sm:h-fit sm:min-h-[28rem] w-full sm:w-fit shadow-lg px-12 sm:px-28 sm:place-self-center pb-16 sm:rounded-md pt-24"
       >
         <div className="flex flex-col items-center">
           <div className="mb-7 flex flex-col gap-2 w-full">
