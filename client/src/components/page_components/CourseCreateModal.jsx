@@ -27,13 +27,10 @@ export default function CourseCreateModal({
   const [year, yearSet] = useState();
   const [semester, semesterSet] = useState();
   const [colorPicked, colorPickedSet] = useState();
-  const [courseCreationData, courseCreationDataSet] = useState({});
+  const [courseCodeTemp, courseCodeTempSet] = useState();
+  const [courseSemesterTemp, courseSemesterTempSet] = useState();
 
-  function addCourseCreationData(key, value) {
-    let newData = courseCreationData;
-    newData[key] = value;
-    courseCreationDataSet(newData);
-  }
+  let courseCreationData = {}
 
   function resetAllStates() {
     stepSet(0);
@@ -41,7 +38,9 @@ export default function CourseCreateModal({
     yearSet();
     semesterSet();
     colorPickedSet();
-    courseCreationDataSet();
+    courseCodeTempSet();
+    courseSemesterTempSet();
+    courseCreationData = {};
   }
 
   async function submitCreateCourseForm(e) {
@@ -62,9 +61,13 @@ export default function CourseCreateModal({
     alertRef.current.hide();
 
     const formData = new FormData(e.target);
-    formData.forEach((value, key) => addCourseCreationData(key, value));
+
+    formData.forEach((value, key) => {
+      courseCreationData[key] = value;
+    });
+
     if (!courseCreationData["numOfSessions"]) {
-      addCourseCreationData("numOfSessions", 1);
+      courseCreationData["numOfSessions"] = 1;
     } else if (courseCreationData["numOfSessions"] < 0) {
       alertRef.current.setMessage("Number of sections cannot be negative");
       alertRef.current.show();
@@ -77,6 +80,8 @@ export default function CourseCreateModal({
     ).then((result) => {
       if (result.success) {
         alertRef.current.hide();
+        courseCodeTempSet(courseCreationData.courseCode);
+        courseSemesterTempSet(courseCreationData.courseSemester);
         stepSet(1);
       } else {
         alertRef.current.setMessage(result.message);
@@ -247,7 +252,7 @@ export default function CourseCreateModal({
                     return;
                   }
                   alertRef.current.hide();
-                  addCourseCreationData("accessCode", accessCode);
+                  courseCreationData["accessCode"] = accessCode;
                   stepSet(step + 1);
                 }}
               >
@@ -258,9 +263,9 @@ export default function CourseCreateModal({
           {step === 2 && (
             <div className="flex flex-col gap-6">
               <h1 className="text-2xl font-bold flex items-center gap-2">
-                <div>Pick a color for {courseCreationData.courseCode}</div>
+                <div>Pick a color for {courseCodeTemp}</div>
                 <Badge
-                  label={courseCreationData.courseSemester}
+                  label={courseSemesterTemp}
                   accentColor={colorPicked}
                 />
               </h1>
@@ -284,7 +289,7 @@ export default function CourseCreateModal({
                   pointerEvents: colorPicked ? "auto" : "none",
                 }}
                 onClick={() => {
-                  addCourseCreationData("accentColor", colorPicked);
+                  courseCreationData["accentColor"] = colorPicked;
                   createCourse(courseCreationData).then((result) => {
                     if (result.success) {
                       onSuccess(
