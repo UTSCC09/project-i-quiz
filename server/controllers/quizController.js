@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import formatMessage from "../utils/utils.js";
 import Quiz from "../models/Quiz.js";
 import MCQ from "../models/MCQ.js";
 import MSQ from "../models/MSQ.js";
@@ -6,8 +7,6 @@ import CLO from "../models/CLO.js";
 import OEQ from "../models/OEQ.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
-
-import formatMessage from "../utils/utils.js";
 
 //@route  POST api/quizzes
 //@desc   Allow instructor to create a quiz
@@ -152,7 +151,7 @@ const createQuiz = asyncHandler(async (req, res) => {
     courseToAddTo.quizzes.push(quiz._id);
     await courseToAddTo.save();
     return res
-      .status(200)
+      .status(201)
       .json(formatMessage(true, "Quiz created successfully", quiz));
   } else {
     return res.status(400).json(formatMessage(false, "Quiz creation failed"));
