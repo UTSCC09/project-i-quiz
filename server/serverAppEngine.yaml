@@ -2,7 +2,7 @@ runtime: nodejs18
 service: server
 entrypoint: nodemon server.js
 env_variables:
-  MONGO_URI: mongodb+srv://cscc09:1234@cluster0.r3emgll.mongodb.net/demo
+  MONGO_URI: mongodb+srv://cscc09:1234@cluster0.r3emgll.mongodb.net/prod
   JWT_SECRET: iquizsecret
   SESSION_SECRET: iquizsessionsecret
   AUTH_EMAIL: "project.iquiz@outlook.com"
