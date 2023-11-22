@@ -11,7 +11,7 @@ function isStudentUserType() {
     "$1"
   );
   if (userType !== "student" && userType !== "instructor") {
-    fetch("/api/users/logout", { method: "GET" }).then(() => {
+    fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
       window.location.reload();
     });
   } else {

@@ -33,7 +33,7 @@ export default function VerifyPasswordResetCodePage() {
       return;
     }
 
-    fetch("/api/users/verifypasswordresetcode", {
+    fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/verifypasswordresetcode", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

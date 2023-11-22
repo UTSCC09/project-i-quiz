@@ -7,7 +7,8 @@
     "test": "npx mocha",
     "server": "nodemon server.js",
     "client": "yarn --cwd ../client start",
-    "dev": "concurrently \"yarn run server\" \"yarn run client\""
+    "dev": "concurrently \"yarn run server\" \"yarn run client\"",
+    "start": "nodemon server.js"
   },
   "license": "ISC",
   "type": "module",

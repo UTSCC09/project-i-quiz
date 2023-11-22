@@ -1,5 +1,5 @@
 const createQuiz = async (quizData) => {
-  return fetch("/api/quizzes", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/quizzes", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -7,7 +7,7 @@ const createQuiz = async (quizData) => {
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -22,14 +22,14 @@ const createQuiz = async (quizData) => {
 };
 
 const getQuiz = async (quizId) => {
-  return fetch(`/api/quizzes/${quizId}/questions`, {
+  return fetch(process.env.REACT_APP_PROXY_HOST + `/api/quizzes/${quizId}/questions`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -48,14 +48,14 @@ const getQuiz = async (quizId) => {
 };
 
 const getQuizzesForDashboard = async (quizStatus, userType) => {
-  return fetch(`/api/quizzes/${quizStatus}/${userType}`, {
+  return fetch(process.env.REACT_APP_PROXY_HOST + `/api/quizzes/${quizStatus}/${userType}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -74,14 +74,14 @@ const getQuizzesForDashboard = async (quizStatus, userType) => {
 };
 
 const getQuizzesForInstructedCourse = async (courseId) => {
-  return fetch(`/api/quizzes/course/instructed/${courseId}`, {
+  return fetch(process.env.REACT_APP_PROXY_HOST + `/api/quizzes/course/instructed/${courseId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -100,14 +100,14 @@ const getQuizzesForInstructedCourse = async (courseId) => {
 };
 
 const getQuizzesForEnrolledCourse = async (courseId) => {
-  return fetch(`/api/quizzes/course/enrolled/${courseId}`, {
+  return fetch(process.env.REACT_APP_PROXY_HOST + `/api/quizzes/course/enrolled/${courseId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -126,7 +126,7 @@ const getQuizzesForEnrolledCourse = async (courseId) => {
 };
 
 const basicUpdateQuiz = async (basicQuizUpdateData) => {
-  return fetch("/api/quizzes", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/quizzes", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -134,7 +134,7 @@ const basicUpdateQuiz = async (basicQuizUpdateData) => {
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -149,7 +149,7 @@ const basicUpdateQuiz = async (basicQuizUpdateData) => {
 };
 
 const updateQuizQuestion = async (quizQuestionUpdateData) => {
-  return fetch("/api/quizzes/question", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/quizzes/question", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -157,7 +157,7 @@ const updateQuizQuestion = async (quizQuestionUpdateData) => {
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -172,7 +172,7 @@ const updateQuizQuestion = async (quizQuestionUpdateData) => {
 };
 
 const addQuizQuestions = async (quizQuestionsData) => {
-  return fetch("/api/quizzes/question", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/quizzes/question", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -180,7 +180,7 @@ const addQuizQuestions = async (quizQuestionsData) => {
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }

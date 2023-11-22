@@ -1,5 +1,5 @@
 async function updateAccentColor(courseId, accentColor) {
-  return fetch("/api/courses/accent_color", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/accent_color", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -15,7 +15,7 @@ async function updateAccentColor(courseId, accentColor) {
 }
 
 async function archiveCourse(courseId) {
-  return fetch("/api/courses/archive", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/archive", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -28,7 +28,7 @@ async function archiveCourse(courseId) {
 }
 
 async function dropCourse(courseId) {
-  return fetch("/api/courses/drop", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/drop", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -45,7 +45,7 @@ async function checkNewCourseAvailability(
   CourseName,
   courseSemester
 ) {
-  return fetch(`/api/courses/instructed/availability`, {
+  return fetch(process.env.REACT_APP_PROXY_HOST + `/api/courses/instructed/availability`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -58,7 +58,7 @@ async function checkNewCourseAvailability(
 }
 
 async function createCourse(courseData) {
-  return fetch("/api/courses", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -72,13 +72,13 @@ async function createCourse(courseData) {
 
 // Fetch enrolled courses
 async function fetchEnrolledCourses() {
-  return fetch("/api/courses/enrolled", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/enrolled", {
     method: "GET",
     withCredentials: true,
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -98,13 +98,13 @@ async function fetchEnrolledCourses() {
 
 // Fetch instructed courses
 async function fetchInstructedCourses() {
-  return fetch("/api/courses/instructed", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/instructed", {
     method: "GET",
     withCredentials: true,
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -123,13 +123,13 @@ async function fetchInstructedCourses() {
 }
 
 async function fetchCourseObject(courseId) {
-  return fetch("/api/courses/" + courseId, {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/" + courseId, {
     method: "GET",
     withCredentials: true,
   })
     .then(async (response) => {
       if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+        await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
         });
       }
@@ -144,7 +144,7 @@ async function fetchCourseObject(courseId) {
 }
 
 async function updateAccessCode(courseId, accessCode) {
-  return fetch("/api/courses/access_code", {
+  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/access_code", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
