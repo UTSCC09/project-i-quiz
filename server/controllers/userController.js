@@ -113,22 +113,22 @@ const loginUser = asyncHandler(async (req, res) => {
 
     //Store email
     req.session.email = email;
-    req.session.cookie.httpOnly = true;
+    //req.session.cookie.httpOnly = false;
     req.session.cookie.secure = true;
-    req.session.cookie.sameSite = 'None';
+    req.session.cookie.sameSite = true;
 
     //Setting cookie
     res.cookie("user", email, {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: 'None',
     });
     res.cookie("user_type", user.type, {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: 'None',
     });
