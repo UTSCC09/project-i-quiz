@@ -16,33 +16,36 @@ export default function CourseCreateModal({
 }) {
 
   const [step, stepSet] = useState(0);
-  const [courseCreationData, courseCreationDataSet] = useState({});
+  const courseCreationData = useRef({});
 
   return (
     <Modal
       modalShow={modalShow}
       modalShowSet={modalShowSet}
+      onClose={() => stepSet(0)}
       content={
         <div className="sm:w-96">
-          {/* --- Step 1 --- */}
           {step === 0 && (
             <CourseCreationInfoForm
               courseCreationData={courseCreationData}
-              courseCreationDataSet={courseCreationDataSet}
               next={() => stepSet(1)}
             />
           )}
-          {/* --- Step 2 --- */}
           {step === 1 && (
-            <AccessCodeForm next={() => stepSet(2)} />
+            <AccessCodeForm
+              courseCreationData={courseCreationData}
+              next={() => stepSet(2)}
+            />
           )}
           {step === 2 && (
             <AccentColorForm
+              courseCreationData={courseCreationData}
               onSuccess={onSuccess}
               close={() => {
                 modalShowSet(false);
                 stepSet(0);
-              }} />
+              }}
+            />
           )}
         </div>
       }
@@ -50,14 +53,13 @@ export default function CourseCreateModal({
   );
 }
 
-function CourseCreationInfoForm({ courseCreationData, courseCreationDataSet, next }) {
+function CourseCreationInfoForm({ courseCreationData, next }) {
   const alertRef = useRef();
   const semesterDropdownRef = useRef();
   const yearDropdownRef = useRef();
   const courseNameInputRef = useRef();
   const courseCodeInputRef = useRef();
   const sessionNumInputRef = useRef();
-  // const yearDropdownRef = useRef();
   const [year, yearSet] = useState();
   const [semester, semesterSet] = useState();
   const [helpMessageShow, helpMessageShowSet] = useState(false);
@@ -82,11 +84,11 @@ function CourseCreationInfoForm({ courseCreationData, courseCreationDataSet, nex
     const formData = new FormData(e.target);
 
     formData.forEach((value, key) => {
-      courseCreationDataSet((prevData) => ({ ...prevData, [key]: value }));
+      courseCreationData[key] = value;
     });
 
     if (!courseCreationData["numOfSessions"]) {
-      courseCreationDataSet((prevData) => ({ ...prevData, numOfSessions: 1 }));
+      courseCreationData["numOfSessions"] = 1;
     } else if (courseCreationData["numOfSessions"] < 0) {
       alertRef.current.setMessage("Number of sections cannot be negative");
       alertRef.current.show();
@@ -233,7 +235,7 @@ function CourseCreationInfoForm({ courseCreationData, courseCreationDataSet, nex
   )
 }
 
-function AccessCodeForm({ courseCreationData, courseCreationDataSet, next }) {
+function AccessCodeForm({ courseCreationData, next }) {
   const accessCodeInputRef = useRef();
   const alertRef = useRef();
 
@@ -265,7 +267,7 @@ function AccessCodeForm({ courseCreationData, courseCreationDataSet, next }) {
             return;
           }
           alertRef.current.hide();
-          courseCreationDataSet((prevData) => ({ ...prevData, accessCode: accessCode }));
+          courseCreationData["accessCode"] = accessCode;
           next();
         }}
       >
@@ -275,7 +277,7 @@ function AccessCodeForm({ courseCreationData, courseCreationDataSet, next }) {
   )
 }
 
-function AccentColorForm({ courseCreationData, courseCreationDataSet, onSuccess, close }) {
+function AccentColorForm({ courseCreationData, onSuccess, close }) {
   const alertRef = useRef();
   const [colorPicked, colorPickedSet] = useState();
 
@@ -308,7 +310,7 @@ function AccentColorForm({ courseCreationData, courseCreationDataSet, onSuccess,
           pointerEvents: colorPicked ? "auto" : "none",
         }}
         onClick={() => {
-          courseCreationDataSet((prevData) => ({ ...prevData, accentColor: colorPicked }));
+          courseCreationData["accentColor"] = colorPicked;
           createCourse(courseCreationData).then((result) => {
             if (result.success) {
               onSuccess(
