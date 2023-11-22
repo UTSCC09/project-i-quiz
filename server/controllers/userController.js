@@ -113,7 +113,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
     //Store email
     req.session.email = email;
-    //req.session.cookie.httpOnly = false;
+    if (process.env.NODE_ENV == "production") {
+      req.session.cookie.httpOnly = true;
+    }
     req.session.cookie.secure = true;
     req.session.cookie.sameSite = true;
 
@@ -123,14 +125,14 @@ const loginUser = asyncHandler(async (req, res) => {
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
       httpOnly: false,
       secure: true,
-      sameSite: 'None',
+      sameSite: true,
     });
     res.cookie("user_type", user.type, {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
       httpOnly: false,
       secure: true,
-      sameSite: 'None',
+      sameSite: true,
     });
 
     return res.json(formatMessage(true, "Login Successfully"));
