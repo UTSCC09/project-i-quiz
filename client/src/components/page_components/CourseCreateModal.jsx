@@ -66,6 +66,8 @@ function CourseCreationInfoForm({ courseCreationData, next }) {
 
   async function submitCreateCourseForm(e) {
     e.preventDefault();
+
+    /* Validation */
     let inputsValidated = courseNameInputRef.current.validate("required");
     inputsValidated =
       semesterDropdownRef.current.validate() && inputsValidated;
@@ -81,20 +83,22 @@ function CourseCreationInfoForm({ courseCreationData, next }) {
 
     alertRef.current.hide();
 
+    /* Read form data */
     const formData = new FormData(e.target);
 
     formData.forEach((value, key) => {
-      courseCreationData[key] = value;
+      courseCreationData.current[key] = value;
     });
 
-    if (!courseCreationData["numOfSessions"]) {
-      courseCreationData["numOfSessions"] = 1;
-    } else if (courseCreationData["numOfSessions"] < 0) {
+    if (!courseCreationData.current["numOfSessions"]) {
+      courseCreationData.current["numOfSessions"] = 1;
+    } else if (courseCreationData.current["numOfSessions"] < 0) {
       alertRef.current.setMessage("Number of sections cannot be negative");
       alertRef.current.show();
       return;
     }
 
+    /* Check course availability to avoid duplicates */
     checkNewCourseAvailability(
       courseCreationData.courseCode,
       courseCreationData.courseName,
@@ -267,7 +271,7 @@ function AccessCodeForm({ courseCreationData, next }) {
             return;
           }
           alertRef.current.hide();
-          courseCreationData["accessCode"] = accessCode;
+          courseCreationData.current["accessCode"] = accessCode;
           next();
         }}
       >
@@ -310,7 +314,7 @@ function AccentColorForm({ courseCreationData, onSuccess, close }) {
           pointerEvents: colorPicked ? "auto" : "none",
         }}
         onClick={() => {
-          courseCreationData["accentColor"] = colorPicked;
+          courseCreationData.current["accentColor"] = colorPicked;
           createCourse(courseCreationData).then((result) => {
             if (result.success) {
               onSuccess(
