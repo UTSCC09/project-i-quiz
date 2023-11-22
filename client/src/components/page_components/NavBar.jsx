@@ -64,7 +64,7 @@ function SettingsButton() {
         {
           label: <div className="text-red-600">Log out</div>,
           onClick: async () => {
-            await fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/logout", { method: "GET" }).then(() => {
+            await fetch("/api/users/logout", { method: "GET" }).then(() => {
               window.location.reload();
             });
           },

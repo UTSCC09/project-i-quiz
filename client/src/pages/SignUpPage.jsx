@@ -154,7 +154,7 @@ function SignUpForm({ email, userType }) {
     // Call Sign Up API
     const formData = new FormData(e.target);
 
-    fetch(process.env.REACT_APP_PROXY_HOST + "/api/users", {
+    fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

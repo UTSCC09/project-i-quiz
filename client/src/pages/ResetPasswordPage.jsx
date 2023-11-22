@@ -49,7 +49,7 @@ export default function ResetPasswordPage() {
 
     const formData = new FormData(e.target);
 
-    fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/resetpassword", {
+    fetch("/api/users/resetpassword", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

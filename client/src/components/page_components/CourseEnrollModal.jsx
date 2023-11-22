@@ -6,7 +6,7 @@ import Badge from "components/elements/Badge";
 import AlertBanner from "components/elements/AlertBanner";
 
 async function enrollInCourse(courseId, accentColor, sessionNumber) {
-  return fetch(process.env.REACT_APP_PROXY_HOST + "/api/courses/enroll", {
+  return fetch("/api/courses/enroll", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,

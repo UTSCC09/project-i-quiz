@@ -66,7 +66,7 @@ const SignInWindow = () => {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    fetch(process.env.REACT_APP_PROXY_HOST + "/api/users/login", {
+    fetch("/api/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
