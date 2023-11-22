@@ -1,31 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SingleLineInput from "components/elements/SingleLineInput";
 import Modal from "components/elements/Modal";
 import ColorPicker from "./ColorPicker";
 import Badge from "components/elements/Badge";
 import AlertBanner from "components/elements/AlertBanner";
-
-async function enrollInCourse(courseId, accentColor, sessionNumber, onError) {
-  return fetch("/api/courses/enroll", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-    body: JSON.stringify({
-      courseId,
-      accentColor,
-      sessionNumber,
-    }),
-  })
-    .then((response) => response.json())
-    .then((result) => {
-      if (result.success) {
-        return result.payload;
-      }
-      else {
-        onError(result.message);
-      }
-    });
-}
+import { enrollInCourse } from "api/CourseApi";
 
 export default function CourseEnrollModal({
   enrollModalShow,
@@ -59,7 +38,10 @@ export default function CourseEnrollModal({
           {step === 2 && (
             <AccentColorForm
               enrollInfoRef={enrollInfoRef}
-              onSuccess={onSuccess}
+              onSuccess={(payload) => {
+                onSuccess(payload);
+                stepSet(0);
+              }}
               close={() => enrollModalShowSet(false)}
             />
           )}
@@ -192,7 +174,7 @@ function ChooseSessionForm({ enrollInfoRef, next }) {
   )
 }
 
-function AccentColorForm({ enrollInfoRef, onSuccess, close }) {
+function AccentColorForm({ enrollInfoRef, onSuccess }) {
   const alertRef = useRef();
   const [colorPicked, colorPickedSet] = useState();
 
@@ -232,11 +214,9 @@ function AccentColorForm({ enrollInfoRef, onSuccess, close }) {
             enrollInfoRef.current.courseId,
             colorPicked,
             enrollInfoRef.current.sessionNumber,
+            onSuccess,
             onError
-          ).then((payload) => {
-            onSuccess(payload.courseCode, payload.courseSemester);
-            close();
-          });
+          );
         }}
       >
         Enroll
