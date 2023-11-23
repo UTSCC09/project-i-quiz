@@ -1,0 +1,13 @@
+runtime: nodejsYOUR_NODEJS_VERSION
+service: ENTER_YOUR_CLIENT_SERVICE_NAME
+env_variables:
+  REACT_APP_PROXY_HOST: YOUR_DEPLOYED_SERVER_URL
+
+handlers: 
+  - url: /(.*\..+)$
+    static_files: build/\1
+    upload: build/(.*\..+)$
+    
+  - url: /.*
+    static_files: build/index.html
+    upload: build/index.html
