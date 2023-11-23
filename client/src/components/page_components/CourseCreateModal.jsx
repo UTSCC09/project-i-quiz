@@ -100,9 +100,9 @@ function CourseCreationInfoForm({ courseCreationData, next }) {
 
     /* Check course availability to avoid duplicates */
     checkNewCourseAvailability(
-      courseCreationData.courseCode,
-      courseCreationData.courseName,
-      courseCreationData.courseSemester
+      courseCreationData.current.courseCode,
+      courseCreationData.current.courseName,
+      courseCreationData.current.courseSemester
     ).then((result) => {
       if (result.success) {
         alertRef.current.hide();
@@ -288,9 +288,9 @@ function AccentColorForm({ courseCreationData, onSuccess, close }) {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold flex items-center gap-2">
-        <div>Pick a color for {courseCreationData.courseCode}</div>
+        <div>Pick a color for {courseCreationData.current.courseCode}</div>
         <Badge
-          label={courseCreationData.courseSemester}
+          label={courseCreationData.current.courseSemester}
           accentColor={colorPicked}
         />
       </h1>
@@ -315,7 +315,7 @@ function AccentColorForm({ courseCreationData, onSuccess, close }) {
         }}
         onClick={() => {
           courseCreationData.current["accentColor"] = colorPicked;
-          createCourse(courseCreationData).then((result) => {
+          createCourse(courseCreationData.current).then((result) => {
             if (result.success) {
               onSuccess(
                 result.payload.courseCode,
