@@ -89,7 +89,7 @@ export default function ResetPasswordWindow() {
         <div className="flex items-center relative ml-0.5 text-sm text-gray-500">
           Please create a new password
           <div
-            className="ml-2 mt-1 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:bg-black hover:bg-opacity-5 rounded-lg transition-all"
+            className="ml-2 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:bg-black hover:bg-opacity-5 rounded-lg transition-all"
             onClick={() => {
               helpMessageShowSet(!helpMessageShow);
             }}
