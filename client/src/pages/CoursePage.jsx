@@ -266,6 +266,7 @@ export default function CoursePage() {
                     </button>
                   }
                   options={courseEditOptions}
+                  menuAlignLeft
                 />
                 {!isStudent && (
                   <Link
