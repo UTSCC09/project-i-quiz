@@ -39,7 +39,7 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-4">
+      <div className="flex gap-4 h-8 md:h-10">
         <DropdownSelection
           selections={questionTypeNames}
           selection={questionTypeCodeToName(questionType)}
