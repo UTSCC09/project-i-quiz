@@ -121,14 +121,14 @@ const loginUser = asyncHandler(async (req, res) => {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
       httpOnly: false,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS when under prod
       sameSite: true,
     });
     res.cookie("user_type", user.type, {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
       httpOnly: false,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS when under prod
       sameSite: true,
     });
 
