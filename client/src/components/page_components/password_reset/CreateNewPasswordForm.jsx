@@ -61,7 +61,7 @@ export default function ResetPasswordWindow() {
         if (result.success) {
           navigate(
             "/login",
-            { state: { passInMessage: "Your password has been reset" } }
+            { state: { passInMessage: "Your password has been updated" } }
           );
         } else {
           alertRef.current.setMessage(result.message);
