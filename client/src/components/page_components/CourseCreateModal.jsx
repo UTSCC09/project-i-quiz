@@ -133,38 +133,42 @@ function CourseCreationInfoForm({ courseCreationData, next }) {
             label="Course name"
             acceptSpace
           />
-          <div className="flex gap-2">
-            <DropdownSelection
-              ref={semesterDropdownRef}
-              label="Semester"
-              selections={["Fall", "Winter", "Summer"]}
-              selection={semester}
-              onSelectionChange={(selection) => {
-                semesterSet(selection);
-              }}
-              width="7rem"
-            />
-            <DropdownSelection
-              ref={yearDropdownRef}
-              label="Year"
-              selections={["22", "23", "24"]}
-              selection={year}
-              onSelectionChange={(selection) => {
-                yearSet(selection);
-              }}
-              width="4.5rem"
-            />
-            <input
-              className="hidden"
-              name="courseSemester"
-              value={semester + " " + year}
-              readOnly
-            />
-            <SingleLineInput
-              ref={courseCodeInputRef}
-              name="courseCode"
-              label="Course code"
-            />
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+            <div className="w-full">
+              <SingleLineInput
+                ref={courseCodeInputRef}
+                name="courseCode"
+                label="Course code"
+              />
+            </div>
+            <div className="flex gap-2 h-11 w-full sm:h-auto">
+              <DropdownSelection
+                ref={semesterDropdownRef}
+                label="Semester"
+                selections={["Fall", "Winter", "Summer"]}
+                selection={semester}
+                onSelectionChange={(selection) => {
+                  semesterSet(selection);
+                }}
+                width="7rem"
+              />
+              <DropdownSelection
+                ref={yearDropdownRef}
+                label="Year"
+                selections={["22", "23", "24"]}
+                selection={year}
+                onSelectionChange={(selection) => {
+                  yearSet(selection);
+                }}
+                width="4.75rem"
+              />
+              <input
+                className="hidden"
+                name="courseSemester"
+                value={semester + " " + year}
+                readOnly
+              />
+            </div>
           </div>
           <div className="relative">
             <SingleLineInput
