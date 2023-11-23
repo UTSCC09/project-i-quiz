@@ -23,10 +23,10 @@ export default function CourseAccentColorModal({
       modalShowSet={modalShowSet}
       onClose={() => colorPickedSet(courseObject.accentColor)}
       content={
-        <div className="flex flex-col w-96 gap-6">
+        <div className="flex flex-col sm:w-96 gap-6">
           <h1 className="text-2xl font-bold">Fresh color, fresh start</h1>
           <AlertBanner ref={alertRef} />
-          <span className="w-96 text-gray-600">
+          <span className="text-gray-600">
             Pick a new accent color for{" "}
             <b>
               {courseObject.courseCode} {courseObject.courseSemester}
