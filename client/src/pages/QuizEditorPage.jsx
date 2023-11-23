@@ -175,11 +175,11 @@ export default function QuizEditorPage() {
               </div>
             );
           })}
-          <div className="flex justify-between px-2">
+          <div className="flex flex-col sm:flex-row justify-between px-2">
             <div className="flex gap-4">
               <button
                 type="button"
-                className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
+                className="btn-outline w-fit text-start text-sm px-4 py-2"
                 onClick={() => {
                   addQuestion();
                 }}
@@ -188,7 +188,7 @@ export default function QuizEditorPage() {
               </button>
               <button
                 type="button"
-                className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
+                className="btn-outline w-fit text-start text-sm px-4 py-2"
                 onClick={() => jsonImportModalShowSet(true)}
               >
                 Import JSON
@@ -196,7 +196,7 @@ export default function QuizEditorPage() {
             </div>
             <button
               type="submit"
-              className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
+              className="btn-primary w-fit text-start px-6 py-4 sm:py-2 mt-8 sm:mt-0"
               onClick={() => {
                 let flag = true;
                 [...document.querySelectorAll("input")]
