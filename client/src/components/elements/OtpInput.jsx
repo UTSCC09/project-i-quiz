@@ -42,14 +42,9 @@ function OtpInput(
     setCharacters(newCharacters);
   };
 
-  const inputFocus = (index, event) => {
-    if (/^[a-zA-Z0-9]$/.test(event.key)) {
-      if (event.target.value.length > 0) {
-        event.target.value = event.key;
-        handleChange(index, event);
-      }
-    }
-    else if ((event.key === "Delete" || event.key === "Backspace") && event.target.value === "") {
+  const handleKeyDown = (index, event) => {
+    event.target.select(); // select current text for replacement
+    if ((event.key === "Delete" || event.key === "Backspace") && event.target.value === "") {
       const prev = index - 1;
       if (prev >= 0) {
         event.target.form.elements[prev].focus();
@@ -105,8 +100,10 @@ function OtpInput(
           autoComplete="off"
           className="flex-1 text-center w-0 h-12 text-xl border border-gray-300 rounded hover:border-blue-600 transition group focus:outline-none focus:ring focus:ring-blue-200 uppercase hover:bg-gray-50 cursor-pointer font-semibold"
           value={character}
-          onChange={(e) => handleChange(index, e)}
-          onKeyDown={(e) => inputFocus(index, e)}
+          onInput={(e) => handleChange(index, e)}
+          onKeyDown={(e) => handleKeyDown(index, e)}
+          // Add time out to prevent deselect on mouse up
+          onFocus={(e) => setTimeout(() => e.target.select(), 100)}
           onPaste={handlePaste}
           tabIndex={index}
           maxLength={1}
