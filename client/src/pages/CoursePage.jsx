@@ -225,7 +225,7 @@ export default function CoursePage() {
       <NavBar />
       <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
         <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
-          <div className="flex items-end justify-between mb-6 md:mb-8 h-16">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between mb-6 md:mb-8 h-28 sm:h-16">
             <div className="flex flex-col pr-4">
               <div className="flex items-center gap-3">
                 <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
@@ -242,7 +242,7 @@ export default function CoursePage() {
                 {courseObject.courseName}
               </span>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4 text-gray-700">
+            <div className="flex gap-2 sm:gap-4 text-gray-700">
               <div className="flex gap-2 sm:gap-4">
                 <DropdownMenu
                   buttonElement={
@@ -272,9 +272,11 @@ export default function CoursePage() {
                     to="/create-quiz"
                     title="Create quiz"
                     state={{ passInCourseObject: courseObject }}
-                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl pb-1.5 sm:pb-2 font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
+                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
                   >
-                    +
+                    <svg className="h-[18px] sm:h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path clipRule="evenodd" fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" />
+                    </svg>
                   </Link>
                 )}
               </div>

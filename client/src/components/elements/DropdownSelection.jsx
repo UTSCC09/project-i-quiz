@@ -54,7 +54,7 @@ function DropdownSelection(
           onClick={() => {
             dropdownShowSet(!dropdownShow);
           }}
-          className="border bg-white cursor-pointer hover:bg-gray-100 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30"
+          className="border bg-white cursor-pointer hover:bg-gray-100 rounded-md text-sm flex items-center focus:ring focus:ring-blue-300 transition-all z-30 h-8 sm:h-10"
           style={{
             width: width,
             height: height,
@@ -83,7 +83,7 @@ function DropdownSelection(
               </span>
             </div>
           ) : (
-            <div className="w-full text-gray-700 justify-center mr-4 h-8 sm:h-10 flex items-center">
+            <div className="w-full text-gray-700 justify-center mr-4 flex items-center">
               <div>{selection}</div>
             </div>
           )}
