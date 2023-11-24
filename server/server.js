@@ -66,7 +66,6 @@ app.use(function (req, res, next) {
   if (req.session) {
     req.user = req.session.email;
   }
-  //console.log("HTTP request", req.user , req.method, req.url, req.body);
   next();
 });
 

@@ -29,6 +29,16 @@ const attemptQuiz = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
+  //Check if quiz response already exists
+  try {
+    const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
+    if (quizResponse) {
+      return res.status(400).json(formatMessage(false, "Quiz response already exists"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding existing quiz response"));
+  }
+
   let quiz;
   try {
     quiz = await Quiz.findById(quizId);
@@ -39,6 +49,7 @@ const attemptQuiz = asyncHandler(async (req, res) => {
       )) {
       return res.status(403).json(formatMessage(false, "Student not enrolled in course"));
     }
+
     const startTime = new Date(quiz.startTime);
     const endTime = new Date(quiz.endTime);
     const currentTime = new Date();
@@ -48,7 +59,7 @@ const attemptQuiz = asyncHandler(async (req, res) => {
     } else if (endTime < currentTime) {
       return res.status(403).json(formatMessage(false, "Quiz locked"));
     }
-
+  
   } catch (error) {
     return res
       .status(400)
@@ -65,7 +76,8 @@ const attemptQuiz = asyncHandler(async (req, res) => {
   try {
     const quizResponse = await QuizResponse.create({
       quiz: quizId,
-      questionResponses: questionResponses,
+      student: student._id,
+      questionResponses: questionResponses
     });
     if (quizResponse) {
       return res.status(201).json(formatMessage(true, "Quiz response created successfully", quizResponse));
@@ -75,6 +87,131 @@ const attemptQuiz = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  GET api/quiz-responses
+//@desc   Allow student to fetch all of their quiz response
+//@access Private
+const getAllMyQuizResponses = asyncHandler(async (req, res) => {
+  let student;
+  try {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (student.type !== "student") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  try {
+    const quizResponses = await QuizResponse.find({ student: student._id });
+    if (quizResponses) {
+      return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses"));
+  }
+});
+
+//@route  GET api/quiz-responses/quiz/:quizId
+//@desc   Allow instructor to fetch all quiz responses for a specific quiz
+//@access Private
+const getQuizResponsesForQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  try {
+    const quiz = await Quiz.findById(quizId);
+    const quizCourse = quiz.course;
+    if (!instructor.courses.some(
+      (course) => course.courseId.toString() === quizCourse.toString()
+      )) {
+      return res.status(403).json(formatMessage(false, "Instructor does not instruct course"));
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  try {
+    const quizResponses = await QuizResponse.find({ quiz: quizId });
+    if (quizResponses) {
+      return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses"));
+  }
+});
+
+//@route  PATCH api/quiz-responses/:questionResponseId
+//@desc   Allow student to submit a quiz response
+//@access Private
+const submitQuiz = asyncHandler(async (req, res) => {
+  const { questionResponseId } = req.params;
+
+  let student;
+  try {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (student.type !== "student") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  //Verify question response validity
+  try {
+    const quizResponse = await QuizResponse.findById(questionResponseId);
+    if (!quizResponse) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz response id"));
+    } else if (quizResponse.student.toString() !== student._id.toString()) {
+      return res.status(403).json(formatMessage(false, "Quiz response does not belong to student"));
+    } else if (quizResponse.status === "submitted") {
+      return res.status(400).json(formatMessage(false, "Quiz response already submitted"));
+    }
+
+    const quiz = await Quiz.findById(quizResponse.quiz);
+    const startTime = new Date(quiz.startTime);
+    const endTime = new Date(quiz.endTime);
+    const currentTime = new Date();
+
+    if (startTime > currentTime) {
+      return res.status(403).json(formatMessage(false, "Quiz not yet released"));
+    } else if (endTime < currentTime) {
+      return res.status(403).json(formatMessage(false, "Quiz locked"));
+    }
+
+    quizResponse.status = "submitted";
+    await quizResponse.save();
+    return res.status(200).json(formatMessage(true, "Quiz response submitted successfully"));
+  
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error verifying quiz response validity", null, error));
+  }
+});
+
 export {
-  attemptQuiz
+  attemptQuiz,
+  getAllMyQuizResponses,
+  getQuizResponsesForQuiz,
+  submitQuiz
 };

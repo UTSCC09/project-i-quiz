@@ -17,7 +17,7 @@ const createCourse = asyncHandler(async (req, res) => {
   } = req.body;
 
   //Verify all fields exist
-  if (!courseCode || !courseName || !courseSemester || !numOfSessions) {
+  if (!courseCode || !courseName || !courseSemester || !numOfSessions || !accessCode || !accentColor) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
