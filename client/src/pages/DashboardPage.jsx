@@ -150,10 +150,10 @@ export default function DashboardPage() {
       <CourseEnrollModal
         enrollModalShow={enrollModalShow}
         enrollModalShowSet={enrollModalShowSet}
-        onSuccess={(courseCode, courseSemester) => {
-          const successMessage = `${courseCode} ${courseSemester} has been added to your course list`;
+        onSuccess={(payload) => {
+          const successMessage = `${payload.courseCode} ${payload.courseSemester} has been added to your course list`;
           refetchDataAndShowToast(successMessage);
-          refetchDataAndShowToast(successMessage);
+          enrollModalShowSet(false);
         }}
       />
       <CourseCreateModal
@@ -161,7 +161,6 @@ export default function DashboardPage() {
         modalShowSet={courseCreateModalShowSet}
         onSuccess={(courseCode, courseSemester) => {
           const successMessage = `${courseCode} ${courseSemester} has been created`;
-          refetchDataAndShowToast(successMessage);
           refetchDataAndShowToast(successMessage);
         }}
       />

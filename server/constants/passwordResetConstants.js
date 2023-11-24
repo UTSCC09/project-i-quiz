@@ -1,6 +1,6 @@
 const PASSWORD_RESET_CONSTANTS = {
   CODE_LENGTH: 6,
-  CODE_EXPIRATION: 60 * 1000, // 1 minute
+  CODE_EXPIRATION: 5 * 60 * 1000, // 5 minutes
   MAX_ATTEMPTS: 3,
 };
 

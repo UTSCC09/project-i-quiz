@@ -466,7 +466,7 @@ const dropCourse = asyncHandler(async (req, res) => {
 const archiveCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.body;
 
-  if (courseId == null) {
+  if (!courseId) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
