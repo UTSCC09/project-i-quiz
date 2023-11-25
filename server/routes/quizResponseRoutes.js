@@ -3,6 +3,7 @@ import {
   createQuizResponse,
   getAllMyQuizResponses,
   getMyResponseForQuiz,
+  editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
   submitQuizResponse
 } from "../controllers/quizResponseController.js";
@@ -15,7 +16,8 @@ router.route("/")
   .get(protect, getAllMyQuizResponses);
 
 router.route("/my/:quizId")
-  .get(protect, getMyResponseForQuiz);
+  .get(protect, getMyResponseForQuiz)
+  .patch(protect, editMyResponseForQuiz);
 
 router.route("/all/:quizId")
   .get(protect, getAllStudentResponsesForQuiz);

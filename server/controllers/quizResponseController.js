@@ -67,8 +67,10 @@ const createQuizResponse = asyncHandler(async (req, res) => {
   }
 
   //Verify question responses have same questions as quiz
-  const quizQuestions = JSON.stringify(quiz.questions.map((question) => question.question.toString()));
-  const questionResponsesQuestions = JSON.stringify(questionResponses.map((questionResponse) => questionResponse.question.toString()));
+  const quizQuestions = JSON.stringify(quiz.questions
+    .map((question) => question.question.toString()));
+  const questionResponsesQuestions = JSON.stringify(questionResponses
+    .map((questionResponse) => questionResponse.question.toString()));
   if (quizQuestions !== questionResponsesQuestions) {
     return res.status(400).json(formatMessage(false, "Response questions do not match quiz questions"));
   }
@@ -107,9 +109,7 @@ const getAllMyQuizResponses = asyncHandler(async (req, res) => {
 
   try {
     const quizResponses = await QuizResponse.find({ student: student._id });
-    if (quizResponses) {
-      return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
-    }
+    return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
   } catch (error) {
     return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses"));
   }
@@ -136,10 +136,11 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
   }
 
   try {
-    const quizResponses = await QuizResponse.find({ quiz: quizId, student: student._id });
-    if (quizResponses) {
-      return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
+    const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
+    if (quizResponse) {
+      return res.status(200).json(formatMessage(true, "Quiz response fetched successfully", quizResponse));
     }
+    return res.status(400).json(formatMessage(true, "No response found for this quiz"));
   } catch (error) {
     return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz response"));
   }
@@ -148,8 +149,9 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
 //@route  PATCH api/quiz-responses/my/:quizId
 //@desc   Allow student to edit their response for a specific quiz
 //@access Private
-/* const editMyResponseForQuiz = asyncHandler(async (req, res) => {
-  const { quizId, questionResponses } = req.body;
+const editMyResponseForQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+  const { questionResponses } = req.body;
 
   let student;
   try {
@@ -174,13 +176,50 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
   let quizResponse;
   try {
     quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
-    if (quizResponse) {
-      return res.status(400).json(formatMessage(false, "Quiz response already exists"));
+    if (!quizResponse) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz response"));
+    }
+    if (quizResponse.status === "submitted") {
+      return res.status(400).json(formatMessage(false, "Quiz response already submitted"));
     }
   } catch (error) {
     return res.status(400).json(formatMessage(false, "Mongoose error finding existing quiz response"));
   }
-}); */
+
+  let quiz;
+  try {
+    quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+
+    const endTime = new Date(quiz.endTime);
+    const currentTime = new Date();
+
+    if (endTime < currentTime) {
+      return res.status(403).json(formatMessage(false, "Quiz locked"));
+    }
+  
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  //Verify question responses have same questions as quiz
+  const quizQuestions = JSON.stringify(quiz.questions
+    .map((question) => question.question.toString()));
+  const questionResponsesQuestions = JSON.stringify(questionResponses
+    .map((questionResponse) => questionResponse.question.toString()));
+  if (quizQuestions !== questionResponsesQuestions) {
+    return res.status(400).json(formatMessage(false, "Response questions do not match quiz questions"));
+  }
+
+  //Update quiz response
+  quizResponse.questionResponses = questionResponses;
+  await quizResponse.save();
+  return res.status(200).json(formatMessage(true, "Quiz response updated successfully", quizResponse));
+});
 
 //@route  PATCH api/quiz-responses/:questionResponseId
 //@desc   Allow student to submit a quiz response
@@ -280,6 +319,7 @@ export {
   createQuizResponse,
   getAllMyQuizResponses,
   getMyResponseForQuiz,
+  editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
   submitQuizResponse
 };
