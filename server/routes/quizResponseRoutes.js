@@ -1,22 +1,26 @@
 import { Router } from "express";
 import {
-  attemptQuiz,
+  createQuizResponse,
   getAllMyQuizResponses,
-  getQuizResponsesForQuiz,
-  submitQuiz
+  getMyResponseForQuiz,
+  getAllStudentResponsesForQuiz,
+  submitQuizResponse
 } from "../controllers/quizResponseController.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = Router();
 
 router.route("/")
-  .post(protect, attemptQuiz)
+  .post(protect, createQuizResponse)
   .get(protect, getAllMyQuizResponses);
 
-router.route("/quiz/:quizId")
-  .get(protect, getQuizResponsesForQuiz);
+router.route("/my/:quizId")
+  .get(protect, getMyResponseForQuiz);
+
+router.route("/all/:quizId")
+  .get(protect, getAllStudentResponsesForQuiz);
 
 router.route("/:questionResponseId")
-  .patch(protect, submitQuiz);
+  .patch(protect, submitQuizResponse);
 
 export default router;

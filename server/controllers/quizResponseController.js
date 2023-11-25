@@ -7,7 +7,7 @@ import Quiz from "../models/Quiz.js";
 //@route  POST api/quiz-responses
 //@desc   Allow student to create a quiz response
 //@access Private
-const attemptQuiz = asyncHandler(async (req, res) => {
+const createQuizResponse = asyncHandler(async (req, res) => {
   const { quizId, questionResponses } = req.body;
 
   let student;
@@ -88,7 +88,7 @@ const attemptQuiz = asyncHandler(async (req, res) => {
 });
 
 //@route  GET api/quiz-responses
-//@desc   Allow student to fetch all of their quiz response
+//@desc   Allow student to fetch all of their quiz responses
 //@access Private
 const getAllMyQuizResponses = asyncHandler(async (req, res) => {
   let student;
@@ -115,18 +115,18 @@ const getAllMyQuizResponses = asyncHandler(async (req, res) => {
   }
 });
 
-//@route  GET api/quiz-responses/quiz/:quizId
-//@desc   Allow instructor to fetch all quiz responses for a specific quiz
+//@route  GET api/quiz-responses/my/:quizId
+//@desc   Allow student to fetch their response for a specific quiz
 //@access Private
-const getQuizResponsesForQuiz = asyncHandler(async (req, res) => {
+const getMyResponseForQuiz = asyncHandler(async (req, res) => {
   const { quizId } = req.params;
 
-  let instructor;
+  let student;
   try {
-    instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
       return res.status(400).json(formatMessage(false, "Invalid user"));
-    } else if (instructor.type !== "instructor") {
+    } else if (student.type !== "student") {
       return res.status(400).json(formatMessage(false, "Invalid user type"));
     }
   } catch (error) {
@@ -136,32 +136,56 @@ const getQuizResponsesForQuiz = asyncHandler(async (req, res) => {
   }
 
   try {
-    const quiz = await Quiz.findById(quizId);
-    const quizCourse = quiz.course;
-    if (!instructor.courses.some(
-      (course) => course.courseId.toString() === quizCourse.toString()
-      )) {
-      return res.status(403).json(formatMessage(false, "Instructor does not instruct course"));
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
-  }
-
-  try {
-    const quizResponses = await QuizResponse.find({ quiz: quizId });
+    const quizResponses = await QuizResponse.find({ quiz: quizId, student: student._id });
     if (quizResponses) {
       return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
     }
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses"));
+    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz response"));
   }
 });
+
+//@route  PATCH api/quiz-responses/my/:quizId
+//@desc   Allow student to edit their response for a specific quiz
+//@access Private
+/* const editMyResponseForQuiz = asyncHandler(async (req, res) => {
+  const { quizId, questionResponses } = req.body;
+
+  let student;
+  try {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (student.type !== "student") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  //Verify all fields exist
+  if (!quizId || !questionResponses) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Find quiz response if it exists
+  let quizResponse;
+  try {
+    quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
+    if (quizResponse) {
+      return res.status(400).json(formatMessage(false, "Quiz response already exists"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error finding existing quiz response"));
+  }
+}); */
 
 //@route  PATCH api/quiz-responses/:questionResponseId
 //@desc   Allow student to submit a quiz response
 //@access Private
-const submitQuiz = asyncHandler(async (req, res) => {
+const submitQuizResponse = asyncHandler(async (req, res) => {
   const { questionResponseId } = req.params;
 
   let student;
@@ -209,9 +233,53 @@ const submitQuiz = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  GET api/quiz-responses/all/:quizId
+//@desc   Allow instructor to fetch all quiz responses for a specific quiz
+//@access Private
+const getAllStudentResponsesForQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  try {
+    const quiz = await Quiz.findById(quizId);
+    const quizCourse = quiz.course;
+    if (!instructor.courses.some(
+      (course) => course.courseId.toString() === quizCourse.toString()
+      )) {
+      return res.status(403).json(formatMessage(false, "Instructor does not instruct course"));
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  try {
+    const quizResponses = await QuizResponse.find({ quiz: quizId });
+    if (quizResponses) {
+      return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses"));
+  }
+});
+
 export {
-  attemptQuiz,
+  createQuizResponse,
   getAllMyQuizResponses,
-  getQuizResponsesForQuiz,
-  submitQuiz
+  getMyResponseForQuiz,
+  getAllStudentResponsesForQuiz,
+  submitQuizResponse
 };
