@@ -1,8 +1,8 @@
 import React from "react";
-import MultipleChoiceQuestion from "../questions/MultipleChoiceQuestion";
-import ShortAnswerQuestion from "../questions/ShortAnswerQuestion";
-import ClozeQuestion from "../questions/ClozeQuestion";
-import MultipleSelectQuestion from "../questions/MultipleSelectQuestion";
+import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
+import ShortAnswerQuestion from "./ShortAnswerQuestion";
+import ClozeQuestion from "./ClozeQuestion";
+import MultipleSelectQuestion from "./MultipleSelectQuestion";
 
 const QuestionWrapper = (props) => {
   let questionElmt;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import QuestionWrapper from "components/questions/QuestionWrapper";
+import QuestionWrapper from "components/question_components/QuestionWrapper";
 import QuizMock from "mock_data/QuizPage/QuizMock_1.json";
 import NavBar from "components/page_components/NavBar";
 import { getQuiz } from "api/QuizApi";
@@ -9,8 +9,6 @@ const QuizPage = () => {
   let savedAnswers = JSON.parse(localStorage.getItem("savedAnswers")) ?? {};
   const { quizId } = useParams();
   const [quizObject, quizObjectSet] = useState();
-
-  // console.log("Fetched saved aswers from LocalStorage:", savedAnswers);
 
   QuizMock.questions.forEach((questionObj) => {
     savedAnswers[questionObj.qid] = savedAnswers[questionObj.qid] ?? [];
