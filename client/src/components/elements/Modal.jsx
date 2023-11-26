@@ -53,21 +53,17 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
         .getElementsByTagName("meta")
         .namedItem("theme-color")
         .setAttribute("content", "#e5e5e5");
+    } else {
+      if (isIOS) {
+        window.scrollTo(0, scrollY.current);
+      }
+
+      document
+        .getElementsByTagName("meta")
+        .namedItem("theme-color")
+        .setAttribute("content", "#ffffff");
     }
   }, [modalShow]);
-
-  function close() {
-    if (onClose) onClose();
-    if (isIOS) {
-      modalRef.current.style.position = "fixed";
-      window.scrollTo(0, scrollY.current);
-    }
-
-    document
-      .getElementsByTagName("meta")
-      .namedItem("theme-color")
-      .setAttribute("content", "#ffffff");
-  }
 
   return (
     <>
@@ -98,7 +94,7 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
                   className="m-4 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
                   onClick={() => {
                     modalShowSet(false);
-                    close();
+                    if (onClose) onClose();
                   }}
                 >
                   {/* [Credit]: svg from https://heroicons.dev */}
