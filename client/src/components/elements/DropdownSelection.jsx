@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronIcon } from "./SVGIcons";
 
 function DropdownSelection(
   {
@@ -87,22 +88,7 @@ function DropdownSelection(
               <div>{selection}</div>
             </div>
           )}
-          {/* [Credit]: svg from https://heroicons.dev */}
-          <svg
-            className="absolute right-0.5 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-180 mr-2.5 shrink-0 text-gray-600"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <path
-              clipRule="evenodd"
-              fillRule="evenodd"
-              d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
-              stroke="currentColor"
-              opacity="0.8"
-            ></path>
-          </svg>
+          <ChevronIcon className="absolute right-0.5 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-180 mr-2.5 shrink-0 text-gray-600" />
         </div>
         <input
           type="checkbox"
