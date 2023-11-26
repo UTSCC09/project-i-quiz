@@ -54,6 +54,7 @@ app.use(
   })
 );
 app.use(cookieParser());
+app.set('trust proxy', true);
 
 // Cookie.user checking
 app.use(function (req, res, next) {
