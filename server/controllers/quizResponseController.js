@@ -140,7 +140,7 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
     if (quizResponse) {
       return res.status(200).json(formatMessage(true, "Quiz response fetched successfully", quizResponse));
     }
-    return res.status(400).json(formatMessage(true, "No response found for this quiz"));
+    return res.status(400).json(formatMessage(false, "No response found for this quiz"));
   } catch (error) {
     return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz response"));
   }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
 import { getQuiz } from "api/QuizApi";
-import { createQuizReponse } from "api/QuizResponseApi";
+import { createQuizReponse, getQuizResponse } from "api/QuizResponseApi";
 import NavBar from "components/page_components/NavBar";
 import { isStudentUserType } from "utils/CookieUtils";
 
@@ -21,14 +21,13 @@ const QuizMiscellaneousPage = () => {
         response: []
       };
     });
-
     console.log(questionResponses);
-
+    
     createQuizReponse(quizId, questionResponses).then((payload) => {
       if (payload) {
         navigate("/quiz/" + quizId);
       } else {
-        alert("Failed to start quiz");
+        alert("Failed to create blank quiz response");
       }
     });
   };
@@ -38,14 +37,24 @@ const QuizMiscellaneousPage = () => {
       navigate("/quiz/" + quizId);
       return;
     } else {
-      const timeoutId = setTimeout(() => {
-        getQuiz(quizId).then((payload) => {
-          quizObjectSet(payload);
-        });
-      }, 3000);
-
-      // Cleanup function to clear the timeout in case the component unmounts before the delay is complete
-      return () => clearTimeout(timeoutId);
+      getQuizResponse(quizId).then((result) => {
+        console.log("result:", result);
+        if (!result.success && result.message === "No response found for this quiz") {
+          const timeoutId = setTimeout(() => {
+            getQuiz(quizId).then((payload) => {
+              quizObjectSet(payload);
+            });
+          }, 3000);
+    
+          // Cleanup function to clear the timeout in case the component unmounts before the delay is complete
+          return () => clearTimeout(timeoutId);
+        } else if (result.success) {
+          navigate("/quiz/" + quizId);
+        } else {
+          console.error(result.message);
+          alert("Failed to fetch quiz response");
+        }
+      });
     }
   }, [quizId]);
 

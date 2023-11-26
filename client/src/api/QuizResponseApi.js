@@ -43,11 +43,7 @@ const getQuizResponse = async (quizId) => {
       return response.json();
     })
     .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-        return [];
-      }
-      return result.payload;
+      return result;
     })
     .catch((err) => {
       console.error(err);
