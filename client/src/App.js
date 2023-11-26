@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router";
 import LoginPage from "pages/LoginPage";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import QuizMiscellaneousPage from "pages/QuizMiscellaneousPage";
 import QuizPage from "pages/QuizPage";
 import SignUpPage from "pages/SignUpPage";
 import NotFoundPage from "pages/NotFoundPage";
@@ -31,6 +32,14 @@ const App = () => {
         }
       />
 
+      <Route
+        path="/quiz-miscellaneous/:quizId"
+        element={
+          <ProtectedRoute>
+            <QuizMiscellaneousPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/quiz/:quizId"
         element={

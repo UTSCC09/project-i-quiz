@@ -799,7 +799,6 @@ const getQuizObject = asyncHandler(async (req, res) => {
           .json(formatMessage(false, "Invalid question id"));
       }
       formattedQuesions.push({
-        questionId: question._id,
         type: quiz.questions[i].type,
         question: question,
       });
