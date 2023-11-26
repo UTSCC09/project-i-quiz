@@ -56,6 +56,19 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
     }
   }, [modalShow]);
 
+  function close() {
+    if (onClose) onClose();
+    if (isIOS) {
+      modalRef.current.style.position = "fixed";
+      window.scrollTo(0, scrollY.current);
+    }
+
+    document
+      .getElementsByTagName("meta")
+      .namedItem("theme-color")
+      .setAttribute("content", "#ffffff");
+  }
+
   return (
     <>
       <AnimatePresence>
@@ -84,18 +97,8 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
                 <button
                   className="m-4 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
                   onClick={() => {
-                    if (isIOS) {
-                      modalRef.current.style.position = "fixed";
-                      window.scrollTo(0, scrollY.current);
-                    }
-
-                    document
-                      .getElementsByTagName("meta")
-                      .namedItem("theme-color")
-                      .setAttribute("content", "#ffffff");
-
                     modalShowSet(false);
-                    if (onClose) onClose();
+                    close();
                   }}
                 >
                   {/* [Credit]: svg from https://heroicons.dev */}
@@ -114,7 +117,7 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
                   </svg>
                 </button>
               </div>
-              <div className="overflow-y-auto px-12 sm:px-24 mb-16">
+              <div className="overflow-y-auto w-full sm:w-auto px-12 sm:px-24 mb-16">
                 {content}
               </div>
             </div>
