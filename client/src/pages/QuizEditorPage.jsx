@@ -1,4 +1,4 @@
-import { fetchInstructedCourses } from "api/CourseApi";
+import { fetchCourseObject, fetchInstructedCourses } from "api/CourseApi";
 import { getQuiz } from "api/QuizApi";
 import DropdownSelection from "components/elements/DropdownSelection";
 import { XMarkIcon } from "components/elements/SVGIcons";
@@ -69,6 +69,11 @@ export default function QuizEditorPage() {
     if (quizId) {
       getQuiz(quizId).then((quizPayload) => {
         questionListSet(quizPayload.questions);
+        fetchCourseObject(quizPayload.courseId).then((result) => {
+          if (result.success) {
+            courseObjectSet(result.payload);
+          }
+        });
       });
     }
   }, [quizId, questionListSet]);
@@ -79,7 +84,6 @@ export default function QuizEditorPage() {
         (course) => course.archived === false
       );
       activeCourseListSet(filteredPayload);
-      if (!courseObject) courseObjectSet(filteredPayload[0]);
     });
   }, [activeCourseListSet, courseObject, courseObjectSet, location.state]);
 
@@ -89,7 +93,7 @@ export default function QuizEditorPage() {
       course: courseObject.courseId,
       questions: questionList,
     });
-  }, [quizName, courseObject.courseId, questionList]);
+  }, [quizName, questionList, courseObject.courseId]);
 
   return (
     <>
@@ -126,7 +130,11 @@ export default function QuizEditorPage() {
               <DropdownSelection
                 width="12rem"
                 height="3rem"
-                selection={`${courseObject.courseCode} ${courseObject.courseSemester}`}
+                selection={
+                  courseObject.courseCode && courseObject.courseSemester
+                    ? `${courseObject.courseCode} ${courseObject.courseSemester}`
+                    : ""
+                }
                 label={"Course"}
                 selections={(activeCourseList ?? []).map(
                   (course) => `${course.courseCode} ${course.courseSemester}`
