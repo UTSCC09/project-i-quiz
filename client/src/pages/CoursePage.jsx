@@ -258,7 +258,7 @@ export default function CoursePage() {
                     to="/create-quiz"
                     title="Create quiz"
                     state={{ passInCourseObject: courseObject }}
-                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl pb-1.5 sm:pb-2 font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
+                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
                   >
                     <PlusIcon className="h-[18px] sm:h-5" />
                   </Link>
