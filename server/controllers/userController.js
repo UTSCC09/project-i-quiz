@@ -113,7 +113,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     //Store email
     req.session.email = email;
-    req.session.cookie.httpOnly = process.env.NODE_ENV == "production";
+    req.session.cookie.httpOnly = process.env.NODE_ENV === "production";
     req.session.cookie.secure = process.env.NODE_ENV === "production";
     req.session.cookie.sameSite = true;
 
@@ -244,9 +244,9 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     "passwordResetToken",
     generateToken(user._id, SCOPES.VERIFY_PASSWORD_RESET_CODE),
     {
-      httpOnly: true,
-      secure: true,
-      sameSite: true
+      httpOnly: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production"
     }
   );
   return res.status(200).json(formatMessage(true, "Password reset request accepted"));
@@ -303,9 +303,9 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
     "passwordResetToken",
     generateToken(user._id, SCOPES.RESET_PASSWORD),
     {
-      httpOnly: true,
-      secure: true,
-      sameSite: true
+      httpOnly: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production"
     }
   );
   return res.status(200).json(formatMessage(true, "Password reset code is valid"));
