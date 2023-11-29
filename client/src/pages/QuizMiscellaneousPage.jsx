@@ -10,6 +10,7 @@ const QuizMiscellaneousPage = () => {
   const isStudent = isStudentUserType();
   const { quizId } = useParams();
   const [quizObject, quizObjectSet] = useState();
+  const [quizResponseSubmitted, setQuizResponseSubmitted] = useState(false);
   const navigate = useNavigate();
 
   const onStartQuiz = (e) => {
@@ -38,16 +39,15 @@ const QuizMiscellaneousPage = () => {
     } else {
       getQuizResponse(quizId).then((result) => {
         if (!result.success && result.message === "No response found for this quiz") {
-          const timeoutId = setTimeout(() => {
-            getQuiz(quizId).then((payload) => {
-              quizObjectSet(payload);
-            });
-          }, 3000);
-    
-          // Cleanup function to clear the timeout in case the component unmounts before the delay is complete
-          return () => clearTimeout(timeoutId);
+          getQuiz(quizId).then((payload) => {
+            quizObjectSet(payload);
+          });
         } else if (result.success) {
-          navigate("/quiz/" + quizId);
+          if (result.payload.status === "submitted") {
+            setQuizResponseSubmitted(true);
+          } else {
+            navigate("/quiz/" + quizId);
+          }
         } else {
           console.error(result.message);
           alert("Failed to fetch quiz response");
@@ -60,16 +60,23 @@ const QuizMiscellaneousPage = () => {
     <>
       <NavBar />
       <div className="min-h-screen w-full flex justify-center py-28 sm:py-36 bg-gray-100">
-        <button
-          className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
-          style={{
-            pointerEvents: quizObject ? "auto" : "none",
-            opacity: quizObject ? 1 : 0.5,
-          }}
-          onClick={(e) => onStartQuiz(e)}
-        >
-          Start Quiz
-        </button>
+        {quizResponseSubmitted ? (
+          <div className="flex flex-col items-center">
+            <h1 className="text-3xl font-bold">Quiz Submitted</h1>
+            <p className="text-lg">You have already submitted this quiz.</p>
+          </div>
+        ) : (
+          <button
+            className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
+            style={{
+              pointerEvents: quizObject ? "auto" : "none",
+              opacity: quizObject ? 1 : 0.5,
+            }}
+            onClick={(e) => onStartQuiz(e)}
+          >
+            Start Quiz
+          </button>
+        )}
       </div>
     </>
   );

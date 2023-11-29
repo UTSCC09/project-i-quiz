@@ -221,11 +221,11 @@ const editMyResponseForQuiz = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Quiz response updated successfully", quizResponse));
 });
 
-//@route  PATCH api/quiz-responses/:questionResponseId
-//@desc   Allow student to submit a quiz response
+//@route  PATCH api/quiz-responses/submit/:quizId
+//@desc   Allow student to submit a quiz response for a quiz
 //@access Private
-const submitQuizResponse = asyncHandler(async (req, res) => {
-  const { questionResponseId } = req.params;
+const submitMyResponseForQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
 
   let student;
   try {
@@ -243,11 +243,9 @@ const submitQuizResponse = asyncHandler(async (req, res) => {
 
   //Verify question response validity
   try {
-    const quizResponse = await QuizResponse.findById(questionResponseId);
+    const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
     if (!quizResponse) {
       return res.status(400).json(formatMessage(false, "Invalid quiz response id"));
-    } else if (quizResponse.student.toString() !== student._id.toString()) {
-      return res.status(403).json(formatMessage(false, "Quiz response does not belong to student"));
     } else if (quizResponse.status === "submitted") {
       return res.status(400).json(formatMessage(false, "Quiz response already submitted"));
     }
@@ -321,5 +319,5 @@ export {
   getMyResponseForQuiz,
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
-  submitQuizResponse
+  submitMyResponseForQuiz
 };

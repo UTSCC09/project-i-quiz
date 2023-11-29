@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import QuestionWrapper from "components/question_components/QuestionWrapper";
 import NavBar from "components/page_components/NavBar";
 import { getQuiz } from "api/QuizApi";
-import { getQuizResponse, editQuizResponse } from "api/QuizResponseApi";
+import {
+  getQuizResponse,
+  editQuizResponse,
+  submitQuizResponse
+} from "api/QuizResponseApi";
 import { useParams } from "react-router";
 import { isStudentUserType } from "utils/CookieUtils";
 
@@ -11,16 +16,18 @@ const QuizPage = () => {
   const { quizId } = useParams();
   const [quizObject, quizObjectSet] = useState();
   let savedQuizResponse = JSON.parse(localStorage.getItem("savedQuizResponse")) ?? {};
-  const [intervalId, setIntervalId] = useState();
+  const [canEdit, setCanEdit] = useState(true);
+  const [canSubmit, setCanSubmit] = useState(true);
+  const navigate = useNavigate();
 
-  const setSavedQuizResponse = (questionResponses) => {
+  const locallyStoreQuizResponse = (questionResponses) => {
     questionResponses.forEach((questionResponse) => {
       savedQuizResponse[questionResponse.question] = questionResponse.response;
     });
     localStorage.setItem("savedQuizResponse", JSON.stringify(savedQuizResponse));
   };
 
-  const saveUpdateQuestionResponse = (questionId, updatedQuestionResponse) => {
+  const updateLocallyStoredQuestionResponse = (questionId, updatedQuestionResponse) => {
     savedQuizResponse[questionId] = updatedQuestionResponse;
     localStorage.setItem("savedQuizResponse", JSON.stringify(savedQuizResponse));
   };
@@ -34,25 +41,51 @@ const QuizPage = () => {
       });
     });
 
+    setCanEdit(false);
+    setCanSubmit(false);
     editQuizResponse(quizId, editedQuestionResponses)
       .then((payload) => {
         if (payload?.questionResponses) {
-          setSavedQuizResponse(payload.questionResponses);
-          console.log("Saved quiz response to server");
+          console.log("Edited quiz response");
+          setCanEdit(true);
+          setCanSubmit(true);
+          locallyStoreQuizResponse(payload.questionResponses);
         }
       })
       .catch((error) => {
-        console.error("Error submitting quiz response:", error);
+        console.error("Frontend error editting quiz response:", error);
       });
   };
+
+  const submitQuizResponseInDb = () => {
+    setCanEdit(false);
+    setCanSubmit(false);
+    submitQuizResponse(quizId)
+      .then((resultSuccess) => {
+        if (resultSuccess) {
+          console.log("Submitted quiz response");
+          setCanEdit(true);
+          setCanSubmit(true);
+          navigate("/quiz-miscellaneous/" + quizId);
+        }
+      })
+      .catch((error) => {
+        console.error("Frontend error submitting quiz response:", error);
+      });
+  }
 
   useEffect(() => {
     getQuiz(quizId).then((quizPayload) => {
       if (isStudent) {
         getQuizResponse(quizId).then((result) => {
-          if (result?.payload?.questionResponses) {
-            setSavedQuizResponse(result.payload.questionResponses);
+          if (!result.success || !result.payload || !result.payload.questionResponses) {
+            console.error(result.message);
           }
+          if (result.payload.status === "submitted") {
+            navigate("/quiz-miscellaneous/" + quizId);
+            return;
+          }
+          locallyStoreQuizResponse(result.payload.questionResponses);
           quizObjectSet(quizPayload);
         });
       }
@@ -94,7 +127,7 @@ const QuizPage = () => {
                       questionType={questionObject.type}
                       question={questionObject.question}
                       savedQuestionResponse={savedQuizResponse[questionObject.question._id]}
-                      updateQuestionResponse={saveUpdateQuestionResponse}
+                      updateQuestionResponse={updateLocallyStoredQuestionResponse}
                     />
                   </div>
                 </div>
@@ -102,6 +135,9 @@ const QuizPage = () => {
             })}
             <button
               className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
+              style={{
+                pointerEvents: canEdit ? "auto" : "none"
+              }}
               onClick={editQuizResponseInDb}
             >
               Save
@@ -109,7 +145,10 @@ const QuizPage = () => {
             <button
               type="submit"
               className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
-              onClick={() => console.log("Response submitted")}
+              style={{
+                pointerEvents: canSubmit ? "auto" : "none"
+              }}
+              onClick={submitQuizResponseInDb}
             >
               Submit
             </button>
