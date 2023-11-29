@@ -9,12 +9,12 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
   const onChange = useCallback(
     (newQuestionBody) => {
       updateQuestion({
-        id: questionObject.id,
+        ...newQuestionBody,
         type: questionType,
-        question: newQuestionBody,
+        _id: questionObject._id,
       });
     },
-    [questionObject.id, questionType, updateQuestion]
+    [questionObject._id, questionType, updateQuestion]
   );
 
   const questionTypeNames = [
@@ -49,24 +49,19 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
             questionTypeSet(newTypeCode);
             if (newTypeCode) {
               onChange({
-                prompt: questionObject.question.prompt,
-                choices: questionObject.question.choices ?? [
-                  { id: "0", content: "" },
-                ],
+                prompt: questionObject.prompt,
+                choices: questionObject.choices ?? [{ id: "0", content: "" }],
               });
             }
           }}
         />
       </div>
       {questionType === "OEQ" ? (
-        <OEQEditor
-          questionBody={questionObject.question}
-          onChange={onChange}
-        />
+        <OEQEditor questionBody={questionObject} onChange={onChange} />
       ) : questionType === "MCQ" || questionType === "MSQ" ? (
         <MCQEditor
           allowMultipleAnswer={questionType === "MSQ"}
-          questionBody={questionObject.question}
+          questionBody={questionObject}
           onChange={onChange}
         />
       ) : (

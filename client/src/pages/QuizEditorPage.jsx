@@ -1,4 +1,5 @@
 import { fetchInstructedCourses } from "api/CourseApi";
+import { getQuiz } from "api/QuizApi";
 import DropdownSelection from "components/elements/DropdownSelection";
 import { XMarkIcon } from "components/elements/SVGIcons";
 import Toast from "components/elements/Toast";
@@ -8,22 +9,22 @@ import QuizReleaseModal from "components/page_components/QuizReleaseModal";
 import QuestionEditor from "components/quiz_editor/QuestionEditor";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { useParams } from "react-router-dom";
 
 export default function QuizEditorPage() {
   const location = useLocation();
   const { passInCourseObject } = location.state ?? {};
+  const { quizId } = useParams();
 
   const navigate = useNavigate();
 
-  const [courseObject, courseObjectSet] = useState(passInCourseObject);
+  const [courseObject, courseObjectSet] = useState(passInCourseObject ?? {});
   const [questionList, questionListSet] = useState([
     {
-      id: "0",
+      _id: "0",
       type: "MCQ",
-      question: {
-        prompt: "",
-        choices: [{ id: "0", content: "" }],
-      },
+      prompt: "",
+      choices: [{ id: "0", content: "" }],
     },
   ]);
   const [questionIdCounter, questionIdCounterSet] = useState(1);
@@ -38,26 +39,25 @@ export default function QuizEditorPage() {
     questionListSet([
       ...questionList,
       {
-        id: String(questionIdCounter),
+        _id: String(questionIdCounter),
         type: "MCQ",
-        question: {
-          prompt: "",
-          choices: [{ id: "0", content: "" }],
-        },
+        prompt: "",
+        choices: [{ id: "0", content: "" }],
       },
     ]);
     questionIdCounterSet(questionIdCounter + 1);
   }
 
   function removeQuestion(id) {
-    questionListSet(questionList.filter((question) => question.id !== id));
+    questionListSet(questionList.filter((question) => question._id !== id));
   }
 
   const updateQuestion = useCallback(
     (newQuestion) => {
       questionListSet((questionList) =>
         questionList.map((questionObject) => {
-          if (questionObject.id === newQuestion.id) {
+          console.log("newQuestion", newQuestion);
+          if (questionObject._id === newQuestion._id) {
             return newQuestion;
           }
           return questionObject;
@@ -66,6 +66,14 @@ export default function QuizEditorPage() {
     },
     [questionListSet]
   );
+
+  useEffect(() => {
+    if (quizId) {
+      getQuiz(quizId).then((quizPayload) => {
+        questionListSet(quizPayload.questions);
+      });
+    }
+  }, [quizId, questionListSet]);
 
   useEffect(() => {
     fetchInstructedCourses().then((payload) => {
@@ -141,7 +149,7 @@ export default function QuizEditorPage() {
             return (
               <div
                 className="relative bg-white h-fit py-8 sm:py-12 px-8 sm:px-12 lg:px-16 rounded-md shadow-sm flex flex-col"
-                key={question.id}
+                key={question._id}
               >
                 <span className="font-semibold text-xs uppercase text-gray-500 mb-6 ml-1">
                   Question {idx + 1} / {questionList.length}
@@ -155,7 +163,7 @@ export default function QuizEditorPage() {
                   title="Remove option"
                   className="absolute h-8 w-8 flex items-center justify-center right-6 top-6 text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
                   onClick={() => {
-                    removeQuestion(question.id);
+                    removeQuestion(question._id);
                   }}
                 >
                   <XMarkIcon className="h-6" />
