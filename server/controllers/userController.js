@@ -113,10 +113,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     //Store email
     req.session.email = email;
-    if (process.env.NODE_ENV == "production") {
-      req.session.cookie.httpOnly = true;
-    }
-    req.session.cookie.secure = true;
+    req.session.cookie.httpOnly = process.env.NODE_ENV == "production";
+    req.session.cookie.secure = process.env.NODE_ENV === "production";
     req.session.cookie.sameSite = true;
 
     //Setting cookie
