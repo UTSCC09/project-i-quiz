@@ -7,10 +7,13 @@ import JSONImportModal from "components/page_components/JSONImportModal";
 import NavBar from "components/page_components/NavBar";
 import QuizReleaseModal from "components/page_components/QuizReleaseModal";
 import QuestionEditor from "components/quiz_editor/QuestionEditor";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useParams } from "react-router-dom";
 import ObjectID from "bson-objectid";
+import Modal from "components/elements/Modal";
+import Badge from "components/elements/Badge";
+import AlertBanner from "components/elements/AlertBanner";
 
 export default function QuizEditorPage() {
   const location = useLocation();
@@ -29,11 +32,13 @@ export default function QuizEditorPage() {
     },
   ]);
   const [quizReleaseModalShow, quizReleaseModalShowSet] = useState(false);
+  const [quizEditSaveModalShow, quizEditSaveModalShowSet] = useState(false);
   const [jsonImportModalShow, jsonImportModalShowSet] = useState(false);
   const [activeCourseList, activeCourseListSet] = useState();
   const [quizName, quizNameSet] = useState("");
   const [quizCreationData, quizCreationDataSet] = useState({});
   const [toastMessage, toastMessageSet] = useState();
+  const alertRef = useRef();
 
   function addQuestion() {
     questionListSet([
@@ -133,6 +138,60 @@ export default function QuizEditorPage() {
     <>
       <NavBar />
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
+      <Modal
+        modalShow={quizEditSaveModalShow}
+        modalShowSet={quizEditSaveModalShowSet}
+        content={
+          <div className="flex flex-col sm:w-96 gap-6">
+            <h1 className="text-2xl font-bold">Saving changes</h1>
+            <AlertBanner ref={alertRef} />
+            <div className="flex flex-col gap-4 text-gray-600">
+              <span>
+                Are you sure you want to save changes for <b>{quizName}</b> in{" "}
+                <b>
+                  {courseObject.courseCode} {courseObject.courseSemester}
+                </b>
+                ?
+              </span>
+            </div>
+            <div className="flex gap-4 mt-2">
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  alertRef.current.hide();
+                  updateQuiz({
+                    ...quizCreationData,
+                    quizId: quizId,
+                  }).then((result) => {
+                    if (result.success) {
+                      quizEditSaveModalShowSet(false);
+                      toastMessageSet(
+                        "Your changes have been saved successfully"
+                      );
+                      setTimeout(() => {
+                        toastMessageSet();
+                      }, 3000);
+                    } else {
+                      alertRef.current.setMessage(
+                        "Changes cannot be saved: " + result.message
+                      );
+                      alertRef.current.show();
+                    }
+                  });
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => quizEditSaveModalShowSet(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        }
+      />
       <QuizReleaseModal
         modalShow={quizReleaseModalShow}
         modalShowSet={quizReleaseModalShowSet}
@@ -260,23 +319,7 @@ export default function QuizEditorPage() {
                   className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
                   onClick={() => {
                     if (validateInputs()) {
-                      updateQuiz({
-                        ...quizCreationData,
-                        quizId: quizId,
-                      }).then((result) => {
-                        if (result.success) {
-                          toastMessageSet(
-                            "Your changes have been saved successfully"
-                          );
-                        } else {
-                          toastMessageSet(
-                            `Your changes cannot be saved. Error: ${result.message}`
-                          );
-                        }
-                        setTimeout(() => {
-                          toastMessageSet();
-                        }, 3000);
-                      });
+                      quizEditSaveModalShowSet(true);
                     }
                   }}
                 >
