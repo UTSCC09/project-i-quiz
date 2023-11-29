@@ -10,6 +10,7 @@ import QuestionEditor from "components/quiz_editor/QuestionEditor";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useParams } from "react-router-dom";
+import ObjectID from "bson-objectid";
 
 export default function QuizEditorPage() {
   const location = useLocation();
@@ -21,13 +22,12 @@ export default function QuizEditorPage() {
   const [courseObject, courseObjectSet] = useState(passInCourseObject ?? {});
   const [questionList, questionListSet] = useState([
     {
-      _id: "0",
+      _id: ObjectID().toHexString(),
       type: "MCQ",
       prompt: "",
       choices: [{ id: "0", content: "" }],
     },
   ]);
-  const [questionIdCounter, questionIdCounterSet] = useState(1);
   const [quizReleaseModalShow, quizReleaseModalShowSet] = useState(false);
   const [jsonImportModalShow, jsonImportModalShowSet] = useState(false);
   const [activeCourseList, activeCourseListSet] = useState();
@@ -39,13 +39,12 @@ export default function QuizEditorPage() {
     questionListSet([
       ...questionList,
       {
-        _id: String(questionIdCounter),
+        _id: ObjectID().toHexString(),
         type: "MCQ",
         prompt: "",
         choices: [{ id: "0", content: "" }],
       },
     ]);
-    questionIdCounterSet(questionIdCounter + 1);
   }
 
   function removeQuestion(id) {
@@ -56,7 +55,6 @@ export default function QuizEditorPage() {
     (newQuestion) => {
       questionListSet((questionList) =>
         questionList.map((questionObject) => {
-          console.log("newQuestion", newQuestion);
           if (questionObject._id === newQuestion._id) {
             return newQuestion;
           }
