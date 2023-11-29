@@ -78,6 +78,7 @@ export default function QuizEditorPage() {
     if (quizId) {
       getQuiz(quizId).then((quizPayload) => {
         questionListSet(quizPayload.questions);
+        quizNameSet(quizPayload.quizName);
         fetchCourseObject(quizPayload.courseId).then((result) => {
           if (result.success) {
             courseObjectSet(result.payload);
