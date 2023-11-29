@@ -164,10 +164,10 @@ const createQuiz = asyncHandler(async (req, res) => {
 //@desc   Allow instructor to update a quiz
 //@access Private
 const updateQuiz = asyncHandler(async (req, res) => {
-  const { quizId, quizName, startTime, endTime, course, questions } = req.body;
+  const { quizId, quizName, course, questions } = req.body;
 
   //Verify all fields exist
-  if (!quizName || !startTime || !endTime || !course || !questions) {
+  if (!quizName || !course || !questions) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -198,21 +198,6 @@ const updateQuiz = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Mongoose error finding course"));
   }
 
-  //Convert startTime and endTime to Date objects
-  const startTimeConverted = new Date(startTime);
-  const endTimeConverted = new Date(endTime);
-
-  //Verify startTime and endTime are valid dates and startTime is before endTime
-  if (
-    isNaN(startTimeConverted) ||
-    isNaN(endTimeConverted) ||
-    startTime >= endTime
-  ) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Invalid start and/or end time"));
-  }
-
   // verify quiz id
   const existingQuiz = await Quiz.findById(quizId);
   if (!existingQuiz) {
@@ -241,8 +226,6 @@ const updateQuiz = asyncHandler(async (req, res) => {
 
   existingQuiz.quizName = quizName;
   existingQuiz.course = course;
-  existingQuiz.startTime = startTimeConverted;
-  existingQuiz.endTime = endTimeConverted;
   existingQuiz.questions = quizQuestions;
 
   await existingQuiz.save();

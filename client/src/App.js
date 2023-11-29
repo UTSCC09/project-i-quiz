@@ -10,6 +10,7 @@ import CoursePage from "pages/CoursePage";
 import ProtectedRoute from "components/ProtectedRoute";
 import QuizEditorPage from "pages/QuizEditorPage";
 import PasswordResetPage from "pages/PasswrodResetPage";
+import QuizRedirect from "pages/QuizRedirect";
 
 const App = () => {
   const { pathname } = useLocation();
@@ -35,7 +36,7 @@ const App = () => {
         path="/quiz/:quizId"
         element={
           <ProtectedRoute>
-            <QuizPage />
+            <QuizRedirect />
           </ProtectedRoute>
         }
       />

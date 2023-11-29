@@ -1,5 +1,5 @@
 import { fetchCourseObject, fetchInstructedCourses } from "api/CourseApi";
-import { getQuiz } from "api/QuizApi";
+import { getQuiz, updateQuiz } from "api/QuizApi";
 import DropdownSelection from "components/elements/DropdownSelection";
 import { ChevronIcon, XMarkIcon } from "components/elements/SVGIcons";
 import Toast from "components/elements/Toast";
@@ -73,6 +73,30 @@ export default function QuizEditorPage() {
     },
     [questionListSet]
   );
+
+  function validateInputs() {
+    let validationFlag = true;
+    [...document.querySelectorAll("input")]
+      .concat([...document.querySelectorAll("textarea")])
+      .forEach((input) => {
+        input.addEventListener("input", (e) => {
+          e.target.classList.remove("input-invalid-state");
+        });
+        if (input.value === "") {
+          validationFlag = false;
+          input.classList.add("input-invalid-state");
+        }
+      });
+    if (!validationFlag) {
+      toastMessageSet(
+        "Please fill out all fields, or remove any unwanted questions and choices"
+      );
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+    }
+    return validationFlag;
+  }
 
   useEffect(() => {
     if (quizId) {
@@ -230,36 +254,54 @@ export default function QuizEditorPage() {
                 Import JSON
               </button>
             </div>
-            <button
-              type="submit"
-              className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
-              onClick={() => {
-                let flag = true;
-                [...document.querySelectorAll("input")]
-                  .concat([...document.querySelectorAll("textarea")])
-                  .forEach((input) => {
-                    input.addEventListener("input", (e) => {
-                      e.target.classList.remove("input-invalid-state");
-                    });
-                    if (input.value === "") {
-                      flag = false;
-                      input.classList.add("input-invalid-state");
+            <div className="flex gap-4">
+              {quizId ? (
+                <button
+                  className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
+                  onClick={() => {
+                    if (validateInputs()) {
+                      updateQuiz({
+                        ...quizCreationData,
+                        quizId: quizId,
+                      }).then((result) => {
+                        if (result.success) {
+                          toastMessageSet(
+                            "Your changes have been saved successfully"
+                          );
+                        } else {
+                          toastMessageSet(
+                            `Your changes cannot be saved. Error: ${result.message}`
+                          );
+                        }
+                        setTimeout(() => {
+                          toastMessageSet();
+                        }, 3000);
+                      });
                     }
-                  });
-                if (flag) {
-                  quizReleaseModalShowSet(true);
-                } else {
-                  toastMessageSet(
-                    "Please fill out all fields, or remove any unwanted questions and choices"
-                  );
-                  setTimeout(() => {
-                    toastMessageSet();
-                  }, 3000);
-                }
-              }}
-            >
-              Release quiz
-            </button>
+                  }}
+                >
+                  Save changes
+                </button>
+              ) : (
+                <button
+                  className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
+                  onClick={() => {
+                    if (validateInputs()) {
+                      quizReleaseModalShowSet(true);
+                    }
+                  }}
+                >
+                  Release quiz
+                </button>
+              )}
+              <button
+                className="btn-secondary w-fit text-start text-sm px-4 py-2 mt-2 text-gray-800 bg-gray-200 border-gray-200"
+                onClick={() => {}}
+              >
+                Save as draft
+              </button>
+            </div>
+
             {/* <button
               type="button"
               className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
