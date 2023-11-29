@@ -4,6 +4,7 @@ import { getUserCookie } from "utils/CookieUtils";
 import { AnimatePresence, motion } from "framer-motion";
 import SingleLineInput from "components/elements/SingleLineInput";
 import AlertBanner from "components/elements/AlertBanner";
+import { QuestionMarkCircleIcon } from "components/elements/SVGIcons";
 
 export default function ResetPasswordWindow() {
   const navigate = useNavigate();
@@ -40,7 +41,10 @@ export default function ResetPasswordWindow() {
       return;
     }
 
-    if (confirmNewPasswordInputRef.current.getValue() !== newPasswordInputRef.current.getValue()) {
+    if (
+      confirmNewPasswordInputRef.current.getValue() !==
+      newPasswordInputRef.current.getValue()
+    ) {
       alertRef.current.setMessage("Passwords doesn't match");
       alertRef.current.show();
       return;
@@ -53,16 +57,15 @@ export default function ResetPasswordWindow() {
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({
-        newPassword: formData.get("password")
-      })
+        newPassword: formData.get("password"),
+      }),
     })
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate(
-            "/login",
-            { state: { passInMessage: "Your password has been updated" } }
-          );
+          navigate("/login", {
+            state: { passInMessage: "Your password has been updated" },
+          });
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();
@@ -83,30 +86,16 @@ export default function ResetPasswordWindow() {
       className="w-full h-full flex flex-col items-center"
     >
       <div className="mb-7 flex flex-col gap-2 w-full">
-        <h1 className="self-start text-3xl font-bold">
-          Reset your password
-        </h1>
+        <h1 className="self-start text-3xl font-bold">Reset your password</h1>
         <div className="flex items-center relative ml-0.5 text-sm text-gray-500">
           Please create a new password
           <div
-            className="ml-2 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:bg-black hover:bg-opacity-5 rounded-lg transition-all"
+            className="ml-2 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:text-opacity-20 rounded-lg transition-all"
             onClick={() => {
               helpMessageShowSet(!helpMessageShow);
             }}
           >
-            {/* [Credit]: svg from https://www.flaticon.com/uicons */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              strokeWidth="0.5"
-              stroke="currentColor"
-              className="h-3.5 w-3.5"
-            >
-              <path d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm0,22A10,10,0,1,1,22,12,10.011,10.011,0,0,1,12,22Z" />
-              <path d="M12.717,5.063A4,4,0,0,0,8,9a1,1,0,0,0,2,0,2,2,0,0,1,2.371-1.967,2.024,2.024,0,0,1,1.6,1.595,2,2,0,0,1-1,2.125A3.954,3.954,0,0,0,11,14.257V15a1,1,0,0,0,2,0v-.743a1.982,1.982,0,0,1,.93-1.752,4,4,0,0,0-1.213-7.442Z" />
-              <circle cx="12.005" cy="18" r="1" />
-            </svg>
+            <QuestionMarkCircleIcon className="h-3.5" />
           </div>
           <AnimatePresence>
             {helpMessageShow && (
@@ -116,11 +105,10 @@ export default function ResetPasswordWindow() {
                 exit={{ opacity: 0, scale: 0.98, y: 0 }}
                 className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg w-80 rounded-lg right-[min(calc(100vw - 12rem), 12rem)] top-full"
               >
+                <span>Make sure your password is strong.</span>
                 <span>
-                  Make sure your password is strong.
-                </span>
-                <span>
-                  It should be at least 8 characters and contain at least one letter and one number.
+                  It should be at least 8 characters and contain at least one
+                  letter and one number.
                 </span>
               </motion.div>
             )}
