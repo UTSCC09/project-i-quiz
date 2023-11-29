@@ -60,17 +60,36 @@ const QuizPage = () => {
   const submitQuizResponseInDb = () => {
     setCanEdit(false);
     setCanSubmit(false);
-    submitQuizResponse(quizId)
-      .then((resultSuccess) => {
-        if (resultSuccess) {
-          console.log("Submitted quiz response");
-          setCanEdit(true);
-          setCanSubmit(true);
-          navigate("/quiz-miscellaneous/" + quizId);
+
+    const editedQuestionResponses = [];
+    Object.keys(savedQuizResponse).forEach((questionId) => {
+      editedQuestionResponses.push({
+        question: questionId,
+        response: savedQuizResponse[questionId],
+      });
+    });
+    editQuizResponse(quizId, editedQuestionResponses)
+      .then((payload) => {
+        if (payload?.questionResponses) {
+          console.log("Edited quiz response before submitting");
+          locallyStoreQuizResponse(payload.questionResponses);
+
+          submitQuizResponse(quizId)
+          .then((resultSuccess) => {
+            if (resultSuccess) {
+              console.log("Submitted quiz response");
+              setCanEdit(true);
+              setCanSubmit(true);
+              navigate("/quiz-miscellaneous/" + quizId);
+            }
+          })
+          .catch((error) => {
+            console.error("Frontend error submitting quiz response:", error);
+          });
         }
       })
       .catch((error) => {
-        console.error("Frontend error submitting quiz response:", error);
+        console.error("Frontend error editting quiz response:", error);
       });
   }
 
