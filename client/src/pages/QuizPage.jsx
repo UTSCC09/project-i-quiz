@@ -109,13 +109,9 @@ const QuizPage = () => {
         });
       }
     });
-  
-    /* const interval = setInterval(intervalFunction, 0.5 * 60 * 1000);
-    setIntervalId(interval); */
 
     return () => {
       localStorage.removeItem("savedQuizResponse");
-      /* clearInterval(intervalId); */
     };
   }, [quizId, quizObjectSet]);
 
@@ -126,10 +122,6 @@ const QuizPage = () => {
         {quizObject && (
           <form
             className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800"
-            onSubmit={(e) => {
-              e.preventDefault();
-              /* TODO: make submit quiz API call */
-            }}
           >
             {quizObject.questions.map((questionObject, idx) => {
               return (
