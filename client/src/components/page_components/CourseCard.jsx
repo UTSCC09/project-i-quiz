@@ -3,6 +3,7 @@ import Badge from "components/elements/Badge";
 import { Link } from "react-router-dom";
 import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
+import { EllipsisIcon } from "components/elements/SVGIcons";
 
 export default function CourseCard({
   courseObject,
@@ -106,20 +107,7 @@ export default function CourseCard({
         <DropdownMenu
           buttonElement={
             <button className="mx-2 p-1 text-slate-600 rounded-full hover:bg-gray-100 transition">
-              {/* [Credit]: svg from https://heroicons.dev */}
-              <svg
-                className="h-5"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  clipRule="evenodd"
-                  fillRule="evenodd"
-                  d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
-                />
-              </svg>
+              <EllipsisIcon className="h-5" />
             </button>
           }
           options={courseEditOptions}
