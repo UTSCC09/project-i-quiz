@@ -144,7 +144,6 @@ function ChooseSessionForm({ enrollInfoRef, next }) {
                 className="hidden peer"
                 readOnly
               />
-              {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
               <span className="cursor-pointer hover:opacity-50 px-4 py-2 transition-all rounded border font-medium text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600">
                 {session}
               </span>

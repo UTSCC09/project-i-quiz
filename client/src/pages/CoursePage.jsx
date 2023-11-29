@@ -17,6 +17,7 @@ import {
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
 } from "api/QuizApi";
+import { AdjustmentsIcon, PlusIcon } from "components/elements/SVGIcons";
 
 export default function CoursePage() {
   const navigate = useNavigate();
@@ -247,22 +248,7 @@ export default function CoursePage() {
                 <DropdownMenu
                   buttonElement={
                     <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
-                      {/* [Credit]: svg from https://heroicons.dev */}
-                      <svg
-                        className="h-[18px] sm:h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={1.3}
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                        />
-                      </svg>
+                      <AdjustmentsIcon className="h-[18px] sm:h-5" />
                     </button>
                   }
                   options={courseEditOptions}
@@ -275,9 +261,7 @@ export default function CoursePage() {
                     state={{ passInCourseObject: courseObject }}
                     className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
                   >
-                    <svg className="h-[18px] sm:h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path clipRule="evenodd" fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" />
-                    </svg>
+                    <PlusIcon className="h-[18px] sm:h-5" />
                   </Link>
                 )}
               </div>

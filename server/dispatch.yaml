@@ -1,0 +1,5 @@
+dispatch:
+  - url: "*/api/*"
+    service: YOUR_SERVER_SERVICE_NAME
+  - url: "*/*"
+    service: YOUR_CLIENT_SERVICE_NAME
