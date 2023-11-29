@@ -1,22 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 
-const ShortAnswerQuestion = ({
-  questionObject,
-  savedAnswer,
-  autoSaveAnswers,
-}) => {
+const ShortAnswerQuestion = (props) => {
+  const [text, setText] = useState(props.savedQuestionResponse);
+
+  const updateText = (e) => {
+    e.preventDefault();
+    setText(e.target.value);
+    props.updateQuestionResponse(props.question._id, e.target.value);
+  };
+
   return (
     <>
       <div
         className="mb-6 mx-2"
-        dangerouslySetInnerHTML={{ __html: questionObject.prompt }}
+        dangerouslySetInnerHTML={{ __html: props.question.prompt }}
       ></div>
       <textarea
         className="h-24 px-4 py-2 w-full rounded-md border border-gray-200"
-        name={questionObject.qid}
-        maxLength={questionObject.maxLength}
-        defaultValue={savedAnswer}
-        onChange={autoSaveAnswers}
+        name={props.question._id}
+        maxLength={props.question.maxLength}
+        value={text}
+        onChange={updateText}
       ></textarea>
     </>
   );

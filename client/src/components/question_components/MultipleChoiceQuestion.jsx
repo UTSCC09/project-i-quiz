@@ -6,13 +6,13 @@ const MultipleChoiceQuestion = (props) => {
     <div className="flex flex-col">
       <span
         className="mb-6 mx-2"
-        dangerouslySetInnerHTML={{ __html: props.questionObject.prompt }}
+        dangerouslySetInnerHTML={{ __html: props.question.prompt }}
       ></span>
       <RadioGroup
-        radioGroupId={props.questionObject.qid}
-        radioOptions={props.questionObject.choices}
-        defaultOptionId={props.savedAnswer[0]}
-        autoSaveAnswers={props.autoSaveAnswers}
+        radioGroupId={props.question._id}
+        radioOptions={props.question.choices}
+        defaultOptionId={props.savedQuestionResponse[0]}
+        updateQuestionResponse={props.updateQuestionResponse}
       />
     </div>
   );

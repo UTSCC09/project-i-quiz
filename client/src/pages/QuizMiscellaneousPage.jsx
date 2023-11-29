@@ -18,10 +18,9 @@ const QuizMiscellaneousPage = () => {
     const questionResponses = quizObject.questions.map((question) => {
       return {
         question: question.question._id,
-        response: []
+        response: [""]
       };
     });
-    console.log(questionResponses);
     
     createQuizReponse(quizId, questionResponses).then((payload) => {
       if (payload) {
@@ -38,7 +37,6 @@ const QuizMiscellaneousPage = () => {
       return;
     } else {
       getQuizResponse(quizId).then((result) => {
-        console.log("result:", result);
         if (!result.success && result.message === "No response found for this quiz") {
           const timeoutId = setTimeout(() => {
             getQuiz(quizId).then((payload) => {
