@@ -57,7 +57,7 @@ const QuizPage = () => {
                   <div className="">
                     <QuestionWrapper
                       questionType={questionObj.type}
-                      questionObject={questionObj.question}
+                      questionObject={questionObj}
                       savedAnswer={savedAnswers[idx]}
                       autoSaveAnswers={autoSaveAnswers}
                     />
