@@ -76,7 +76,7 @@ export default function RequestPasswordResetPage({
             Reset your password
           </h1>
           <div className="flex items-center relative text-sm text-gray-500">
-            <span className="pl-0.5">Please provide an email address</span>
+            <span className="pl-0.5">Please enter your email address</span>
             <div
               className="ml-2 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:text-opacity-20 rounded-lg transition-all"
               onClick={() => {
@@ -91,15 +91,15 @@ export default function RequestPasswordResetPage({
                   initial={{ opacity: 0, scale: 0.98, y: 0 }}
                   animate={{ opacity: 1, scale: 1, y: 10 }}
                   exit={{ opacity: 0, scale: 0.98, y: 0 }}
-                  className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg max-w-full sm:w-80 rounded-lg right-[min(calc(100vw - 12rem), 12rem)] top-full"
+                  className="absolute z-20 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg max-w-full sm:w-80 rounded-lg right-[min(calc(100vw - 12rem), 12rem)] top-full"
                 >
                   <span>
-                    Make sure this is the same email that you registered to
-                    iQuiz! with, and that it is verified your email.
+                    Make sure this is the same email address that you
+                    registered to iQuiz! with.
                   </span>
                   <span>
                     If you have not received a verification email, please check
-                    your junk/spam folder.
+                    your junk / spam folder.
                   </span>
                 </motion.div>
               )}
@@ -113,7 +113,7 @@ export default function RequestPasswordResetPage({
                     transition: { duration: 0.1 },
                   }}
                   exit={{ opacity: 0 }}
-                  className="fixed top-0 left-0 h-screen w-screen bg-black bg-opacity-10"
+                  className="fixed z-10 top-0 left-0 h-screen w-screen bg-black bg-opacity-10"
                   onClick={() => {
                     helpMessageShowSet(false);
                   }}
