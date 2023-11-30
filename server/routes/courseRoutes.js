@@ -12,6 +12,7 @@ import {
   getCourse,
   setAccessCode,
   checkNewCourseAvailability,
+  sendQuizInvitations,
 } from "../controllers/courseController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -23,6 +24,9 @@ router.route("/")
 
 router.route("/instructed/availability")
   .post(protect, checkNewCourseAvailability);
+
+  router.route("/sendQuizInvitations")
+  .post(protect, sendQuizInvitations);
 
 router.route("/instructed")
   .get(protect, getMyInstructedCourses);
