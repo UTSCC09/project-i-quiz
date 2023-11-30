@@ -19,7 +19,7 @@ export default function QuizInviteModal({
         <div className="flex flex-col sm:w-96 gap-6">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">
-              {quizObject.quizName}
+              {quizObject.quizName} Invitations
             </h1>
             <Badge
               label={quizObject.courseCode}
