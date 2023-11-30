@@ -1,0 +1,28 @@
+import { transporter, defaultMailOptions, backendUrl } from "./mailTransporter.js";
+
+const sendQuizInvitation = async (course, emails, quiz) => {
+    if (!course || !quiz) {
+      console.log("Fail to provide arguments to send quiz invitations.");
+    }
+  
+    for (const email of emails) {
+      let quizInviteOptions = {
+        ...defaultMailOptions,
+        to: email,
+        subject: course.courseName + " Quiz Notice",
+        html: `
+          <p><b>Quiz</b>: ${quiz.quizName}</p>
+          <p><b>Time</b>: Starts at ${quiz.startTime} and ends at ${quiz.endTime}</p>
+          <p><a href=${backendUrl + "quiz/" + quiz._id}>Click here to start!</p>
+        `
+      };
+      
+      try {
+        await transporter.sendMail(quizInviteOptions);
+      } catch (err) { 
+        console.log("Fail to send quiz invitation email to: " + user.email);
+      }
+    };
+};
+
+export default sendQuizInvitation;
