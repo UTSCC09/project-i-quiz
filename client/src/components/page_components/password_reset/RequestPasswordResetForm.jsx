@@ -75,8 +75,8 @@ export default function RequestPasswordResetPage({
           <h1 className="self-start text-3xl font-bold">
             Reset your password
           </h1>
-          <div className="flex items-center relative ml-0.5 text-sm text-gray-500">
-            Please provide an email address
+          <div className="flex items-center relative text-sm text-gray-500">
+            <span className="pl-0.5">Please provide an email address</span>
             <div
               className="ml-2 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:text-opacity-20 rounded-lg transition-all"
               onClick={() => {
@@ -91,7 +91,7 @@ export default function RequestPasswordResetPage({
                   initial={{ opacity: 0, scale: 0.98, y: 0 }}
                   animate={{ opacity: 1, scale: 1, y: 10 }}
                   exit={{ opacity: 0, scale: 0.98, y: 0 }}
-                  className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg w-80 rounded-lg right-[min(calc(100vw - 12rem), 12rem)] top-full"
+                  className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg max-w-full sm:w-80 rounded-lg right-[min(calc(100vw - 12rem), 12rem)] top-full"
                 >
                   <span>
                     Make sure this is the same email that you registered to
