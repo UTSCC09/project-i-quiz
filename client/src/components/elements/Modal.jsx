@@ -94,6 +94,7 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
                 <button
                   className="m-4 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
                   onClick={() => {
+                    modalRef.current.style.position = "fixed";
                     modalShowSet(false);
                     if (onClose) onClose();
                   }}
