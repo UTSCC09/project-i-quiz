@@ -2,15 +2,13 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useRef,
-  useState
+  useState,
 } from "react";
 
-function OtpInput(
-  {
-    numOfCharacters = 6,
-    baseName = "otp",
-  }, ref) {
-  const [characters, setCharacters] = useState(Array.from({ length: numOfCharacters }, () => ""));
+function OtpInput({ numOfCharacters = 6, baseName = "otp" }, ref) {
+  const [characters, setCharacters] = useState(
+    Array.from({ length: numOfCharacters }, () => "")
+  );
 
   const inputRefs = useRef([]);
 
@@ -34,22 +32,31 @@ function OtpInput(
   };
 
   const handlePaste = (event) => {
-    const clipboardCharacters = event.clipboardData.getData("Text").split("").slice(0, 6);
+    const clipboardCharacters = event.clipboardData
+      .getData("Text")
+      .split("")
+      .slice(0, 6);
     const newCharacters = Array.from({ length: numOfCharacters }, () => "");
     clipboardCharacters.forEach((char, idx) => {
       newCharacters[idx] = char;
-    })
+    });
     setCharacters(newCharacters);
   };
 
   const handleKeyDown = (index, event) => {
     event.target.select(); // select current text for replacement
-    if ((event.key === "Delete" || event.key === "Backspace") && event.target.value === "") {
+    if (
+      (event.key === "Delete" || event.key === "Backspace") &&
+      event.target.value === ""
+    ) {
       const prev = index - 1;
       if (prev >= 0) {
         event.target.form.elements[prev].focus();
       }
-    } else if ((event.key === "Tab" && event.shiftKey) || event.key === "ArrowLeft") {
+    } else if (
+      (event.key === "Tab" && event.shiftKey) ||
+      event.key === "ArrowLeft"
+    ) {
       const prev = index - 1;
       if (prev >= 0) {
         event.preventDefault();
@@ -103,7 +110,7 @@ function OtpInput(
           onInput={(e) => handleChange(index, e)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           // Add time out to prevent deselect on mouse up
-          onFocus={(e) => setTimeout(() => e.target.select(), 100)}
+          onFocus={(e) => setTimeout(() => e.target.select(), 0)}
           onPaste={handlePaste}
           tabIndex={index}
           maxLength={1}
