@@ -96,12 +96,11 @@ export default function DashboardPage() {
     ).then((fetchedPayload) => {
       upcomingQuizListSet(fetchedPayload ?? []);
     });
-    getQuizzesForDashboard(
-      "active",
-      isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
-      activeQuizListSet(fetchedPayload ?? []);
-    });
+    getQuizzesForDashboard("active", isStudent ? "student" : "instructor").then(
+      (fetchedPayload) => {
+        activeQuizListSet(fetchedPayload ?? []);
+      }
+    );
   }
 
   useEffect(() => {
@@ -182,9 +181,11 @@ export default function DashboardPage() {
         courseObject={targetCourseObject}
         archiveCourse={archiveCourse}
         onSuccess={() => {
-          const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester
-            } has been ${targetCourseObject.archived ? "unarchived" : "archived"
-            }`;
+          const successMessage = `${targetCourseObject.courseCode} ${
+            targetCourseObject.courseSemester
+          } has been ${
+            targetCourseObject.archived ? "unarchived" : "archived"
+          }`;
           refetchDataAndShowToast(successMessage);
         }}
       />
@@ -215,8 +216,8 @@ export default function DashboardPage() {
               isStudent
                 ? () => enrollModalShowSet(true)
                 : () => {
-                  courseCreateModalShowSet(true);
-                }
+                    courseCreateModalShowSet(true);
+                  }
             }
           >
             {isStudent ? "Add course" : "Create course"}
@@ -262,11 +263,12 @@ export default function DashboardPage() {
           >
             {activeQuizList && upcomingQuizList ? (
               <>
-                {(activeQuizList.length === 0 && upcomingQuizList.length === 0) && (
-                  <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                    You have no quizzes
-                  </div>
-                )}
+                {activeQuizList.length === 0 &&
+                  upcomingQuizList.length === 0 && (
+                    <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                      You have no quizzes
+                    </div>
+                  )}
                 {activeQuizList.length !== 0 && (
                   <Accordion
                     sectionName="Available Quizzes"
@@ -302,17 +304,17 @@ export default function DashboardPage() {
                         {upcomingQuizList.map((quizObject, idx) => {
                           return (
                             <>
-                            <QuizInviteModal
+                              <QuizInviteModal
                                 modalShow={quizInviteModalShow}
                                 modalShowSet={quizInviteModalShowSet}
                                 quizObject={quizObject}
                               />
-                            <QuizCard
-                              accentColor={quizObject.accentColor}
-                              quizInviteModalShowSet={quizInviteModalShowSet}
-                              quizObject={quizObject}
-                              key={idx}
-                            />
+                              <QuizCard
+                                accentColor={quizObject.accentColor}
+                                quizInviteModalShowSet={quizInviteModalShowSet}
+                                quizObject={quizObject}
+                                key={idx}
+                              />
                             </>
                           );
                         })}
@@ -340,11 +342,12 @@ export default function DashboardPage() {
           >
             {activeCourseList && archivedCourseList ? (
               <>
-                {(activeCourseList.length === 0 && archivedCourseList.length === 0) && (
-                  <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                    You have no courses
-                  </div>
-                )}
+                {activeCourseList.length === 0 &&
+                  archivedCourseList.length === 0 && (
+                    <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                      You have no courses
+                    </div>
+                  )}
                 {activeCourseList.length !== 0 && (
                   <Accordion
                     sectionName={"Active Courses"}

@@ -21,26 +21,24 @@ export default function QuizInviteModal({
             <h1 className="text-2xl font-bold">
               {quizObject.quizName} Invitations
             </h1>
-            <Badge
-              label={quizObject.courseCode}
-              accentColor={""}
-            />
+            <Badge label={quizObject.courseCode} accentColor={""} />
           </div>
           <AlertBanner ref={alertRef} />
           <div className="flex flex-col gap-3 text-gray-800">
             <span>
-              Are you sure you want to send quiz email invitations for {" "}
-              <b>
-                {quizObject.quizName}
-              </b>
-              {" "} to all your students enrolled in <b>{quizObject.courseCode}</b>?
+              Are you sure you want to send quiz email invitations for{" "}
+              <b>{quizObject.quizName}</b> to all your students enrolled in{" "}
+              <b>{quizObject.courseCode}</b>?
             </span>
           </div>
           <div className="flex gap-4 mt-2">
             <button
               className="btn-primary"
               onClick={() => {
-                sendQuizInvitations(quizObject.courseId, quizObject.quizId).then((result) => {
+                sendQuizInvitations(
+                  quizObject.courseId,
+                  quizObject.quizId
+                ).then((result) => {
                   if (result.success) {
                     modalShowSet(false);
                   } else {
@@ -62,5 +60,5 @@ export default function QuizInviteModal({
         </div>
       }
     />
-    );
-  } 
+  );
+}

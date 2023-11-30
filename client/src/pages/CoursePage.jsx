@@ -312,7 +312,7 @@ export default function CoursePage() {
 
 function QuizList({ quizArr, accentColor, courseCode, courseId }) {
   const [quizInviteModalShow, setQuizInviteModalShow] = useState(false);
-  
+
   return (
     <div className={"flex flex-col w-full gap-4"}>
       {quizArr
@@ -322,24 +322,24 @@ function QuizList({ quizArr, accentColor, courseCode, courseId }) {
         .map((currQuizObject, idx) => {
           return (
             <>
-            <QuizInviteModal
-              modalShow={quizInviteModalShow}
-              modalShowSet={setQuizInviteModalShow}
-              quizObject={{
-                ...currQuizObject,
-                courseCode,
-                courseId,
-              }}
-            />
-            <QuizCard
-              accentColor={accentColor}
-              quizObject={{
-                ...currQuizObject,
-                courseCode,
-              }}
-              quizInviteModalShowSet={setQuizInviteModalShow}
-              key={idx}
-            />
+              <QuizInviteModal
+                modalShow={quizInviteModalShow}
+                modalShowSet={setQuizInviteModalShow}
+                quizObject={{
+                  ...currQuizObject,
+                  courseCode,
+                  courseId,
+                }}
+              />
+              <QuizCard
+                accentColor={accentColor}
+                quizObject={{
+                  ...currQuizObject,
+                  courseCode,
+                }}
+                quizInviteModalShowSet={setQuizInviteModalShow}
+                key={idx}
+              />
             </>
           );
         })}

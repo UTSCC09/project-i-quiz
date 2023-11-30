@@ -6,7 +6,6 @@ import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import { EllipsisIcon } from "components/elements/SVGIcons";
 
-
 function getQuizState(quizObject) {
   const startTime = new Date(quizObject.startTime);
   const endTime = new Date(quizObject.endTime);
@@ -36,8 +35,8 @@ function getFormattedDateStr(time) {
 }
 
 // quizState: available, upcoming, closed
-export default function QuizCard({ 
-  accentColor = "#0366FF", 
+export default function QuizCard({
+  accentColor = "#0366FF",
   quizObject,
   quizInviteModalShowSet,
 }) {
@@ -113,10 +112,10 @@ export default function QuizCard({
           </div>
         </div>
       </Link>
-      <div className="relative top-1/2 -translate-y-1/2 md:translate-y-0 md:top-4 right-0">
+      <div className="">
         <DropdownMenu
           buttonElement={
-            <button className="mx-2 p-1 text-slate-600 rounded-full hover:bg-gray-100 transition">
+            <button className="">
               <EllipsisIcon className="h-5" />
             </button>
           }
