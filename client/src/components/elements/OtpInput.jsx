@@ -11,6 +11,7 @@ function OtpInput({ numOfCharacters = 6, baseName = "otp" }, ref) {
   );
 
   const inputRefs = useRef([]);
+  const timeoutRef = useRef;
 
   const handleChange = (index, event) => {
     const inputCharacter = event.target.value;
@@ -110,7 +111,12 @@ function OtpInput({ numOfCharacters = 6, baseName = "otp" }, ref) {
           onInput={(e) => handleChange(index, e)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           // Add time out to prevent deselect on mouse up
-          onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+          onFocus={(e) => {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(() => {
+              e.target.select();
+            }, 0);
+          }}
           onPaste={handlePaste}
           tabIndex={index}
           maxLength={1}
