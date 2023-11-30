@@ -7,6 +7,8 @@ import CLO from "../models/CLO.js";
 import OEQ from "../models/OEQ.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
+import { getMyResponseForQuiz } from "./quizResponseController.js";
+import QuizResponse from "../models/QuizResponse.js";
 
 //@route  POST api/quizzes
 //@desc   Allow instructor to create a quiz
@@ -339,10 +341,17 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
       } else {
         currentQuizStatus = "Active";
       }
+
+      const quizResponse = await QuizResponse.findOne({
+        quiz: quiz._id,
+        student: student._id,
+      });
+
       formattedQuizzes.push({
         quizId: quiz._id,
         quizName: quiz.quizName,
         status: currentQuizStatus,
+        responseStatus: quizResponse ? quizResponse.status : "",
         startTime: quiz.startTime,
         endTime: quiz.endTime,
       });
@@ -1096,6 +1105,10 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
           currentDateTime >= quiz.startTime &&
           currentDateTime <= quiz.endTime
         ) {
+          const quizResponse = await QuizResponse.findOne({
+            quiz: quiz._id,
+            student: student._id,
+          });
           formattedQuizzes.push({
             quizId: quiz._id,
             quizName: quiz.quizName,
@@ -1103,6 +1116,7 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
             accentColor: accentColor,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
+            responseStatus: quizResponse ? quizResponse.status : "",
           });
         }
       } catch (error) {
