@@ -157,9 +157,16 @@ const QuizPage = () => {
                       savedQuestionResponse={
                         savedQuizResponse[questionObject.question._id]
                       }
-                      updateQuestionResponse={
-                        updateLocallyStoredQuestionResponse
-                      }
+                      updateQuestionResponse={(
+                        questionId,
+                        updatedQuestionResponse
+                      ) => {
+                        updateLocallyStoredQuestionResponse(
+                          questionId,
+                          updatedQuestionResponse
+                        );
+                        editQuizResponseInDb();
+                      }}
                     />
                   </div>
                 </div>

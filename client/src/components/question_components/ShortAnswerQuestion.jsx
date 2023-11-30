@@ -19,8 +19,8 @@ const ShortAnswerQuestion = (props) => {
         className="h-24 px-4 py-2 w-full rounded-md border border-gray-200"
         name={props.question._id}
         maxLength={props.question.maxLength}
-        value={text}
-        onChange={updateText}
+        defaultValue={text}
+        onBlur={updateText}
       ></textarea>
     </>
   );
