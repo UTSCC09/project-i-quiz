@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "media/iquiz_logo.svg";
 import DropdownMenu from "components/elements/DropdownMenu";
 import { BellIcon, CogIcon } from "components/elements/SVGIcons";
 
 export default function NavBar({ additionalButtons }) {
+  /* Scroll to top on load */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <header className="fixed top-0 left-0 h-24 sm:h-28 w-full bg-white shadow-sm flex items-center px-6 md:px-20 justify-between z-10 transition-all">
       <Link to="/">
