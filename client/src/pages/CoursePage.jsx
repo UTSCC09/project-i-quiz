@@ -12,6 +12,7 @@ import CourseAccentColorModal from "components/page_components/CourseAccentColor
 import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
+import QuizInviteModal from "components/page_components/QuizInviteModal";
 import { fetchCourseObject } from "api/CourseApi";
 import {
   getQuizzesForInstructedCourse,
@@ -291,6 +292,7 @@ export default function CoursePage() {
                     accentColor={courseObject.accentColor}
                     quizArr={getFilteredQuizzes(selection)}
                     courseCode={courseObject.courseCode}
+                    courseId={courseObject.courseId}
                   />
                 </motion.div>
               </div>
@@ -308,7 +310,9 @@ export default function CoursePage() {
   );
 }
 
-function QuizList({ quizArr, accentColor, courseCode }) {
+function QuizList({ quizArr, accentColor, courseCode, courseId }) {
+  const [quizInviteModalShow, setQuizInviteModalShow] = useState(false);
+  
   return (
     <div className={"flex flex-col w-full gap-4"}>
       {quizArr
@@ -317,14 +321,26 @@ function QuizList({ quizArr, accentColor, courseCode }) {
         })
         .map((currQuizObject, idx) => {
           return (
+            <>
+            <QuizInviteModal
+              modalShow={quizInviteModalShow}
+              modalShowSet={setQuizInviteModalShow}
+              quizObject={{
+                ...currQuizObject,
+                courseCode,
+                courseId,
+              }}
+            />
             <QuizCard
               accentColor={accentColor}
               quizObject={{
                 ...currQuizObject,
                 courseCode,
               }}
+              quizInviteModalShowSet={setQuizInviteModalShow}
               key={idx}
             />
+            </>
           );
         })}
     </div>

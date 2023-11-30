@@ -8,6 +8,7 @@ import CourseEnrollModal from "components/page_components/CourseEnrollModal";
 import CourseAccentColorModal from "components/page_components/CourseAccentColorModal";
 import CourseArchiveModal from "components/page_components/CourseArchiveModal";
 import CourseDropModal from "components/page_components/CourseDropModal";
+import QuizInviteModal from "components/page_components/QuizInviteModal";
 import { isStudentUserType } from "utils/CookieUtils";
 import CourseCreateModal from "components/page_components/CourseCreateModal";
 import {
@@ -55,6 +56,7 @@ export default function DashboardPage() {
   const [courseArchiveModalShow, courseArchiveModalShowSet] = useState(false);
   const [courseDropModalShow, courseDropModalShowSet] = useState(false);
   const [courseCreateModalShow, courseCreateModalShowSet] = useState(false);
+  const [quizInviteModalShow, quizInviteModalShowSet] = useState(false);
   const [accessCodeUpdateModalShow, accessCodeUpdateModalShowSet] =
     useState(false);
   const [targetCourseObject, targetCourseObjectSet] = useState({});
@@ -271,12 +273,21 @@ export default function DashboardPage() {
                     content={
                       <div className="flex flex-col gap-4 lg:gap-6">
                         {activeQuizList.map((quizObject, idx) => {
+                          console.log(quizObject);
                           return (
-                            <QuizCard
-                              accentColor={quizObject.accentColor}
-                              quizObject={quizObject}
-                              key={idx}
-                            />
+                            <>
+                              <QuizInviteModal
+                                modalShow={quizInviteModalShow}
+                                modalShowSet={quizInviteModalShowSet}
+                                quizObject={quizObject}
+                              />
+                              <QuizCard
+                                accentColor={quizObject.accentColor}
+                                quizObject={quizObject}
+                                quizInviteModalShowSet={quizInviteModalShowSet}
+                                key={idx}
+                              />
+                            </>
                           );
                         })}
                       </div>
@@ -290,11 +301,19 @@ export default function DashboardPage() {
                       <div className="flex flex-col gap-4 lg:gap-6">
                         {upcomingQuizList.map((quizObject, idx) => {
                           return (
+                            <>
+                            <QuizInviteModal
+                                modalShow={quizInviteModalShow}
+                                modalShowSet={quizInviteModalShowSet}
+                                quizObject={quizObject}
+                              />
                             <QuizCard
                               accentColor={quizObject.accentColor}
+                              quizInviteModalShowSet={quizInviteModalShowSet}
                               quizObject={quizObject}
                               key={idx}
                             />
+                            </>
                           );
                         })}
                       </div>

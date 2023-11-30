@@ -2,6 +2,10 @@ import React from "react";
 import Badge from "components/elements/Badge.jsx";
 import colors from "tailwindcss/colors";
 import { Link } from "react-router-dom";
+import DropdownMenu from "components/elements/DropdownMenu";
+import { isStudentUserType } from "utils/CookieUtils";
+import { EllipsisIcon } from "components/elements/SVGIcons";
+
 
 function getQuizState(quizObject) {
   const startTime = new Date(quizObject.startTime);
@@ -32,7 +36,11 @@ function getFormattedDateStr(time) {
 }
 
 // quizState: available, upcoming, closed
-export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
+export default function QuizCard({ 
+  accentColor = "#0366FF", 
+  quizObject,
+  quizInviteModalShowSet,
+}) {
   const quizName = quizObject.quizName;
   const courseCode = quizObject.courseCode;
   const startTime = new Date(quizObject.startTime);
@@ -60,6 +68,19 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
     default:
       break;
   }
+
+  const isStudent = isStudentUserType();
+  let quizEditOptions = [];
+
+  if (!isStudent) {
+    quizEditOptions.push({
+      label: "Send Invite",
+      onClick: () => {
+        quizInviteModalShowSet(true);
+      },
+    });
+  }
+
   return (
     <>
       <Link
@@ -92,6 +113,16 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
           </div>
         </div>
       </Link>
+      <div className="relative top-1/2 -translate-y-1/2 md:translate-y-0 md:top-4 right-0">
+        <DropdownMenu
+          buttonElement={
+            <button className="mx-2 p-1 text-slate-600 rounded-full hover:bg-gray-100 transition">
+              <EllipsisIcon className="h-5" />
+            </button>
+          }
+          options={quizEditOptions}
+        />
+      </div>
     </>
   );
 }

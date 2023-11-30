@@ -186,10 +186,10 @@ async function sendQuizInvitations(courseId, quizId) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
-    body: JSON.stringify(
+    body: JSON.stringify({
       courseId,
       quizId,
-    )
+    }),
   })
     .then((response) => response.json())
     .then((result) => result);
