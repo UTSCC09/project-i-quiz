@@ -1,4 +1,4 @@
-import { transporter, defaultMailOptions, backendUrl, frontendUrl } from "./mailTransporter.js";
+import { transporter, defaultMailOptions, frontendUrl } from "./mailTransporter.js";
 
 const sendQuizInvitation = async (course, emails, quiz) => {
     if (!course || !quiz) {
@@ -9,7 +9,7 @@ const sendQuizInvitation = async (course, emails, quiz) => {
       let quizInviteOptions = {
         ...defaultMailOptions,
         to: email,
-        subject: course.courseName + " Quiz Notice",
+        subject: course.courseName + " " + quiz.quizName + " Notice",
         html: `
           <p><b>Quiz</b>: ${quiz.quizName}</p>
           <p><b>Time</b>: Starts at ${quiz.startTime} and ends at ${quiz.endTime}</p>
