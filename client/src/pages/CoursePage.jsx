@@ -226,7 +226,7 @@ export default function CoursePage() {
       <NavBar />
       <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
         <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
-          <div className="flex items-end justify-between mb-6 md:mb-8 h-16">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between mb-6 md:mb-8 h-28 sm:h-16">
             <div className="flex flex-col pr-4">
               <div className="flex items-center gap-3">
                 <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
@@ -243,7 +243,7 @@ export default function CoursePage() {
                 {courseObject.courseName}
               </span>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4 text-gray-700">
+            <div className="flex gap-2 sm:gap-4 text-gray-700">
               <div className="flex gap-2 sm:gap-4">
                 <DropdownMenu
                   buttonElement={
@@ -252,6 +252,7 @@ export default function CoursePage() {
                     </button>
                   }
                   options={courseEditOptions}
+                  menuAlignLeft
                 />
                 {!isStudent && (
                   <Link

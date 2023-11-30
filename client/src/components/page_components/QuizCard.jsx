@@ -72,9 +72,11 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
         }}
       >
         <div className="w-full py-4 md:py-6 h-20 md:h-24 bg-white group-hover:bg-gray-100 rounded-r border px-4 md:px-6 shrink-0 flex items-center transition-all">
-          <div className="flex-col justify-center items-start inline-flex">
-            <div className="items-center gap-2.5 inline-flex">
-              <div className="md:text-lg font-semibold">{quizName}</div>
+          <div className="w-full flex-col justify-center items-start inline-flex">
+            <div className="items-center gap-2.5 inline-flex w-full overflow-hidden">
+              <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words mb-1">
+                {quizName}
+              </div>
               {isAvailable && !submitted && (
                 <div
                   className="w-2 h-2 shrink-0 rounded-full"

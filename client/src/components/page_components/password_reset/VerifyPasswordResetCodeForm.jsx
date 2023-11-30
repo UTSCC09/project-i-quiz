@@ -59,10 +59,12 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
       exit={{ opacity: 0, x: 30 }}
       className="w-full h-full flex flex-col items-center"
     >
-      <div className="mb-7 flex flex-col gap-2 w-full">
+      <div className="mb-7 flex flex-col gap-4 w-full">
         <h1 className="self-start text-3xl font-bold">Reset your password</h1>
-        <div className="flex items-center relative ml-0.5 text-sm text-gray-500">
-          Please enter the verification code you received
+        <div className="flex items-center relative text-sm text-gray-500">
+          <span className="pl-0.5">
+            Please enter the verification code you received
+          </span>
           <div
             className="ml-2 flex items-center text-black text-opacity-30 text-center cursor-pointer hover:text-opacity-20 rounded-lg transition-all"
             onClick={() => {
@@ -77,7 +79,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
                 initial={{ opacity: 0, scale: 0.98, y: 0 }}
                 animate={{ opacity: 1, scale: 1, y: 10 }}
                 exit={{ opacity: 0, scale: 0.98, y: 0 }}
-                className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg w-80 rounded-lg right-[min(calc(100vw - 12rem), 12rem)] top-full"
+                className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg max-w-full sm:w-80 rounded-lg right-0 top-full"
               >
                 <span>
                   If you do not see the password reset email, please check your
@@ -107,19 +109,15 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
 
       <form
         onSubmit={onSubmit}
-        className="grid grid-cols-1 gap-4 w-full sm:w-96"
+        className="flex flex-col gap-6 w-full sm:w-96"
         autoComplete="off"
         noValidate
       >
         <AlertBanner ref={alertRef} />
-        <div className="col-span-6">
-          <OtpInput ref={otpInputRef} />
-        </div>
-        <div className="mt-4 col-span-6 flex flex-col items-center">
-          <button ref={buttonRef} className="btn-primary">
-            Verify code
-          </button>
-        </div>
+        <OtpInput ref={otpInputRef} />
+        <button ref={buttonRef} className="btn-primary">
+          Verify code
+        </button>
       </form>
 
       <span className="mt-6 text-sm text-gray-500">

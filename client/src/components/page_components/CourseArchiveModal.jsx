@@ -19,15 +19,16 @@ export default function CourseArchiveModal({
         modalShowSet={modalShowSet}
         content={
           <div className="flex flex-col sm:w-96 gap-6">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">
-                Archiving {courseObject.courseCode}
-              </h1>
-              <Badge
-                label={courseObject.courseSemester}
-                accentColor={courseObject.accentColor}
-              />
-            </div>
+            <h1 className="text-2xl font-bold inline-flex flex-wrap">
+              <span className="mr-2">Archiving</span>
+              <div className="flex items-center gap-2">
+                {courseObject.courseCode}
+                <Badge
+                  label={courseObject.courseSemester}
+                  accentColor={courseObject.accentColor}
+                />
+              </div>
+            </h1>
             <AlertBanner ref={alertRef} />
             <div className="flex flex-col gap-4 text-gray-600">
               <span>
@@ -78,15 +79,16 @@ export default function CourseArchiveModal({
         modalShowSet={modalShowSet}
         content={
           <div className="flex flex-col sm:w-96 gap-6">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">
-                Unarchiving {courseObject.courseCode}
-              </h1>
-              <Badge
-                label={courseObject.courseSemester}
-                accentColor={courseObject.accentColor}
-              />
-            </div>
+            <h1 className="text-2xl font-bold inline-flex flex-wrap">
+              <span className="mr-2">Unarchiving</span>
+              <div className="flex items-center gap-2">
+                {courseObject.courseCode}
+                <Badge
+                  label={courseObject.courseSemester}
+                  accentColor={courseObject.accentColor}
+                />
+              </div>
+            </h1>
             <AlertBanner ref={alertRef} />
             <div className="flex flex-col gap-4 text-gray-600">
               <span>
