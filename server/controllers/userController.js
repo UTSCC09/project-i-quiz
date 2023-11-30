@@ -246,7 +246,7 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     {
       httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production"
+      sameSite: true
     }
   );
   return res.status(200).json(formatMessage(true, "Password reset request accepted"));
@@ -305,7 +305,7 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
     {
       httpOnly: process.env.NODE_ENV === "production",
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production"
+      sameSite: true
     }
   );
   return res.status(200).json(formatMessage(true, "Password reset code is valid"));
