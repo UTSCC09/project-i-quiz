@@ -19,10 +19,10 @@ const QuizMiscellaneousPage = () => {
     const questionResponses = quizObject.questions.map((question) => {
       return {
         question: question.question._id,
-        response: [""]
+        response: [""],
       };
     });
-    
+
     createQuizReponse(quizId, questionResponses).then((payload) => {
       if (payload) {
         navigate("/quiz/" + quizId);
@@ -38,7 +38,10 @@ const QuizMiscellaneousPage = () => {
       return;
     } else {
       getQuizResponse(quizId).then((result) => {
-        if (!result.success && result.message === "No response found for this quiz") {
+        if (
+          !result.success &&
+          result.message === "No response found for this quiz"
+        ) {
           getQuiz(quizId).then((payload) => {
             quizObjectSet(payload);
           });
@@ -54,7 +57,7 @@ const QuizMiscellaneousPage = () => {
         }
       });
     }
-  }, [quizId]);
+  }, [isStudent, navigate, quizId]);
 
   return (
     <>
@@ -68,6 +71,7 @@ const QuizMiscellaneousPage = () => {
         ) : (
           <button
             className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
+            type="button"
             style={{
               pointerEvents: quizObject ? "auto" : "none",
               opacity: quizObject ? 1 : 0.5,
