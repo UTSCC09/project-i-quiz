@@ -11,9 +11,10 @@ const sendQuizInvitation = async (course, emails, quiz) => {
         to: email,
         subject: course.courseName + " - " + quiz.quizName + " Notice",
         html: `
-          <p><b>${quiz.quizName}</b></p>
-          <p><b>Time</b>: Starts at ${quiz.startTime.toUTCString()} and ends at ${quiz.endTime.toUTCString()}</p>
+          <p>Hello!</p>
+          <p><b>${quiz.quizName}</b> will start at ${quiz.startTime.toUTCString()} and ends at ${quiz.endTime.toUTCString()}!</p>
           <p><a href=${frontendUrl + "quiz/" + quiz._id}>Click here to start!</p>
+          <p>© iQuiz 2023. All rights reserved.</p>
         `
       };
       
