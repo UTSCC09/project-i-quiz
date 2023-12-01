@@ -9,9 +9,9 @@ const sendQuizInvitation = async (course, emails, quiz) => {
       let quizInviteOptions = {
         ...defaultMailOptions,
         to: email,
-        subject: course.courseName + " Quiz Notice",
+        subject: course.courseName + " - " + quiz.quizName + " Notice",
         html: `
-          <p><b>Quiz</b>: ${quiz.quizName}</p>
+          <p><b>${quiz.quizName}</b></p>
           <p><b>Time</b>: Starts at ${quiz.startTime.toUTCString()} and ends at ${quiz.endTime.toUTCString()}</p>
           <p><a href=${frontendUrl + "quiz/" + quiz._id}>Click here to start!</p>
         `
