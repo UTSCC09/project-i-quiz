@@ -13,6 +13,7 @@ import {
   getActiveQuizzesForEnrolledCourses,
   getActiveQuizzesForInstructedCourses,
   updateQuiz,
+  releaseQuiz,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -43,6 +44,9 @@ router.route("/active/instructor")
 
 router.route("/:quizId")
   .get(protect, getQuiz)
+
+router.route("/:quizId/release")
+  .patch(protect, releaseQuiz);
 
 router.route("/:quizId/questions")
   .get(protect, getQuizObject)

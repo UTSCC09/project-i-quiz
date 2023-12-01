@@ -160,6 +160,43 @@ const createQuiz = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  PATCH api/quizzes/:quizId/release
+//@desc   Allow instructor to release a quiz
+//@access Private
+const releaseQuiz = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  let quiz;
+  try {
+    quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+  quiz.isReleased = true;
+  await quiz.save();
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz released successfully"));
+});
+
 //@route  POST api/quizzes/update
 //@desc   Allow instructor to update a quiz
 //@access Private
@@ -342,6 +379,7 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
           return {
             quizId: quiz._id,
             quizName: quiz.quizName,
+            isReleased: quiz.isReleased,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
           };
@@ -406,29 +444,31 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
       if (!quiz) {
         return res.status(400).json(formatMessage(false, "Invalid quiz id"));
       }
-      const currentDateTime = new Date();
-      let currentQuizStatus = "";
-      if (currentDateTime < quiz.startTime) {
-        currentQuizStatus = "Upcoming";
-      } else if (currentDateTime > quiz.endTime) {
-        currentQuizStatus = "Past";
-      } else {
-        currentQuizStatus = "Active";
+      if (quiz.isReleased) {
+        const currentDateTime = new Date();
+        let currentQuizStatus = "";
+        if (currentDateTime < quiz.startTime) {
+          currentQuizStatus = "Upcoming";
+        } else if (currentDateTime > quiz.endTime) {
+          currentQuizStatus = "Past";
+        } else {
+          currentQuizStatus = "Active";
+        }
+
+        const quizResponse = await QuizResponse.findOne({
+          quiz: quiz._id,
+          student: student._id,
+        });
+
+        formattedQuizzes.push({
+          quizId: quiz._id,
+          quizName: quiz.quizName,
+          status: currentQuizStatus,
+          responseStatus: quizResponse ? quizResponse.status : "",
+          startTime: quiz.startTime,
+          endTime: quiz.endTime,
+        });
       }
-
-      const quizResponse = await QuizResponse.findOne({
-        quiz: quiz._id,
-        student: student._id,
-      });
-
-      formattedQuizzes.push({
-        quizId: quiz._id,
-        quizName: quiz.quizName,
-        status: currentQuizStatus,
-        responseStatus: quizResponse ? quizResponse.status : "",
-        startTime: quiz.startTime,
-        endTime: quiz.endTime,
-      });
     } catch (error) {
       return res
         .status(400)
@@ -964,17 +1004,19 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(
               .status(400)
               .json(formatMessage(false, "Invalid quiz id"));
           }
-          const currentDateTime = new Date();
-          if (currentDateTime < quiz.startTime) {
-            formattedQuizzes.push({
-              quizId: quiz._id,
-              quizName: quiz.quizName,
-              courseCode: course.courseCode,
-              courseId: course._id,
-              accentColor: accentColor,
-              startTime: quiz.startTime,
-              endTime: quiz.endTime,
-            });
+          if (quiz.isReleased) {
+            const currentDateTime = new Date();
+            if (currentDateTime < quiz.startTime) {
+              formattedQuizzes.push({
+                quizId: quiz._id,
+                quizName: quiz.quizName,
+                courseCode: course.courseCode,
+                courseId: course._id,
+                accentColor: accentColor,
+                startTime: quiz.startTime,
+                endTime: quiz.endTime,
+              });
+            }
           }
         } catch (error) {
           return res
@@ -988,7 +1030,13 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(
 
     return res
       .status(200)
-      .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+      .json(
+        formatMessage(
+          true,
+          "Upcoming quizzes fetched for the instructor",
+          formattedQuizzes
+        )
+      );
   }
 );
 
@@ -1035,17 +1083,19 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
         if (!quiz) {
           return res.status(400).json(formatMessage(false, "Invalid quiz id"));
         }
-        const currentDateTime = new Date();
-        if (currentDateTime < quiz.startTime) {
-          formattedQuizzes.push({
-            quizId: quiz._id,
-            quizName: quiz.quizName,
-            courseCode: course.courseCode,
-            courseId: course._id,
-            accentColor: accentColor,
-            startTime: quiz.startTime,
-            endTime: quiz.endTime,
-          });
+        if (quiz.isReleased) {
+          const currentDateTime = new Date();
+          if (currentDateTime < quiz.startTime) {
+            formattedQuizzes.push({
+              quizId: quiz._id,
+              quizName: quiz.quizName,
+              courseCode: course.courseCode,
+              courseId: course._id,
+              accentColor: accentColor,
+              startTime: quiz.startTime,
+              endTime: quiz.endTime,
+            });
+          }
         }
       } catch (error) {
         return res
@@ -1059,7 +1109,13 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+    .json(
+      formatMessage(
+        true,
+        "Upcoming quizzes fetched for the student",
+        formattedQuizzes
+      )
+    );
 });
 
 //@route  GET api/quizzes/active/instructor
@@ -1105,20 +1161,23 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
         if (!quiz) {
           return res.status(400).json(formatMessage(false, "Invalid quiz id"));
         }
-        const currentDateTime = new Date();
-        if (
-          currentDateTime >= quiz.startTime &&
-          currentDateTime <= quiz.endTime
-        ) {
-          formattedQuizzes.push({
-            quizId: quiz._id,
-            quizName: quiz.quizName,
-            courseCode: course.courseCode,
-            courseId: course._id,
-            accentColor: accentColor,
-            startTime: quiz.startTime,
-            endTime: quiz.endTime,
-          });
+
+        if (quiz.isReleased) {
+          const currentDateTime = new Date();
+          if (
+            currentDateTime >= quiz.startTime &&
+            currentDateTime <= quiz.endTime
+          ) {
+            formattedQuizzes.push({
+              quizId: quiz._id,
+              quizName: quiz.quizName,
+              courseCode: course.courseCode,
+              courseId: course._id,
+              accentColor: accentColor,
+              startTime: quiz.startTime,
+              endTime: quiz.endTime,
+            });
+          }
         }
       } catch (error) {
         return res
@@ -1132,7 +1191,13 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+    .json(
+      formatMessage(
+        true,
+        "Active quizzes fetched for the instructor",
+        formattedQuizzes
+      )
+    );
 });
 
 //@route  GET api/quizzes/active/student
@@ -1178,25 +1243,28 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
         if (!quiz) {
           return res.status(400).json(formatMessage(false, "Invalid quiz id"));
         }
-        const currentDateTime = new Date();
-        if (
-          currentDateTime >= quiz.startTime &&
-          currentDateTime <= quiz.endTime
-        ) {
-          const quizResponse = await QuizResponse.findOne({
-            quiz: quiz._id,
-            student: student._id,
-          });
-          formattedQuizzes.push({
-            quizId: quiz._id,
-            quizName: quiz.quizName,
-            courseCode: course.courseCode,
-            courseId: course._id,
-            accentColor: accentColor,
-            startTime: quiz.startTime,
-            endTime: quiz.endTime,
-            responseStatus: quizResponse ? quizResponse.status : "",
-          });
+
+        if (quiz.isReleased) {
+          const currentDateTime = new Date();
+          if (
+            currentDateTime >= quiz.startTime &&
+            currentDateTime <= quiz.endTime
+          ) {
+            const quizResponse = await QuizResponse.findOne({
+              quiz: quiz._id,
+              student: student._id,
+            });
+            formattedQuizzes.push({
+              quizId: quiz._id,
+              quizName: quiz.quizName,
+              courseCode: course.courseCode,
+              courseId: course._id,
+              accentColor: accentColor,
+              startTime: quiz.startTime,
+              endTime: quiz.endTime,
+              responseStatus: quizResponse ? quizResponse.status : "",
+            });
+          }
         }
       } catch (error) {
         return res
@@ -1210,7 +1278,13 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+    .json(
+      formatMessage(
+        true,
+        "Active quizzes fetched for the student",
+        formattedQuizzes
+      )
+    );
 });
 
 /* --- helper functions --- */
@@ -1307,6 +1381,7 @@ async function createQuestion(question, res) {
 export {
   createQuiz,
   updateQuiz,
+  releaseQuiz,
   getQuiz,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
