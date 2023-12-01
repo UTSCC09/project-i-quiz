@@ -85,6 +85,9 @@ export default function QuizEditorPage() {
     [...document.querySelectorAll("input")]
       .concat([...document.querySelectorAll("textarea")])
       .forEach((input) => {
+        if (input.name === "maxScore") {
+          return;
+        }
         input.addEventListener("input", (e) => {
           e.target.classList.remove("input-invalid-state");
         });
@@ -293,7 +296,7 @@ export default function QuizEditorPage() {
                     placeholder="Quiz Title"
                     defaultValue={quizName}
                     onInput={(e) => quizNameSet(e.target.value)}
-                    className="px-2 py-2 text-lg font-semibold outline-none rounded-md w-full"
+                    className="px-2 pt-3 pb-1 text-lg font-semibold outline-none rounded-md w-full"
                     required
                   />
                 </div>
@@ -413,19 +416,7 @@ export default function QuizEditorPage() {
                     type="submit"
                     className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
                     onClick={() => {
-                      let flag = true;
-                      [...document.querySelectorAll("input")]
-                        .concat([...document.querySelectorAll("textarea")])
-                        .forEach((input) => {
-                          input.addEventListener("input", (e) => {
-                            e.target.classList.remove("input-invalid-state");
-                          });
-                          if (input.value === "") {
-                            flag = false;
-                            input.classList.add("input-invalid-state");
-                          }
-                        });
-                      if (flag) {
+                      if (validateInputs()) {
                         if (quizId) {
                           updateQuiz({
                             ...quizCreationData,

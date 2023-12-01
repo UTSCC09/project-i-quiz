@@ -5,6 +5,7 @@ const QuestionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "Please provide a question"],
   },
+  maxScore: { type: Number, required: [true, "Please provide the max score"] },
   type: {
     type: String,
     enum: ["MCQ", "MSQ", "CLO", "OEQ"],
