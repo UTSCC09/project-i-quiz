@@ -424,7 +424,7 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
           return {
             quizId: quiz._id,
             quizName: quiz.quizName,
-            isDraft: !quiz.isDraft,
+            isDraft: quiz.isDraft,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
           };
