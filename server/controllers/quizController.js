@@ -48,6 +48,11 @@ const createQuiz = asyncHandler(async (req, res) => {
     if (!courseToAddTo) {
       return res.status(400).json(formatMessage(false, "Invalid course id"));
     }
+    if (!courseToAddTo.instructor.equals(instructor._id)) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "No access to the course"));
+    }
   } catch (error) {
     return res
       .status(400)
@@ -249,8 +254,9 @@ const updateQuiz = asyncHandler(async (req, res) => {
   }
 
   //Check if valid user
+  let instructor;
   try {
-    const instructor = await User.findOne({ email: req.session.email });
+    instructor = await User.findOne({ email: req.session.email });
     if (!instructor) {
       return res.status(400).json(formatMessage(false, "Invalid user"));
     } else if (instructor.type !== "instructor") {
@@ -268,6 +274,9 @@ const updateQuiz = asyncHandler(async (req, res) => {
     courseToAddTo = await Course.findById(course);
     if (!courseToAddTo) {
       return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+    if (!course.instructor.equals(instructor._id)) {
+      return res.status(400).json(formatMessage(false, "Access denied"));
     }
   } catch (error) {
     return res
@@ -314,6 +323,68 @@ const updateQuiz = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(formatMessage(true, "Quiz updated successfully"));
+});
+
+//@route  DELETE api/quizzes/:quizId
+//@desc   Allow instructor to update a quiz
+//@access Private
+const deleteDraftQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  //Verify all fields exist
+  if (!quizId) {
+    return res.status(400).json(formatMessage(false, "Missing parameter"));
+  }
+
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  // verify quiz id
+  const existingQuiz = await Quiz.findById(quizId);
+  if (!existingQuiz) {
+    return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+  }
+
+  // verify quiz status
+  if (!existingQuiz.isDraft) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Cannot delete released quizzes"));
+  }
+
+  // verify access to the quiz
+  let course;
+  try {
+    course = await Course.findById(existingQuiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+    if (!course.instructor.equals(instructor._id)) {
+      return res.status(400).json(formatMessage(false, "Access denied"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding course"));
+  }
+  await Quiz.deleteOne({ _id: quizId });
+  await Course.updateOne({ _id: course }, { $pull: { quizzes: quizId } });
+
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz deleted successfully"));
 });
 
 //@route  GET api/quizzes/:quizId
@@ -1208,6 +1279,7 @@ export {
   createQuiz,
   updateQuiz,
   releaseQuiz,
+  deleteDraftQuiz,
   getQuiz,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
