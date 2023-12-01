@@ -275,7 +275,7 @@ const updateQuiz = asyncHandler(async (req, res) => {
     if (!courseToAddTo) {
       return res.status(400).json(formatMessage(false, "Invalid course id"));
     }
-    if (!course.instructor.equals(instructor._id)) {
+    if (!courseToAddTo.instructor.equals(instructor._id)) {
       return res.status(400).json(formatMessage(false, "Access denied"));
     }
   } catch (error) {
