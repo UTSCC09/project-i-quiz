@@ -117,10 +117,7 @@ const createQuiz = asyncHandler(async (req, res) => {
           return res
             .status(400)
             .json(
-              formatMessage(
-                false,
-                `Invalid question type ${questions[i].type}`
-              )
+              formatMessage(false, `Invalid question type ${questions[i].type}`)
             );
       }
     } catch (error) {
@@ -229,9 +226,7 @@ const updateQuiz = asyncHandler(async (req, res) => {
   existingQuiz.questions = quizQuestions;
 
   await existingQuiz.save();
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz updated successfully"));
+  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  GET api/quizzes/:quizId
@@ -537,9 +532,7 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   quiz.endTime = endTimeConverted;
   await quiz.save();
 
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz updated successfully"));
+  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  PATCH api/quizzes/question
@@ -570,9 +563,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
     !action ||
     (action !== "edit" && action !== "remove")
   ) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Missing/invalid fields"));
+    return res.status(400).json(formatMessage(false, "Missing/invalid fields"));
   }
 
   //Verify valid question
@@ -1304,6 +1295,38 @@ async function createQuestion(question, res) {
   return createdQuestion;
 }
 
+// Returns the list of questions from Quiz
+async function getQuestions(quizId) {
+  let quiz = await Quiz.findById(quizId);
+
+  const formattedQuestions = [];
+  for (let i = 0; i < quiz.questions.length; i++) {
+    let question;
+    switch (quiz.questions[i].type) {
+      case "MCQ":
+        question = await MCQ.findById(quiz.questions[i].question);
+        break;
+      case "MSQ":
+        question = await MSQ.findById(quiz.questions[i].question);
+        break;
+      case "CLO":
+        question = await CLO.findById(quiz.questions[i].question);
+        break;
+      case "OEQ":
+        question = await OEQ.findById(quiz.questions[i].question);
+        break;
+    }
+
+    formattedQuestions.push({
+      ...question.toObject(),
+      type: quiz.questions[i].type,
+    });
+
+  } 
+
+  return formattedQuestions;
+}
+
 export {
   createQuiz,
   updateQuiz,
@@ -1318,4 +1341,5 @@ export {
   getUpcomingQuizzesForInstructedCourses,
   getActiveQuizzesForEnrolledCourses,
   getActiveQuizzesForInstructedCourses,
+  getQuestions,
 };
