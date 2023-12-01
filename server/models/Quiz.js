@@ -30,7 +30,7 @@ const QuizSchema = new mongoose.Schema({
     required: [true, "Please provide a course"],
   },
   questions: [QuestionSchema],
-  isReleased: {
+  isDraft: {
     type: Boolean,
     required: [true, "Please provide the released status"],
   },

@@ -9,7 +9,7 @@ function getQuizState(quizObject) {
   const endTime = new Date(quizObject.endTime);
   const currentTime = new Date();
 
-  if (quizObject.isReleased !== undefined && !quizObject.isReleased) {
+  if (quizObject.isDraft) {
     return "pending";
   } else if (startTime > currentTime) {
     return "upcoming";

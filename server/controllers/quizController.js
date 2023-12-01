@@ -190,7 +190,7 @@ const releaseQuiz = asyncHandler(async (req, res) => {
       .status(400)
       .json(formatMessage(false, "Mongoose error finding quiz"));
   }
-  quiz.isReleased = true;
+  quiz.isDraft = false;
   await quiz.save();
   return res
     .status(200)
@@ -379,7 +379,7 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
           return {
             quizId: quiz._id,
             quizName: quiz.quizName,
-            isReleased: quiz.isReleased,
+            isDraft: !quiz.isDraft,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
           };
@@ -444,7 +444,7 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
       if (!quiz) {
         return res.status(400).json(formatMessage(false, "Invalid quiz id"));
       }
-      if (quiz.isReleased) {
+      if (!quiz.isDraft) {
         const currentDateTime = new Date();
         let currentQuizStatus = "";
         if (currentDateTime < quiz.startTime) {
@@ -1004,7 +1004,7 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(
               .status(400)
               .json(formatMessage(false, "Invalid quiz id"));
           }
-          if (quiz.isReleased) {
+          if (!quiz.isDraft) {
             const currentDateTime = new Date();
             if (currentDateTime < quiz.startTime) {
               formattedQuizzes.push({
@@ -1083,7 +1083,7 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
         if (!quiz) {
           return res.status(400).json(formatMessage(false, "Invalid quiz id"));
         }
-        if (quiz.isReleased) {
+        if (!quiz.isDraft) {
           const currentDateTime = new Date();
           if (currentDateTime < quiz.startTime) {
             formattedQuizzes.push({
@@ -1162,7 +1162,7 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
           return res.status(400).json(formatMessage(false, "Invalid quiz id"));
         }
 
-        if (quiz.isReleased) {
+        if (!quiz.isDraft) {
           const currentDateTime = new Date();
           if (
             currentDateTime >= quiz.startTime &&
@@ -1244,7 +1244,7 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
           return res.status(400).json(formatMessage(false, "Invalid quiz id"));
         }
 
-        if (quiz.isReleased) {
+        if (!quiz.isDraft) {
           const currentDateTime = new Date();
           if (
             currentDateTime >= quiz.startTime &&

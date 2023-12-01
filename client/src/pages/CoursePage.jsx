@@ -51,16 +51,16 @@ export default function CoursePage() {
       case "New Quizzes":
         return quizList.filter((quiz) => {
           const endTime = new Date(quiz.endTime);
-          return quiz.isReleased && currentDateTime <= endTime;
+          return !quiz.isDraft && currentDateTime <= endTime;
         });
       case "All Quizzes":
         return quizList.filter((quiz) => {
-          return quiz.isReleased;
+          return !quiz.isDraft;
         });
       case "Past Quizzes":
         return quizList.filter((quiz) => {
           const endTime = new Date(quiz.endTime);
-          return quiz.isReleased && currentDateTime > endTime;
+          return !quiz.isDraft && currentDateTime > endTime;
         });
       default:
         return [];
@@ -81,7 +81,7 @@ export default function CoursePage() {
       } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
-          draftQuizListSet(resultPayload.filter((quiz) => !quiz.isReleased));
+          draftQuizListSet(resultPayload.filter((quiz) => quiz.isDraft));
         });
       }
 
@@ -173,7 +173,7 @@ export default function CoursePage() {
       } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
-          draftQuizListSet(resultPayload.filter((quiz) => !quiz.isReleased));
+          draftQuizListSet(resultPayload.filter((quiz) => quiz.isDraft));
         });
       }
     });
