@@ -13,13 +13,6 @@ import QuizEditorPage from "pages/QuizEditorPage";
 import PasswordResetPage from "pages/PasswordResetPage";
 
 const App = () => {
-  const { pathname } = useLocation();
-
-  /* Scroll to top on redirects */
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
   return (
     <Routes>
       {/* -- Protected Routes -- */}
@@ -45,14 +38,6 @@ const App = () => {
         element={
           <ProtectedRoute>
             <QuizPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <DashboardPage />
           </ProtectedRoute>
         }
       />

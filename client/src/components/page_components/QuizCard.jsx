@@ -80,8 +80,10 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
           }}
         >
           <div className="flex-col justify-center items-start inline-flex">
-            <div className="items-center gap-2.5 inline-flex">
-              <div className="md:text-lg font-semibold">{quizName}</div>
+            <div className="items-center gap-2.5 inline-flex w-full overflow-hidden">
+              <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words mb-1">
+			    {quizName}
+			  </div>
               {isAvailable &&
                 isStudentUserType() &&
                 responseStatus !== "submitted" && (

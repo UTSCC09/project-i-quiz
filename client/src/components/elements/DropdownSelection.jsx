@@ -76,7 +76,7 @@ function DropdownSelection(
                 checked={selection || dropdownShow}
                 readOnly
               />
-              <div className="text-left text-black absolute bottom-[6.3px] pl-4 w-full border-none">
+              <div className="text-left whitespace-nowrap overflow-hidden text-ellipsis text-black absolute bottom-[6.3px] pl-4 pr-8 w-full border-none">
                 {selection}
               </div>
               <span className="absolute start-4 top-1/2 text-sm -translate-y-1/2 text-gray-500 transition-all peer-checked:top-3 peer-checked:text-xs peer-focus:top-3 peer-focus:text-xs">
@@ -84,7 +84,7 @@ function DropdownSelection(
               </span>
             </div>
           ) : (
-            <div className="w-full text-gray-700 justify-center mr-4 h-8 sm:h-10 flex items-center">
+            <div className="w-full text-gray-700 justify-center mr-4 flex items-center">
               <div>{selection}</div>
             </div>
           )}
@@ -122,7 +122,7 @@ function DropdownSelection(
                           onSelectionChange(selection);
                           dropdownShowSet(false);
                         }}
-                        className="px-6 py-2 hover:bg-gray-150 transition cursor-pointer whitespace-nowrap"
+                        className="px-6 py-1.5 hover:bg-gray-150 transition cursor-pointer whitespace-nowrap"
                         key={idx}
                       >
                         {selection}

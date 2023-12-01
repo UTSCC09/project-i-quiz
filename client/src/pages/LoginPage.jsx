@@ -75,7 +75,7 @@ const SignInWindow = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/home");
+          navigate("/");
         } else {
           errorMessageRef.current.textContent = result.message;
           errorMessageRef.current.classList.remove("hidden");

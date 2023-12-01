@@ -7,7 +7,7 @@ const sendPasswordResetCode = async (user, code) => {
     expireTimeLengthStr = `${
       PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION / 1000
     } seconds`;
-  } else if (PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION / 1000 == 60) {
+  } else if (PASSWORD_RESET_CONSTANTS.CODE_EXPIRATION / 1000 === 60) {
     expireTimeLengthStr = "1 minute";
   } else {
     expireTimeLengthStr = `${

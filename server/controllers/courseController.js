@@ -317,7 +317,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 
   //Check if student is already enrolled in the specified course
   if (
-    student.courses.findIndex((course) => course.courseId == courseId) !== -1
+    student.courses.findIndex((course) => course.courseId === courseId) !== -1
   ) {
     //Check if student is already enrolled in the specified session
     if (course.sessions[sessionNumber - 1].students.includes(student._id)) {

@@ -19,10 +19,10 @@ export default function CourseEnrollModal({
       modalShow={enrollModalShow}
       modalShowSet={enrollModalShowSet}
       onClose={() => {
-        stepSet(0)
+        stepSet(0);
       }}
       content={
-        <div className="sm:w-96">
+        <div className="w-full sm:w-96">
           {step === 0 && (
             <AccessCodeForm
               enrollInfoRef={enrollInfoRef}
@@ -45,7 +45,7 @@ export default function CourseEnrollModal({
               close={() => enrollModalShowSet(false)}
             />
           )}
-        </div >
+        </div>
       }
     />
   );
@@ -58,8 +58,7 @@ function AccessCodeForm({ enrollInfoRef, next }) {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold">Add a new course</h1>
       <span className="text-gray-600">
-        Please enter the access code provided by your course
-        instructor.
+        Please enter the access code provided by your course instructor.
       </span>
       <form
         className="gap-6 flex flex-col"
@@ -74,14 +73,12 @@ function AccessCodeForm({ enrollInfoRef, next }) {
           className="btn-primary"
           onClick={(e) => {
             e.target.focus();
-            if (
-              !courseAccessCodeInputRef.current.validate("required")
-            ) {
+            if (!courseAccessCodeInputRef.current.validate("required")) {
               return;
             }
             fetch(
               "/api/courses/enroll_info/" +
-              courseAccessCodeInputRef.current.getValue(),
+                courseAccessCodeInputRef.current.getValue(),
               {
                 method: "GET",
                 withCredentials: true,
@@ -95,9 +92,7 @@ function AccessCodeForm({ enrollInfoRef, next }) {
                 } else {
                   alertRef.current.setMessage(result.message);
                   alertRef.current.show();
-                  courseAccessCodeInputRef.current.setValidationState(
-                    false
-                  );
+                  courseAccessCodeInputRef.current.setValidationState(false);
                 }
               });
           }}
@@ -106,13 +101,13 @@ function AccessCodeForm({ enrollInfoRef, next }) {
         </button>
       </form>
     </div>
-  )
+  );
 }
 
 function ChooseSessionForm({ enrollInfoRef, next }) {
   const [sessionPicked, sessionPickedSet] = useState();
   return (
-    <div className="flex flex-col gap-6 w-96">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2">
         <h1 className="text-2xl font-bold">
           Enroll in {enrollInfoRef.current.courseCode}
@@ -170,7 +165,7 @@ function ChooseSessionForm({ enrollInfoRef, next }) {
         Enroll
       </button>
     </div>
-  )
+  );
 }
 
 function AccentColorForm({ enrollInfoRef, onSuccess }) {
@@ -194,14 +189,9 @@ function AccentColorForm({ enrollInfoRef, onSuccess }) {
       </h1>
       <div className="flex flex-col gap-4 text-gray-600">
         <span>Pick an accent color for your newly added course.</span>
-        <span>
-          Don't worry, you will be able to change it at anytime.
-        </span>
+        <span>Don't worry, you will be able to change it at anytime.</span>
       </div>
-      <ColorPicker
-        colorPicked={colorPicked}
-        colorPickedSet={colorPickedSet}
-      />
+      <ColorPicker colorPicked={colorPicked} colorPickedSet={colorPickedSet} />
       <button
         className="btn-primary"
         style={{
@@ -221,5 +211,5 @@ function AccentColorForm({ enrollInfoRef, onSuccess }) {
         Enroll
       </button>
     </div>
-  )
+  );
 }

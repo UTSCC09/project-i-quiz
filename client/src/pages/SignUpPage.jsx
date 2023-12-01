@@ -169,7 +169,7 @@ function SignUpForm({ email, userType }) {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/home");
+          navigate("/");
         } else {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();

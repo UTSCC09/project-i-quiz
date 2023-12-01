@@ -15,7 +15,6 @@ export default function CourseCreateModal({
   modalShowSet,
   onSuccess,
 }) {
-
   const [step, stepSet] = useState(0);
   const courseCreationData = useRef({});
 
@@ -25,7 +24,7 @@ export default function CourseCreateModal({
       modalShowSet={modalShowSet}
       onClose={() => stepSet(0)}
       content={
-        <div className="sm:w-96">
+        <div className="w-full sm:w-96">
           {step === 0 && (
             <CourseCreationInfoForm
               courseCreationData={courseCreationData}
@@ -134,38 +133,42 @@ function CourseCreationInfoForm({ courseCreationData, next }) {
             label="Course name"
             acceptSpace
           />
-          <div className="flex gap-2">
-            <DropdownSelection
-              ref={semesterDropdownRef}
-              label="Semester"
-              selections={["Fall", "Winter", "Summer"]}
-              selection={semester}
-              onSelectionChange={(selection) => {
-                semesterSet(selection);
-              }}
-              width="7rem"
-            />
-            <DropdownSelection
-              ref={yearDropdownRef}
-              label="Year"
-              selections={["22", "23", "24"]}
-              selection={year}
-              onSelectionChange={(selection) => {
-                yearSet(selection);
-              }}
-              width="4.5rem"
-            />
-            <input
-              className="hidden"
-              name="courseSemester"
-              value={semester + " " + year}
-              readOnly
-            />
-            <SingleLineInput
-              ref={courseCodeInputRef}
-              name="courseCode"
-              label="Course code"
-            />
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-2">
+            <div className="w-full">
+              <SingleLineInput
+                ref={courseCodeInputRef}
+                name="courseCode"
+                label="Course code"
+              />
+            </div>
+            <div className="flex gap-2 h-11 w-full sm:h-auto">
+              <DropdownSelection
+                ref={semesterDropdownRef}
+                label="Semester"
+                selections={["Fall", "Winter", "Summer"]}
+                selection={semester}
+                onSelectionChange={(selection) => {
+                  semesterSet(selection);
+                }}
+                width="7rem"
+              />
+              <DropdownSelection
+                ref={yearDropdownRef}
+                label="Year"
+                selections={["22", "23", "24"]}
+                selection={year}
+                onSelectionChange={(selection) => {
+                  yearSet(selection);
+                }}
+                width="4.75rem"
+              />
+              <input
+                className="hidden"
+                name="courseSemester"
+                value={semester + " " + year}
+                readOnly
+              />
+            </div>
           </div>
           <div className="relative">
             <SingleLineInput
@@ -189,17 +192,16 @@ function CourseCreationInfoForm({ courseCreationData, next }) {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
-                  className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg w-80 rounded-lg right-12 bottom-0"
+                  className="absolute z-10 text-sm text-slate-600 flex flex-col gap-4 bg-white py-6 px-8 shadow-lg max-w-full sm:w-80 rounded-lg right-12 bottom-0"
                 >
                   <span>
-                    Having multiple sections allows you to split
-                    students into groups, which you could assign
-                    different quizzes to.
+                    Having multiple sections allows you to split students into
+                    groups, which you could assign different quizzes to.
                   </span>
                   <span>
-                    If you don't plan to use this feature, leave this
-                    field blank. You will still be able to modify the
-                    number of sections later.
+                    If you don't plan to use this feature, leave this field
+                    blank. You will still be able to modify the number of
+                    sections later.
                   </span>
                 </motion.div>
               )}
@@ -225,7 +227,7 @@ function CourseCreationInfoForm({ courseCreationData, next }) {
         <button className="btn-primary">Next</button>
       </form>
     </div>
-  )
+  );
 }
 
 function AccessCodeForm({ courseCreationData, next }) {
@@ -238,12 +240,11 @@ function AccessCodeForm({ courseCreationData, next }) {
       <AlertBanner ref={alertRef} />
       <div className="text-gray-600 flex flex-col gap-4">
         <span>
-          A unique course access code is required. Students will use
-          this code to access your course.
+          A unique course access code is required. Students will use this code
+          to access your course.
         </span>
         <span>
-          You may click on the dice icon to randomly generate an access
-          code.
+          You may click on the dice icon to randomly generate an access code.
         </span>
       </div>
       <AccessCodeInput inputRef={accessCodeInputRef} />
@@ -267,7 +268,7 @@ function AccessCodeForm({ courseCreationData, next }) {
         Next
       </button>
     </div>
-  )
+  );
 }
 
 function AccentColorForm({ courseCreationData, onSuccess, close }) {
@@ -285,17 +286,10 @@ function AccentColorForm({ courseCreationData, onSuccess, close }) {
       </h1>
       <AlertBanner ref={alertRef} />
       <div className="flex flex-col gap-4 text-gray-600">
-        <span>
-          Pick an accent color for your newly created course.
-        </span>
-        <span>
-          Don't worry, you will be able to change it at anytime.
-        </span>
+        <span>Pick an accent color for your newly created course.</span>
+        <span>Don't worry, you will be able to change it at anytime.</span>
       </div>
-      <ColorPicker
-        colorPicked={colorPicked}
-        colorPickedSet={colorPickedSet}
-      />
+      <ColorPicker colorPicked={colorPicked} colorPickedSet={colorPickedSet} />
       <button
         className="btn-primary"
         style={{
@@ -323,5 +317,5 @@ function AccentColorForm({ courseCreationData, onSuccess, close }) {
         Finish
       </button>
     </div>
-  )
+  );
 }
