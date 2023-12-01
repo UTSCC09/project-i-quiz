@@ -1132,7 +1132,7 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+    .json(formatMessage(true, "Active quizzes found", formattedQuizzes));
 });
 
 //@route  GET api/quizzes/active/student
@@ -1210,7 +1210,159 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+    .json(formatMessage(true, "Active quizzes found", formattedQuizzes));
+});
+
+//@route  GET api/quizzes/past/instructor
+//@desc   Allow instructors to get all past quizzes for courses they instruct
+//@access Private
+const getPastQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
+  }
+
+  let formattedQuizzes = [];
+  //Get quizzes for every enrolled course
+  for (let j = 0; j < instructor.courses.length; j++) {
+    const accentColor = instructor.courses[j].accentColor;
+    let course;
+    try {
+      course = await Course.findById(instructor.courses[j].courseId);
+      if (!course) {
+        return res
+          .status(400)
+          .json(formatMessage(false, "Invalid course id in quiz"));
+      }
+    } catch (error) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
+    }
+
+    for (let i = 0; i < course.quizzes.length; i++) {
+      try {
+        const quiz = await Quiz.findById(course.quizzes[i]);
+        if (!quiz) {
+          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+        }
+        const currentDateTime = new Date();
+        if (
+          currentDateTime > quiz.startTime &&
+          currentDateTime > quiz.endTime
+        ) {
+          formattedQuizzes.push({
+            quizId: quiz._id,
+            quizName: quiz.quizName,
+            courseCode: course.courseCode,
+            courseId: course._id,
+            accentColor: accentColor,
+            startTime: quiz.startTime,
+            endTime: quiz.endTime,
+          });
+        }
+      } catch (error) {
+        return res
+          .status(400)
+          .json(
+            formatMessage(false, "Mongoose error finding quizzes for course", null, error)
+          );
+      }
+    }
+  }
+
+  return res
+    .status(200)
+    .json(formatMessage(true, "Past quizzes found", formattedQuizzes));
+});
+
+//@route  GET api/quizzes/past/student
+//@desc   Allow students to get all past quizzes for courses they are enrolled in
+//@access Private
+const getPastQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let student;
+  try {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (student.type !== "student") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
+  }
+
+  let formattedQuizzes = [];
+  //Get quizzes for every enrolled course
+  for (let j = 0; j < student.courses.length; j++) {
+    const accentColor = student.courses[j].accentColor;
+    let course;
+    try {
+      course = await Course.findById(student.courses[j].courseId);
+      if (!course) {
+        return res
+          .status(400)
+          .json(formatMessage(false, "Invalid course id in quiz"));
+      }
+    } catch (error) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
+    }
+
+    for (let i = 0; i < course.quizzes.length; i++) {
+      try {
+        const quiz = await Quiz.findById(course.quizzes[i]);
+        if (!quiz) {
+          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+        }
+        const currentDateTime = new Date();
+        if (
+          currentDateTime > quiz.startTime &&
+          currentDateTime > quiz.endTime
+        ) {
+          const quizResponse = await QuizResponse.findOne({
+            quiz: quiz._id,
+            student: student._id,
+          });
+          formattedQuizzes.push({
+            quizId: quiz._id,
+            quizName: quiz.quizName,
+            courseCode: course.courseCode,
+            courseId: course._id,
+            accentColor: accentColor,
+            startTime: quiz.startTime,
+            endTime: quiz.endTime,
+            responseStatus: quizResponse ? quizResponse.status : "",
+            gradingStatus: quizResponse ? quizResponse.graded : "",
+          });
+        }
+      } catch (error) {
+        return res
+          .status(400)
+          .json(
+            formatMessage(false, "Mongoose error finding quizzes for course", null, error)
+          );
+      }
+    }
+  }
+
+  return res
+    .status(200)
+    .json(formatMessage(true, "Past quizzes found", formattedQuizzes));
 });
 
 /* --- helper functions --- */
@@ -1318,4 +1470,6 @@ export {
   getUpcomingQuizzesForInstructedCourses,
   getActiveQuizzesForEnrolledCourses,
   getActiveQuizzesForInstructedCourses,
+  getPastQuizzesForInstructedCourses,
+  getPastQuizzesForEnrolledCourses,
 };

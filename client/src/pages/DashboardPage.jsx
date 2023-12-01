@@ -44,8 +44,9 @@ export default function DashboardPage() {
   const [activeCourseList, activeCourseListSet] = useState();
   const [archivedCourseList, archivedCourseListSet] = useState();
 
-  const [activeQuizList, activeQuizListSet] = useState();
   const [upcomingQuizList, upcomingQuizListSet] = useState();
+  const [activeQuizList, activeQuizListSet] = useState();
+  const [pastQuizList, pastQuizListSet] = useState();
 
   const [selectedTab, _setSelectedTab] = useState(
     localStorage.getItem("selected_tab") ?? "quizzes"
@@ -73,13 +74,13 @@ export default function DashboardPage() {
   }
 
   function refetchDataAndShowToast(successMessage) {
-    fetchCourses().then((fetchedPayload) => {
-      if (fetchedPayload) {
+    fetchCourses().then((fetchedCourses) => {
+      if (fetchedCourses) {
         activeCourseListSet(
-          fetchedPayload.filter((course) => course.archived === false)
+          fetchedCourses.filter((course) => course.archived === false)
         );
         archivedCourseListSet(
-          fetchedPayload.filter((course) => course.archived === true)
+          fetchedCourses.filter((course) => course.archived === true)
         );
       }
       toastMessageSet(successMessage);
@@ -91,14 +92,20 @@ export default function DashboardPage() {
     getQuizzesForDashboard(
       "upcoming",
       isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
-      upcomingQuizListSet(fetchedPayload ?? []);
+    ).then((upcomingQuizzes) => {
+      upcomingQuizListSet(upcomingQuizzes ?? []);
     });
     getQuizzesForDashboard(
       "active",
       isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
-      activeQuizListSet(fetchedPayload ?? []);
+    ).then((activeQuizzes) => {
+      activeQuizListSet(activeQuizzes ?? []);
+    });
+    getQuizzesForDashboard(
+      "past",
+      isStudent ? "student" : "instructor"
+    ).then((pastQuizzes) => {
+      pastQuizListSet(pastQuizzes ?? []);
     });
   }
 
@@ -107,30 +114,36 @@ export default function DashboardPage() {
     getQuizzesForDashboard(
       "upcoming",
       isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
-      upcomingQuizListSet(fetchedPayload ?? []);
+    ).then((upcomingQuizzes) => {
+      upcomingQuizListSet(upcomingQuizzes ?? []);
       getQuizzesForDashboard(
         "active",
         isStudent ? "student" : "instructor"
-      ).then((fetchedPayload) => {
-        activeQuizListSet(fetchedPayload ?? []);
-        fetchCourses().then((fetchedPayload) => {
-          if (fetchedPayload) {
-            activeCourseListSet(
-              fetchedPayload.filter((course) => course.archived === false)
-            );
-            archivedCourseListSet(
-              fetchedPayload.filter((course) => course.archived === true)
-            );
-          }
-          const { passInMessage } = location.state ?? "";
-          if (passInMessage) {
-            toastMessageSet(passInMessage);
-            navigate("", {});
-            setTimeout(() => {
-              toastMessageSet();
-            }, 3000);
-          }
+      ).then((activeQuizzes) => {
+        activeQuizListSet(activeQuizzes ?? []);
+        getQuizzesForDashboard(
+          "past",
+          isStudent ? "student" : "instructor"
+        ).then((pastQuizzes) => {
+          pastQuizListSet(pastQuizzes ?? []);
+          fetchCourses().then((fetchedCourses) => {
+            if (fetchedCourses) {
+              activeCourseListSet(
+                fetchedCourses.filter((course) => course.archived === false)
+              );
+              archivedCourseListSet(
+                fetchedCourses.filter((course) => course.archived === true)
+              );
+            }
+            const { passInMessage } = location.state ?? "";
+            if (passInMessage) {
+              toastMessageSet(passInMessage);
+              navigate("", {});
+              setTimeout(() => {
+                toastMessageSet();
+              }, 3000);
+            }
+          });
         });
       });
     });
@@ -258,9 +271,11 @@ export default function DashboardPage() {
             ref={quizSectionRef}
             className="lg:w-[35%] flex flex-col gap-8 lg:flex"
           >
-            {activeQuizList && upcomingQuizList ? (
+            {activeQuizList && upcomingQuizList && pastQuizList ? (
               <>
-                {(activeQuizList.length === 0 && upcomingQuizList.length === 0) && (
+                {(activeQuizList.length === 0 &&
+                  upcomingQuizList.length === 0) &&
+                  pastQuizList.length === 0 && (
                   <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
                     You have no quizzes
                   </div>
@@ -289,6 +304,25 @@ export default function DashboardPage() {
                     content={
                       <div className="flex flex-col gap-4 lg:gap-6">
                         {upcomingQuizList.map((quizObject, idx) => {
+                          return (
+                            <QuizCard
+                              accentColor={quizObject.accentColor}
+                              quizObject={quizObject}
+                              key={idx}
+                            />
+                          );
+                        })}
+                      </div>
+                    }
+                  />
+                )}
+                {pastQuizList.length !== 0 && (
+                  <Accordion
+                    sectionName="Past Quizzes"
+                    collapsed={true}
+                    content={
+                      <div className="flex flex-col gap-4 lg:gap-6">
+                        {pastQuizList.map((quizObject, idx) => {
                           return (
                             <QuizCard
                               accentColor={quizObject.accentColor}

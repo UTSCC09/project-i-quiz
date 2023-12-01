@@ -11,7 +11,7 @@ function getQuizState(quizObject) {
 
   if (startTime > currentTime) {
     return "upcoming";
-  } else if (endTime > currentTime) {
+  } else if (endTime >= currentTime) {
     return "available";
   } else {
     return "closed";
@@ -39,24 +39,28 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   const startTime = new Date(quizObject.startTime);
   const endTime = new Date(quizObject.endTime);
   const responseStatus = quizObject.responseStatus;
+  const gradingStatus = quizObject.gradingStatus;
   const quizState = getQuizState(quizObject);
   const startTimeStr = getFormattedDateStr(startTime);
   const endTimeStr = getFormattedDateStr(endTime);
 
-  let quizAvailabilityPrompt, isAvailable;
+  let quizAvailabilityPrompt, isAvailable, isClosed;
 
   switch (quizState) {
     case "available":
       quizAvailabilityPrompt = "Available until " + endTimeStr;
       isAvailable = true;
+      isClosed = false;
       break;
     case "upcoming":
       quizAvailabilityPrompt = "Unlocks on " + startTimeStr;
       isAvailable = false;
+      isClosed = false;
       break;
     case "closed":
       quizAvailabilityPrompt = "Closed on " + endTimeStr;
       isAvailable = false;
+      isClosed = true;
       break;
     default:
       break;
@@ -84,18 +88,34 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
               <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words mb-1">
 			    {quizName}
 			  </div>
-              {isAvailable &&
-                isStudentUserType() &&
-                responseStatus !== "submitted" && (
+              {isStudentUserType() &&
+                (isAvailable && responseStatus !== "submitted" && (
                   <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
-                )}
+                ))
+              }
               <Badge label={courseCode} accentColor={accentColor} />
-              {responseStatus === "submitted" && (
-                <Badge iconId="submitted" accentColor={colors.green[600]} />
-              )}
-              {responseStatus === "writing" && (
-                <Badge iconId="writing" accentColor={colors.gray[500]} />
-              )}
+              {isStudentUserType() &&
+                (isAvailable &&
+                  (
+                    responseStatus === "submitted" && (
+                      <Badge iconId="submitted" accentColor={colors.green[600]} />
+                    ) ||
+                    responseStatus === "writing" && (
+                      <Badge iconId="writing" accentColor={colors.gray[500]} />
+                    )
+                  )
+                ) ||
+                (isClosed &&
+                  (
+                    responseStatus !== "submitted" && (
+                      <Badge iconId="missed" accentColor={colors.red[500]} />
+                    ) ||
+                    gradingStatus === "fully" && (
+                      <Badge iconId="graded" accentColor={colors.green[500]} />
+                    )
+                  )
+                )
+              }
             </div>
             <div className="text-gray-500 text-xs font-normal">
               {quizAvailabilityPrompt}

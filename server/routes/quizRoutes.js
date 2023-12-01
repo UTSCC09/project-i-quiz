@@ -12,6 +12,8 @@ import {
   getUpcomingQuizzesForInstructedCourses,
   getActiveQuizzesForEnrolledCourses,
   getActiveQuizzesForInstructedCourses,
+  getPastQuizzesForInstructedCourses,
+  getPastQuizzesForEnrolledCourses,
   updateQuiz,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
@@ -40,6 +42,12 @@ router.route("/active/student")
 
 router.route("/active/instructor")
   .get(protect, getActiveQuizzesForInstructedCourses);
+
+router.route("/past/student")
+  .get(protect, getPastQuizzesForEnrolledCourses);
+
+router.route("/past/instructor")
+  .get(protect, getPastQuizzesForInstructedCourses);
 
 router.route("/:quizId")
   .get(protect, getQuiz)
