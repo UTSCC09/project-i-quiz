@@ -3,6 +3,9 @@ import formatMessage from "../utils/utils.js";
 import QuizResponse from "../models/QuizResponse.js";
 import User from "../models/User.js";
 import Quiz from "../models/Quiz.js";
+import generatePDF from "../utils/quizToPdfUtils.js";
+import { getQuestions } from "./quizController.js";
+import Course from "../models/Course.js";
 
 //@route  POST api/quiz-responses
 //@desc   Allow student to create a quiz response
@@ -313,11 +316,47 @@ const getAllStudentResponsesForQuiz = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  GET api/quiz-responses/generate/:quizId
+//@desc   Allow student to export quiz to pdf
+//@access Private
+const generateQuizPDF = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  const student = await User.findOne({ email: req.session.email });
+  if (!student) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  } 
+  else if (student.type !== "student") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
+  if (quizResponse) {
+    const quiz = await Quiz.findById(quizResponse.quiz);
+    const course = await Course.findById(quiz.course);
+    const questions = await getQuestions(quiz._id);
+    const pdf = generatePDF(course, quiz, questions, student, quizResponse);
+
+    let filename = `${quiz.quizName}_${student.firstName}_${student.lastName}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=' + filename);
+
+    //Sends pdf back in response
+    res.send(pdf.output());
+    
+  } 
+  else {
+    return res.status(400).json(formatMessage(false, "Fail to get quiz response"));
+  }
+
+}); 
+
 export {
   createQuizResponse,
   getAllMyQuizResponses,
   getMyResponseForQuiz,
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
-  submitMyResponseForQuiz
+  submitMyResponseForQuiz,
+  generateQuizPDF,
 };
