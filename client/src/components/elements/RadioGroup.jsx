@@ -9,18 +9,18 @@ const RadioGroup = (props) => {
 
   function onOptionChange(oid) {
     setSelectedOptionId(oid);
-    props.autoSaveAnswers();
+    props.updateQuestionResponse(props.radioGroupId, oid);
   }
 
   return (
     <div className="flex flex-col gap-3">
-      {props.radioOptions.map((option) => {
+      {props.radioOptions.map((choice) => {
         return (
           <RadioOption
             {...props}
-            optionText={option.content}
-            optionId={option.id}
-            key={option.id}
+            optionText={choice.content}
+            optionId={choice.id}
+            key={choice.id}
             onOptionChange={onOptionChange}
             selectedOptionId={selectedOptionId}
           />

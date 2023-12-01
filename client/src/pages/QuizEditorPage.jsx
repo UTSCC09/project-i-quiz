@@ -6,7 +6,7 @@ import Toast from "components/elements/Toast";
 import JSONImportModal from "components/page_components/JSONImportModal";
 import NavBar from "components/page_components/NavBar";
 import QuizReleaseModal from "components/page_components/QuizReleaseModal";
-import QuestionEditor from "components/quiz_editor/QuestionEditor";
+import QuestionEditor from "components/question_editor_components/QuestionEditor";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useParams } from "react-router-dom";
@@ -294,11 +294,11 @@ export default function QuizEditorPage() {
               </div>
             );
           })}
-          <div className="flex justify-between px-2">
+          <div className="flex flex-col sm:flex-row justify-between px-2">
             <div className="flex gap-4">
               <button
                 type="button"
-                className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
+                className="btn-outline w-fit text-start text-sm px-4 py-2"
                 onClick={() => {
                   addQuestion();
                 }}
@@ -307,7 +307,7 @@ export default function QuizEditorPage() {
               </button>
               <button
                 type="button"
-                className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
+                className="btn-outline w-fit text-start text-sm px-4 py-2"
                 onClick={() => jsonImportModalShowSet(true)}
               >
                 Import JSON
@@ -326,14 +326,34 @@ export default function QuizEditorPage() {
                   Save changes
                 </button>
               ) : (
-                <button
-                  className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
-                  onClick={() => {
-                    if (validateInputs()) {
-                      quizReleaseModalShowSet(true);
-                    }
-                  }}
-                >
+	            <button
+	              type="submit"
+	              className="btn-primary w-fit text-start px-6 py-4 sm:py-2 mt-8 sm:mt-0"
+	              onClick={() => {
+	                let flag = true;
+	                [...document.querySelectorAll("input")]
+	                  .concat([...document.querySelectorAll("textarea")])
+	                  .forEach((input) => {
+	                    input.addEventListener("input", (e) => {
+	                      e.target.classList.remove("input-invalid-state");
+	                    });
+	                    if (input.value === "") {
+	                      flag = false;
+	                      input.classList.add("input-invalid-state");
+	                    }
+	                  });
+	                if (flag) {
+	                  quizReleaseModalShowSet(true);
+	                } else {
+	                  toastMessageSet(
+	                    "Please fill out all fields, or remove any unwanted questions and choices"
+	                  );
+	                  setTimeout(() => {
+	                    toastMessageSet();
+	                  }, 3000);
+	                }
+	              }}
+	            >
                   Release quiz
                 </button>
               )}

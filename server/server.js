@@ -10,6 +10,7 @@ import errorHandler from "./middleware/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
+import quizResponseRoutes from "./routes/quizResponseRoutes.js";
 
 // Get environment variables
 dotenv.config();
@@ -66,7 +67,6 @@ app.use(function (req, res, next) {
   if (req.session) {
     req.user = req.session.email;
   }
-  //console.log("HTTP request", req.user , req.method, req.url, req.body);
   next();
 });
 
@@ -74,6 +74,7 @@ app.use(function (req, res, next) {
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/quizzes", quizRoutes);
+app.use("/api/quiz-responses", quizResponseRoutes);
 
 // Assign port
 const PORT = process.env.PORT || 8080;

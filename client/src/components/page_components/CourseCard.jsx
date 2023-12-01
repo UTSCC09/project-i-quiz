@@ -89,7 +89,7 @@ export default function CourseCard({
               <Badge label={courseSemester} accentColor={accentColor} />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-gray-900 font-bold text-2xl md:text-3xl">
+              <span className="text-gray-900 font-bold text-2xl md:text-3xl overflow-hidden text-ellipsis">
                 {courseCode}
               </span>
               <div className="md:hidden">

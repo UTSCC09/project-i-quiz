@@ -61,7 +61,7 @@ const getQuiz = async (quizId) => {
     .then((result) => {
       if (!result.success) {
         console.error(result.message);
-        return [];
+        return null;
       }
       return result.payload;
     })

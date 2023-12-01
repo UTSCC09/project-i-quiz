@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router";
 import LoginPage from "pages/LoginPage";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import QuizInfoPage from "pages/QuizInfoPage";
 import QuizPage from "pages/QuizPage";
 import SignUpPage from "pages/SignUpPage";
 import NotFoundPage from "pages/NotFoundPage";
@@ -13,13 +14,6 @@ import PasswordResetPage from "pages/PasswordResetPage";
 import QuizRedirect from "pages/QuizRedirect";
 
 const App = () => {
-  const { pathname } = useLocation();
-
-  /* Scroll to top on redirects */
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
   return (
     <Routes>
       {/* -- Protected Routes -- */}
@@ -33,18 +27,18 @@ const App = () => {
       />
 
       <Route
-        path="/quiz/:quizId"
+        path="/quiz-info/:quizId"
         element={
           <ProtectedRoute>
-            <QuizRedirect />
+            <QuizInfoPage />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/home"
+        path="/quiz/:quizId"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <QuizRedirect />
           </ProtectedRoute>
         }
       />
