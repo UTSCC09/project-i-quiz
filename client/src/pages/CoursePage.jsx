@@ -18,6 +18,8 @@ import {
   getQuizzesForEnrolledCourse,
 } from "api/QuizApi";
 import { AdjustmentsIcon, PlusIcon } from "components/elements/SVGIcons";
+import colors from "tailwindcss/colors";
+import Accordion from "components/elements/Accordion";
 
 export default function CoursePage() {
   const navigate = useNavigate();
@@ -45,17 +47,23 @@ export default function CoursePage() {
       }
       const currentDateTime = new Date();
       switch (filter) {
+        case "Pending Quizzes":
+          return quizList.filter((quiz) => {
+            return !quiz.isReleased;
+          });
         case "New Quizzes":
           return quizList.filter((quiz) => {
             const endTime = new Date(quiz.endTime);
-            return currentDateTime <= endTime;
+            return quiz.isReleased && currentDateTime <= endTime;
           });
         case "All Quizzes":
-          return quizList;
+          return quizList.filter((quiz) => {
+            return quiz.isReleased;
+          });
         case "Past Quizzes":
           return quizList.filter((quiz) => {
             const endTime = new Date(quiz.endTime);
-            return currentDateTime > endTime;
+            return quiz.isReleased && currentDateTime > endTime;
           });
         default:
           return;
@@ -265,44 +273,65 @@ export default function CoursePage() {
                   </Link>
                 )}
               </div>
-              <DropdownSelection
-                selections={filters}
-                selection={selection}
-                onSelectionChange={onSelectionChange}
-                showShadow
-              />
+              {
+                <DropdownSelection
+                  selections={filters}
+                  selection={selection}
+                  onSelectionChange={onSelectionChange}
+                  showShadow
+                />
+              }
             </div>
           </div>
-          <AnimatePresence initial={false}>
-            {quizList ? (
-              <div>
-                {getFilteredQuizzes(selection).length === 0 && (
-                  <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                    {selection === "All Quizzes"
-                      ? `No quizzes available`
-                      : `No ${selection.toLowerCase()} available`}
-                  </div>
-                )}
-                <motion.div
-                  key={getFilteredQuizzes(selection)}
-                  variants={variants}
-                  animate={"show"}
-                >
-                  <QuizList
-                    accentColor={courseObject.accentColor}
-                    quizArr={getFilteredQuizzes(selection)}
+          {quizList ? (
+            <div className="flex flex-col gap-8">
+              <Accordion
+                sectionName="Drafts"
+                content={
+                  <PendingQuizList
+                    accentColor={colors.gray[500]}
+                    quizArr={getFilteredQuizzes("Pending Quizzes")}
                     courseCode={courseObject.courseCode}
                   />
-                </motion.div>
-              </div>
-            ) : (
-              <div className="animate-pulse w-full">
-                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
-                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
-                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
-              </div>
-            )}
-          </AnimatePresence>
+                }
+              />
+              <Accordion
+                sectionName="Released Quizzes"
+                content={
+                  <div>
+                    {getFilteredQuizzes(selection).length === 0 && (
+                      <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                        {selection === "All Quizzes"
+                          ? `No released quizzes`
+                          : `No ${selection.toLowerCase()} available`}
+                      </div>
+                    )}
+                    <AnimatePresence initial={false}>
+                      <motion.div
+                        key={getFilteredQuizzes(selection)}
+                        variants={variants}
+                        animate={"show"}
+                        initial={"hide"}
+                        exit={"hide"}
+                      >
+                        <QuizList
+                          accentColor={courseObject.accentColor}
+                          quizArr={getFilteredQuizzes(selection)}
+                          courseCode={courseObject.courseCode}
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                }
+              />
+            </div>
+          ) : (
+            <div className="animate-pulse w-full">
+              <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+              <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+              <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+            </div>
+          )}
         </main>
       </div>
     </>
@@ -328,6 +357,25 @@ function QuizList({ quizArr, accentColor, courseCode }) {
             />
           );
         })}
+    </div>
+  );
+}
+
+function PendingQuizList({ quizArr, accentColor, courseCode }) {
+  return (
+    <div className={"flex flex-col w-full gap-4"}>
+      {quizArr.map((currQuizObject, idx) => {
+        return (
+          <QuizCard
+            accentColor={accentColor}
+            quizObject={{
+              ...currQuizObject,
+              courseCode,
+            }}
+            key={idx}
+          />
+        );
+      })}
     </div>
   );
 }
