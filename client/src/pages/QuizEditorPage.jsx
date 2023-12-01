@@ -1,5 +1,5 @@
 import { fetchCourseObject, fetchInstructedCourses } from "api/CourseApi";
-import { getQuiz, updateQuiz } from "api/QuizApi";
+import { createQuiz, getQuiz, updateQuiz } from "api/QuizApi";
 import DropdownSelection from "components/elements/DropdownSelection";
 import { ChevronIcon, XMarkIcon } from "components/elements/SVGIcons";
 import Toast from "components/elements/Toast";
@@ -34,6 +34,7 @@ export default function QuizEditorPage() {
   const [quizReleaseModalShow, quizReleaseModalShowSet] = useState(false);
   const [quizEditSaveModalShow, quizEditSaveModalShowSet] = useState(false);
   const [jsonImportModalShow, jsonImportModalShowSet] = useState(false);
+  const [quizIsDraft, quizIsDraftSet] = useState(false);
   const [activeCourseList, activeCourseListSet] = useState();
   const [quizName, quizNameSet] = useState("");
   const [quizCreationData, quizCreationDataSet] = useState({});
@@ -106,6 +107,7 @@ export default function QuizEditorPage() {
   useEffect(() => {
     if (quizId) {
       getQuiz(quizId).then((quizPayload) => {
+        quizIsDraftSet(quizPayload.isDraft);
         questionListSet(quizPayload.questions);
         quizNameSet(quizPayload.quizName);
         fetchCourseObject(quizPayload.courseId).then((result) => {
@@ -196,9 +198,12 @@ export default function QuizEditorPage() {
         modalShow={quizReleaseModalShow}
         modalShowSet={quizReleaseModalShowSet}
         quizData={quizCreationData}
+        quizId={quizId}
         onSuccess={(quizName) => {
           navigate("/course/" + courseObject.courseId, {
-            state: { passInMessage: `Quiz "${quizName}" has been created` },
+            state: {
+              passInMessage: `Quiz "${quizName}" has been released to your students`,
+            },
           });
         }}
       />
@@ -322,7 +327,7 @@ export default function QuizEditorPage() {
               </button>
             </div>
             <div className="flex gap-4">
-              {quizId ? (
+              {quizId && !quizIsDraft ? (
                 <button
                   className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
                   onClick={() => {
@@ -334,43 +339,73 @@ export default function QuizEditorPage() {
                   Save changes
                 </button>
               ) : (
-                <button
-                  type="submit"
-                  className="btn-primary w-fit text-start px-6 py-4 sm:py-2 mt-8 sm:mt-0"
-                  onClick={() => {
-                    let flag = true;
-                    [...document.querySelectorAll("input")]
-                      .concat([...document.querySelectorAll("textarea")])
-                      .forEach((input) => {
-                        input.addEventListener("input", (e) => {
-                          e.target.classList.remove("input-invalid-state");
+                <>
+                  <button
+                    type="submit"
+                    className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
+                    onClick={() => {
+                      let flag = true;
+                      [...document.querySelectorAll("input")]
+                        .concat([...document.querySelectorAll("textarea")])
+                        .forEach((input) => {
+                          input.addEventListener("input", (e) => {
+                            e.target.classList.remove("input-invalid-state");
+                          });
+                          if (input.value === "") {
+                            flag = false;
+                            input.classList.add("input-invalid-state");
+                          }
                         });
-                        if (input.value === "") {
-                          flag = false;
-                          input.classList.add("input-invalid-state");
+                      if (flag) {
+                        if (quizId) {
+                          updateQuiz({
+                            ...quizCreationData,
+                            quizId: quizId,
+                          }).then(() => {
+                            quizReleaseModalShowSet(true);
+                          });
                         }
-                      });
-                    if (flag) {
-                      quizReleaseModalShowSet(true);
-                    } else {
-                      toastMessageSet(
-                        "Please fill out all fields, or remove any unwanted questions and choices"
-                      );
-                      setTimeout(() => {
-                        toastMessageSet();
-                      }, 3000);
-                    }
-                  }}
-                >
-                  Release quiz
-                </button>
+                        quizReleaseModalShowSet(true);
+                      } else {
+                        toastMessageSet(
+                          "Please fill out all fields, or remove any unwanted questions and choices"
+                        );
+                        setTimeout(() => {
+                          toastMessageSet();
+                        }, 3000);
+                      }
+                    }}
+                  >
+                    Release quiz
+                  </button>
+                  <button
+                    className="btn-secondary w-fit text-start text-sm px-4 py-2 mt-2 text-gray-800 bg-gray-200 border-gray-200"
+                    onClick={() => {
+                      if (validateInputs()) {
+                        if (quizId) {
+                          quizEditSaveModalShowSet(true);
+                        } else {
+                          createQuiz({
+                            ...quizCreationData,
+                            isDraft: true,
+                          }).then((result) => {
+                            if (result.success) {
+                              toastMessageSet(
+                                `Quiz "${quizName}" has been created. It will not be visible to students until you release it.`
+                              );
+                              setTimeout(() => {
+                                toastMessageSet();
+                              }, 3000);
+                            }
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    Save as draft
+                  </button>
+                </>
               )}
-              <button
-                className="btn-secondary w-fit text-start text-sm px-4 py-2 mt-2 text-gray-800 bg-gray-200 border-gray-200"
-                onClick={() => {}}
-              >
-                Save as draft
-              </button>
             </div>
 
             {/* <button
