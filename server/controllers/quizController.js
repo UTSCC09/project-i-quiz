@@ -27,7 +27,7 @@ const createQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Verify all fields exist
@@ -45,7 +45,7 @@ const createQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding course"));
+      .json(formatMessage(false, "Mongoose error finding course", null, error));
   }
 
   //Convert startTime and endTime to Date objects
@@ -74,7 +74,7 @@ const createQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding existing quiz"));
+      .json(formatMessage(false, "Mongoose error finding existing quiz", null, error));
   }
 
   //Quiz questions
@@ -126,7 +126,7 @@ const createQuiz = asyncHandler(async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error creating question"));
+        .json(formatMessage(false, "Mongoose error creating question", null, error));
     }
 
     if (!createdQuestion) {
@@ -250,7 +250,7 @@ const getQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   let quiz;
@@ -262,7 +262,7 @@ const getQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz"));
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   let course;
@@ -276,7 +276,7 @@ const getQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz course"));
+      .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
   }
 
   //Check if instructor teaches course
@@ -305,7 +305,7 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Check if valid course
@@ -318,7 +318,7 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding course"));
+      .json(formatMessage(false, "Mongoose error finding course", null, error));
   }
 
   //Check if instructor teaches course
@@ -351,7 +351,7 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quizzes for course"));
+      .json(formatMessage(false, "Mongoose error finding quizzes for course", null, error));
   }
 });
 
@@ -371,7 +371,7 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Check if valid course
@@ -384,7 +384,7 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding course"));
+      .json(formatMessage(false, "Mongoose error finding course", null, error));
   }
 
   //Check if student is enrolled in course
@@ -433,7 +433,7 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
       return res
         .status(400)
         .json(
-          formatMessage(false, "Mongoose error finding quizzes for course")
+          formatMessage(false, "Mongoose error finding quizzes for course", null, error)
         );
     }
   }
@@ -461,7 +461,7 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Verify all fields exist
@@ -493,7 +493,7 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz"));
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   //Check if there is a pre-existing quiz with new name
@@ -507,7 +507,7 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding existing quiz"));
+      .json(formatMessage(false, "Mongoose error finding existing quiz", null, error));
   }
 
   let course;
@@ -521,7 +521,7 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz course"));
+      .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
   }
 
   //Check if instructor teaches course
@@ -560,7 +560,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Verify all fields exist
@@ -600,7 +600,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz"));
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   let course;
@@ -614,7 +614,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz course"));
+      .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
   }
 
   //Check if instructor teaches course
@@ -660,7 +660,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error editing question"));
+        .json(formatMessage(false, "Mongoose error editing question", null, error));
     }
     quiz.questions.splice(questionIndex, 1);
     await quiz.save();
@@ -731,7 +731,7 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Verify all fields exist
@@ -748,7 +748,7 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz"));
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   let course;
@@ -762,7 +762,7 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz course"));
+      .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
   }
 
   //Check if instructor teaches course
@@ -813,7 +813,7 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error creating question"));
+        .json(formatMessage(false, "Mongoose error creating question", null, error));
     }
 
     if (!createdQuestion) {
@@ -850,7 +850,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz"));
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   //Get questions for quiz
@@ -888,7 +888,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error finding question"));
+        .json(formatMessage(false, "Mongoose error finding question", null, error));
     }
   }
 
@@ -903,7 +903,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz course"));
+      .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
   }
 
   return res.status(200).json(
@@ -935,7 +935,7 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error finding user"));
+        .json(formatMessage(false, "Mongoose error finding user", null, error));
     }
 
     let formattedQuizzes = [];
@@ -953,7 +953,7 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(
       } catch (error) {
         return res
           .status(400)
-          .json(formatMessage(false, "Mongoose error finding quiz course"));
+          .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
       }
 
       for (let i = 0; i < course.quizzes.length; i++) {
@@ -980,7 +980,7 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(
           return res
             .status(400)
             .json(
-              formatMessage(false, "Mongoose error finding quizzes for course")
+              formatMessage(false, "Mongoose error finding quizzes for course", null, error)
             );
         }
       }
@@ -1008,7 +1008,7 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   let formattedQuizzes = [];
@@ -1026,7 +1026,7 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error finding quiz course"));
+        .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
     }
 
     for (let i = 0; i < course.quizzes.length; i++) {
@@ -1051,7 +1051,7 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
         return res
           .status(400)
           .json(
-            formatMessage(false, "Mongoose error finding quizzes for course")
+            formatMessage(false, "Mongoose error finding quizzes for course", null, error)
           );
       }
     }
@@ -1078,7 +1078,7 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   let formattedQuizzes = [];
@@ -1096,7 +1096,7 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error finding quiz course"));
+        .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
     }
 
     for (let i = 0; i < course.quizzes.length; i++) {
@@ -1124,7 +1124,7 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
         return res
           .status(400)
           .json(
-            formatMessage(false, "Mongoose error finding quizzes for course")
+            formatMessage(false, "Mongoose error finding quizzes for course", null, error)
           );
       }
     }
@@ -1151,7 +1151,7 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   let formattedQuizzes = [];
@@ -1169,7 +1169,7 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error finding quiz course"));
+        .json(formatMessage(false, "Mongoose error finding quiz course", null, error));
     }
 
     for (let i = 0; i < course.quizzes.length; i++) {
@@ -1202,7 +1202,7 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
         return res
           .status(400)
           .json(
-            formatMessage(false, "Mongoose error finding quizzes for course")
+            formatMessage(false, "Mongoose error finding quizzes for course", null, error)
           );
       }
     }

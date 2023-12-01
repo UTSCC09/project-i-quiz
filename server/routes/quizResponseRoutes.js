@@ -5,7 +5,8 @@ import {
   getMyResponseForQuiz,
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
-  submitMyResponseForQuiz
+  submitMyResponseForQuiz,
+  gradeStudentQuizResponse
 } from "../controllers/quizResponseController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -24,5 +25,8 @@ router.route("/submit/:quizId")
 
 router.route("/all/:quizId")
   .get(protect, getAllStudentResponsesForQuiz);
+
+router.route("/grade")
+  .patch(protect, gradeStudentQuizResponse);
 
 export default router;
