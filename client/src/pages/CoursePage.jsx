@@ -30,6 +30,8 @@ export default function CoursePage() {
   const { courseId } = useParams();
   const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState();
+  const [filteredQuizList, filteredQuizListSet] = useState([]);
+  const [draftQuizList, draftQuizListSet] = useState([]);
   const [courseObject, setCourseObject] = useState(passInCourseObject ?? {});
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
@@ -40,37 +42,30 @@ export default function CoursePage() {
 
   const isStudent = isStudentUserType();
 
-  const getFilteredQuizzes = useCallback(
-    (filter) => {
-      if (!quizList) {
+  const getFilteredQuizzes = (filter) => {
+    if (!quizList) {
+      return [];
+    }
+    const currentDateTime = new Date();
+    switch (filter) {
+      case "New Quizzes":
+        return quizList.filter((quiz) => {
+          const endTime = new Date(quiz.endTime);
+          return quiz.isReleased && currentDateTime <= endTime;
+        });
+      case "All Quizzes":
+        return quizList.filter((quiz) => {
+          return quiz.isReleased;
+        });
+      case "Past Quizzes":
+        return quizList.filter((quiz) => {
+          const endTime = new Date(quiz.endTime);
+          return quiz.isReleased && currentDateTime > endTime;
+        });
+      default:
         return [];
-      }
-      const currentDateTime = new Date();
-      switch (filter) {
-        case "Pending Quizzes":
-          return quizList.filter((quiz) => {
-            return !quiz.isReleased;
-          });
-        case "New Quizzes":
-          return quizList.filter((quiz) => {
-            const endTime = new Date(quiz.endTime);
-            return quiz.isReleased && currentDateTime <= endTime;
-          });
-        case "All Quizzes":
-          return quizList.filter((quiz) => {
-            return quiz.isReleased;
-          });
-        case "Past Quizzes":
-          return quizList.filter((quiz) => {
-            const endTime = new Date(quiz.endTime);
-            return quiz.isReleased && currentDateTime > endTime;
-          });
-        default:
-          return;
-      }
-    },
-    [quizList]
-  );
+    }
+  };
 
   function refetchDataAndShowToast(successMessage) {
     fetchCourseObject(courseId).then((result) => {
@@ -86,6 +81,7 @@ export default function CoursePage() {
       } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
+          draftQuizListSet(resultPayload.filter((quiz) => !quiz.isReleased));
         });
       }
 
@@ -99,6 +95,7 @@ export default function CoursePage() {
 
   function onSelectionChange(selection) {
     setSelection(selection);
+    filteredQuizListSet(getFilteredQuizzes(selection));
   }
 
   const variants = {
@@ -176,6 +173,7 @@ export default function CoursePage() {
       } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
+          draftQuizListSet(resultPayload.filter((quiz) => !quiz.isReleased));
         });
       }
     });
@@ -285,29 +283,31 @@ export default function CoursePage() {
           </div>
           {quizList ? (
             <div className="flex flex-col gap-8">
-              <Accordion
-                sectionName="Drafts"
-                content={
-                  <PendingQuizList
-                    accentColor={colors.gray[500]}
-                    quizArr={getFilteredQuizzes("Pending Quizzes")}
-                    courseCode={courseObject.courseCode}
-                  />
-                }
-              />
+              {draftQuizList.length !== 0 && (
+                <Accordion
+                  sectionName="Drafts"
+                  content={
+                    <PendingQuizList
+                      accentColor={colors.gray[500]}
+                      quizArr={draftQuizList}
+                      courseCode={courseObject.courseCode}
+                    />
+                  }
+                />
+              )}
               <Accordion
                 sectionName="Released Quizzes"
                 content={
                   <div>
                     <AnimatePresence initial={false}>
                       <motion.div
-                        key={getFilteredQuizzes(selection)}
+                        key={filteredQuizList}
                         variants={variants}
                         animate={"show"}
                         initial={"hide"}
                         exit={"hide"}
                       >
-                        {getFilteredQuizzes(selection).length === 0 ? (
+                        {filteredQuizList.length === 0 ? (
                           <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
                             {selection === "All Quizzes"
                               ? `No released quizzes`
@@ -316,7 +316,7 @@ export default function CoursePage() {
                         ) : (
                           <QuizList
                             accentColor={courseObject.accentColor}
-                            quizArr={getFilteredQuizzes(selection)}
+                            quizArr={filteredQuizList}
                             courseCode={courseObject.courseCode}
                           />
                         )}
