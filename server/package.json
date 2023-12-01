@@ -23,6 +23,7 @@
     "express-session": "^1.17.3",
     "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^2.5.1",
     "mongoose": "^7.6.2",
     "nodemailer": "^6.9.7",
     "validator": "^13.11.0"
