@@ -275,7 +275,6 @@ export default function DashboardPage() {
                     content={
                       <div className="flex flex-col gap-4 lg:gap-6">
                         {activeQuizList.map((quizObject, idx) => {
-                          console.log(quizObject);
                           return (
                             <>
                               <QuizInviteModal
