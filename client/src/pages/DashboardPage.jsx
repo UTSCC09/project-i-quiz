@@ -20,6 +20,7 @@ import {
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getQuizzesForDashboard } from "api/QuizApi";
+import colors from "tailwindcss/colors";
 
 /* -- API function calls -- */
 
@@ -44,6 +45,7 @@ export default function DashboardPage() {
   const [activeCourseList, activeCourseListSet] = useState();
   const [archivedCourseList, archivedCourseListSet] = useState();
 
+  const [draftQuizList, draftQuizListSet] = useState();
   const [activeQuizList, activeQuizListSet] = useState();
   const [upcomingQuizList, upcomingQuizListSet] = useState();
 
@@ -88,6 +90,11 @@ export default function DashboardPage() {
       }, 3000);
     });
 
+    if (!isStudent) {
+      getQuizzesForDashboard("draft", "instructor").then((fetchedPayload) => {
+        console.log(fetchedPayload);
+      });
+    }
     getQuizzesForDashboard(
       "upcoming",
       isStudent ? "student" : "instructor"
@@ -104,6 +111,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setSelectedTab(selectedTab);
+    if (!isStudent) {
+      getQuizzesForDashboard("draft", "instructor").then((fetchedPayload) => {
+        draftQuizListSet(fetchedPayload ?? []);
+      });
+    }
     getQuizzesForDashboard(
       "upcoming",
       isStudent ? "student" : "instructor"
@@ -180,9 +192,11 @@ export default function DashboardPage() {
         courseObject={targetCourseObject}
         archiveCourse={archiveCourse}
         onSuccess={() => {
-          const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester
-            } has been ${targetCourseObject.archived ? "unarchived" : "archived"
-            }`;
+          const successMessage = `${targetCourseObject.courseCode} ${
+            targetCourseObject.courseSemester
+          } has been ${
+            targetCourseObject.archived ? "unarchived" : "archived"
+          }`;
           refetchDataAndShowToast(successMessage);
         }}
       />
@@ -213,8 +227,8 @@ export default function DashboardPage() {
               isStudent
                 ? () => enrollModalShowSet(true)
                 : () => {
-                  courseCreateModalShowSet(true);
-                }
+                    courseCreateModalShowSet(true);
+                  }
             }
           >
             {isStudent ? "Add course" : "Create course"}
@@ -260,10 +274,29 @@ export default function DashboardPage() {
           >
             {activeQuizList && upcomingQuizList ? (
               <>
-                {(activeQuizList.length === 0 && upcomingQuizList.length === 0) && (
-                  <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                    You have no quizzes
-                  </div>
+                {activeQuizList.length === 0 &&
+                  upcomingQuizList.length === 0 && (
+                    <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                      You have no quizzes
+                    </div>
+                  )}
+                {draftQuizList.length !== 0 && (
+                  <Accordion
+                    sectionName="Draft Quizzes"
+                    content={
+                      <div className="flex flex-col gap-4 lg:gap-6">
+                        {draftQuizList.map((quizObject, idx) => {
+                          return (
+                            <QuizCard
+                              accentColor={colors.gray[500]}
+                              quizObject={quizObject}
+                              key={idx}
+                            />
+                          );
+                        })}
+                      </div>
+                    }
+                  />
                 )}
                 {activeQuizList.length !== 0 && (
                   <Accordion
@@ -321,11 +354,12 @@ export default function DashboardPage() {
           >
             {activeCourseList && archivedCourseList ? (
               <>
-                {(activeCourseList.length === 0 && archivedCourseList.length === 0) && (
-                  <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                    You have no courses
-                  </div>
-                )}
+                {activeCourseList.length === 0 &&
+                  archivedCourseList.length === 0 && (
+                    <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                      You have no courses
+                    </div>
+                  )}
                 {activeCourseList.length !== 0 && (
                   <Accordion
                     sectionName={"Active Courses"}
