@@ -6,13 +6,13 @@ export default function MultipleSelectQuestion(props) {
     <div className="flex flex-col">
       <span
         className="mb-6 mx-2"
-        dangerouslySetInnerHTML={{ __html: props.questionObject.prompt }}
+        dangerouslySetInnerHTML={{ __html: props.question.prompt }}
       ></span>
       <CheckBoxGroup
-        checkBoxGroupName={props.questionObject.qid}
-        options={props.questionObject.choices}
-        checkedOptions={props.savedAnswer}
-        autoSaveAnswers={props.autoSaveAnswers}
+        checkBoxGroupName={props.question._id}
+        options={props.question.choices}
+        checkedOptions={props.savedQuestionResponse}
+        updateQuestionResponse={props.updateQuestionResponse}
       />
     </div>
   );

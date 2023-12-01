@@ -1,50 +1,146 @@
-import React, { useEffect, useState } from "react";
-import QuestionWrapper from "components/questions/QuestionWrapper";
-import QuizMock from "mock_data/QuizPage/QuizMock_1.json";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import QuestionWrapper from "components/question_components/QuestionWrapper";
 import NavBar from "components/page_components/NavBar";
 import { getQuiz } from "api/QuizApi";
+import {
+  getQuizResponse,
+  editQuizResponse,
+  submitQuizResponse,
+} from "api/QuizResponseApi";
 import { useParams } from "react-router";
+import { isStudentUserType } from "utils/CookieUtils";
 
 const QuizPage = () => {
-  let savedAnswers = JSON.parse(localStorage.getItem("savedAnswers")) ?? {};
+  const isStudent = isStudentUserType();
   const { quizId } = useParams();
   const [quizObject, quizObjectSet] = useState();
+  let savedQuizResponse = useMemo(() => {
+    return JSON.parse(localStorage.getItem("savedQuizResponse")) ?? {};
+  }, []);
+  const [canEdit, setCanEdit] = useState(true);
+  const [canSubmit, setCanSubmit] = useState(true);
+  const navigate = useNavigate();
 
-  // console.log("Fetched saved aswers from LocalStorage:", savedAnswers);
+  const locallyStoreQuizResponse = useCallback(
+    (questionResponses) => {
+      questionResponses.forEach((questionResponse) => {
+        savedQuizResponse[questionResponse.question] =
+          questionResponse.response;
+      });
+      localStorage.setItem(
+        "savedQuizResponse",
+        JSON.stringify(savedQuizResponse)
+      );
+    },
+    [savedQuizResponse]
+  );
 
-  QuizMock.questions.forEach((questionObj) => {
-    savedAnswers[questionObj.qid] = savedAnswers[questionObj.qid] ?? [];
-  });
+  const updateLocallyStoredQuestionResponse = (
+    questionId,
+    updatedQuestionResponse
+  ) => {
+    savedQuizResponse[questionId] = updatedQuestionResponse;
+    localStorage.setItem(
+      "savedQuizResponse",
+      JSON.stringify(savedQuizResponse)
+    );
+  };
 
-  function autoSaveAnswers() {
-    savedAnswers = {};
-    const formData = new FormData(document.querySelector("form"));
-    formData.forEach((value, key) => {
-      if (!savedAnswers[key]) savedAnswers[key] = [];
-      savedAnswers[key].push(value);
+  const editQuizResponseInDb = () => {
+    const editedQuestionResponses = [];
+    Object.keys(savedQuizResponse).forEach((questionId) => {
+      editedQuestionResponses.push({
+        question: questionId,
+        response: savedQuizResponse[questionId],
+      });
     });
-    localStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
-  }
+
+    setCanEdit(false);
+    setCanSubmit(false);
+    editQuizResponse(quizId, editedQuestionResponses)
+      .then((payload) => {
+        if (payload?.questionResponses) {
+          console.log("Edited quiz response");
+          setCanEdit(true);
+          setCanSubmit(true);
+          locallyStoreQuizResponse(payload.questionResponses);
+        }
+      })
+      .catch((error) => {
+        console.error("Frontend error editting quiz response:", error);
+      });
+  };
+
+  const submitQuizResponseInDb = () => {
+    setCanEdit(false);
+    setCanSubmit(false);
+
+    const editedQuestionResponses = [];
+    Object.keys(savedQuizResponse).forEach((questionId) => {
+      editedQuestionResponses.push({
+        question: questionId,
+        response: savedQuizResponse[questionId],
+      });
+    });
+    editQuizResponse(quizId, editedQuestionResponses)
+      .then((payload) => {
+        if (payload?.questionResponses) {
+          console.log("Edited quiz response before submitting");
+          locallyStoreQuizResponse(payload.questionResponses);
+
+          submitQuizResponse(quizId)
+            .then((resultSuccess) => {
+              if (resultSuccess) {
+                console.log("Submitted quiz response");
+                setCanEdit(true);
+                setCanSubmit(true);
+                navigate("/quiz-info/" + quizId);
+              }
+            })
+            .catch((error) => {
+              console.error("Frontend error submitting quiz response:", error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error("Frontend error editting quiz response:", error);
+      });
+  };
 
   useEffect(() => {
-    getQuiz(quizId).then((payload) => {
-      quizObjectSet(payload);
+    getQuiz(quizId).then((quizPayload) => {
+      if (isStudent) {
+        getQuizResponse(quizId).then((result) => {
+          if (
+            !result.success ||
+            !result.payload ||
+            !result.payload.questionResponses
+          ) {
+            console.error(result.message);
+          }
+          if (result.payload.status === "submitted") {
+            navigate("/quiz-info/" + quizId);
+            return;
+          }
+          locallyStoreQuizResponse(result.payload.questionResponses);
+          quizObjectSet(quizPayload);
+        });
+      }
     });
-  }, [quizId, quizObjectSet]);
+
+    return () => {
+      localStorage.removeItem("savedQuizResponse");
+    };
+  }, [isStudent, locallyStoreQuizResponse, navigate, quizId, quizObjectSet]);
 
   return (
     <>
       <NavBar />
       <div className="min-h-screen w-full flex justify-center py-28 sm:py-36 bg-gray-100">
         {quizObject && (
-          <form
-            className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800"
-            onSubmit={(e) => {
-              e.preventDefault();
-              /* TODO: make submit quiz API call */
-            }}
-          >
-            {quizObject.questions.map((questionObj, idx) => {
+          <form className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
+            {quizObject.questions.map((questionObject, idx) => {
               return (
                 <div
                   className="h-fit w-full flex flex-col shadow-sm bg-white rounded-md py-8 md:py-12 px-8 sm:px-12 lg:px-16 border"
@@ -56,10 +152,21 @@ const QuizPage = () => {
                   <div className="border-b h-0 mb-6"></div>
                   <div className="">
                     <QuestionWrapper
-                      questionType={questionObj.type}
-                      questionObject={questionObj.question}
-                      savedAnswer={savedAnswers[idx]}
-                      autoSaveAnswers={autoSaveAnswers}
+                      questionType={questionObject.type}
+                      question={questionObject.question}
+                      savedQuestionResponse={
+                        savedQuizResponse[questionObject.question._id]
+                      }
+                      updateQuestionResponse={(
+                        questionId,
+                        updatedQuestionResponse
+                      ) => {
+                        updateLocallyStoredQuestionResponse(
+                          questionId,
+                          updatedQuestionResponse
+                        );
+                        editQuizResponseInDb();
+                      }}
                     />
                   </div>
                 </div>
@@ -67,7 +174,21 @@ const QuizPage = () => {
             })}
             <button
               className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
-              onClick={() => console.log(JSON.stringify(savedAnswers))}
+              type="button"
+              style={{
+                pointerEvents: canEdit ? "auto" : "none",
+              }}
+              onClick={editQuizResponseInDb}
+            >
+              Save
+            </button>
+            <button
+              type="submit"
+              className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
+              style={{
+                pointerEvents: canSubmit ? "auto" : "none",
+              }}
+              onClick={submitQuizResponseInDb}
             >
               Submit
             </button>

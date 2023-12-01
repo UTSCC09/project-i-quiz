@@ -19,7 +19,7 @@ const checkId = (id) => {
 const protect = asyncHandler(async (req, res, next) => {
   let cookies = parse(req.headers.cookie || "");
 
-  if (!req.session || !cookies || req.session.email !== cookies.user) {
+  if (!req?.session?.email || !cookies || req.session.email !== cookies.user) {
     return res.status(401).json(formatMessage(false, "Not authorized"));
   }
 

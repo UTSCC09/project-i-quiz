@@ -10,8 +10,14 @@ export default function CheckBoxGroup(props) {
   const [optionDict, setOptionDict] = useState(optionDictInit);
 
   function onOptionChange(oid) {
-    setOptionDict((prevDict) => ({ ...prevDict, [oid]: !prevDict[oid] }));
-    props.autoSaveAnswers();
+    setOptionDict((prevDict) => {
+      const updatedDict = { ...prevDict, [oid]: !prevDict[oid] };
+      const selectedOptions = Object.keys(updatedDict).filter(
+        (key) => updatedDict[key]
+      );
+      props.updateQuestionResponse(props.checkBoxGroupName, selectedOptions);
+      return updatedDict;
+    });
   }
 
   return (

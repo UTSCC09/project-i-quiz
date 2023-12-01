@@ -5,7 +5,7 @@ import Toast from "components/elements/Toast";
 import JSONImportModal from "components/page_components/JSONImportModal";
 import NavBar from "components/page_components/NavBar";
 import QuizReleaseModal from "components/page_components/QuizReleaseModal";
-import QuestionEditor from "components/quiz_editor/QuestionEditor";
+import QuestionEditor from "components/question_editor_components/QuestionEditor";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
