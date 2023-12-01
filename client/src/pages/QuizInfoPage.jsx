@@ -18,7 +18,7 @@ const QuizInfoPage = () => {
 
     const questionResponses = quizObject.questions.map((question) => {
       return {
-        question: question.question._id,
+        question: question._id,
         response: [""],
       };
     });
