@@ -100,10 +100,9 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
               {responseStatus === "submitted" && (
                 <Badge iconId="submitted" accentColor={colors.green[600]} />
               )}
-              {responseStatus === "writing" ||
-                (quizState === "pending" && (
-                  <Badge iconId="writing" accentColor={colors.gray[500]} />
-                ))}
+              {(responseStatus === "writing" || quizState === "pending") && (
+                <Badge iconId="writing" accentColor={colors.gray[500]} />
+              )}
             </div>
             {quizAvailabilityPrompt && (
               <div className="text-gray-500 text-xs font-normal mt-1">

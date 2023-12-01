@@ -15,6 +15,7 @@ import {
   updateQuiz,
   releaseQuiz,
   getDraftQuizzesForInstructedCourses,
+  getMyQuizzes,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -30,6 +31,9 @@ router.route("/update")
 router.route("/question")
   .post(protect, addQuizQuestions)
   .patch(protect, updateQuizQuestion);
+
+router.route("/:status")
+  .get(protect, getMyQuizzes);
 
 router.route("/draft/instructor")
   .get(protect, getDraftQuizzesForInstructedCourses);
@@ -58,7 +62,7 @@ router.route("/:quizId/questions")
 router.route("/course/instructed/:courseId")
   .get(protect, getQuizzesForInstructedCourse);
 
-  router.route("/course/enrolled/:courseId")
+router.route("/course/enrolled/:courseId")
   .get(protect, getQuizzesForEnrolledCourse);
 
 export default router;

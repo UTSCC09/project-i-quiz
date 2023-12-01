@@ -1200,6 +1200,115 @@ const getDraftQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
     );
 });
 
+//@route  GET api/quizzes/:status
+//@desc   Allow users to get draft, active, or upcoming quizzes for their enrolled or instructed courses
+//@access Private
+const getMyQuizzes = asyncHandler(async (req, res) => {
+  const { status } = req.params;
+
+  if (status !== "draft" && status !== "active" && status !== "upcoming") {
+    return res.status(400).json(formatMessage(false, "Invalid parameter"));
+  }
+
+  //Check if valid user
+  let user;
+  try {
+    user = await User.findOne({ email: req.session.email });
+    if (!user) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  let formattedQuizzes = [];
+
+  //Get quizzes for every course
+  for (let j = 0; j < user.courses.length; j++) {
+    const accentColor = user.courses[j].accentColor;
+    let course;
+    try {
+      course = await Course.findById(user.courses[j].courseId);
+      if (!course) {
+        return res
+          .status(400)
+          .json(formatMessage(false, "Invalid course id in quiz"));
+      }
+    } catch (error) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Mongoose error finding quiz course"));
+    }
+
+    for (let i = 0; i < course.quizzes.length; i++) {
+      try {
+        const quiz = await Quiz.findById(course.quizzes[i]);
+        if (!quiz) {
+          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+        }
+        const currentDateTime = new Date();
+        let flag;
+        switch (status) {
+          case "draft":
+            flag = quiz.isDraft && user.type === "instructor";
+            break;
+          case "active":
+            flag =
+              !quiz.isDraft &&
+              currentDateTime >= quiz.startTime &&
+              currentDateTime <= quiz.endTime;
+            break;
+          case "upcoming":
+            flag = !quiz.isDraft && currentDateTime < quiz.startTime;
+            break;
+          default:
+            break;
+        }
+
+        if (flag) {
+          let quizResponse;
+          if (user.type === "student") {
+            quizResponse = await QuizResponse.findOne({
+              quiz: quiz._id,
+              student: user._id,
+            });
+            console.log(quizResponse);
+          }
+          formattedQuizzes.push({
+            quizId: quiz._id,
+            quizName: quiz.quizName,
+            courseCode: course.courseCode,
+            courseId: course._id,
+            accentColor: accentColor,
+            startTime: quiz.startTime,
+            endTime: quiz.endTime,
+            isDraft: quiz.isDraft,
+            responseStatus: quizResponse ? quizResponse.status : undefined,
+          });
+        }
+      } catch (error) {
+        return res
+          .status(400)
+          .json(
+            formatMessage(false, "Mongoose error finding quizzes for course")
+          );
+      }
+    }
+  }
+
+  return res
+    .status(200)
+    .json(
+      formatMessage(
+        true,
+        `${status} quizzes fetched for the user`,
+        formattedQuizzes
+      )
+    );
+});
+
 //@route  GET api/quizzes/active/instructor
 //@desc   Allow instructors to get all active quizzes for courses they instruct
 //@access Private
@@ -1471,6 +1580,7 @@ export {
   updateQuizQuestion,
   addQuizQuestions,
   getQuizObject,
+  getMyQuizzes,
   getDraftQuizzesForInstructedCourses,
   getUpcomingQuizzesForEnrolledCourses,
   getUpcomingQuizzesForInstructedCourses,

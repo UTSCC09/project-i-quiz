@@ -91,20 +91,14 @@ export default function DashboardPage() {
     });
 
     if (!isStudent) {
-      getQuizzesForDashboard("draft", "instructor").then((fetchedPayload) => {
+      getQuizzesForDashboard("draft").then((fetchedPayload) => {
         console.log(fetchedPayload);
       });
     }
-    getQuizzesForDashboard(
-      "upcoming",
-      isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
+    getQuizzesForDashboard("upcoming").then((fetchedPayload) => {
       upcomingQuizListSet(fetchedPayload ?? []);
     });
-    getQuizzesForDashboard(
-      "active",
-      isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
+    getQuizzesForDashboard("active").then((fetchedPayload) => {
       activeQuizListSet(fetchedPayload ?? []);
     });
   }
@@ -112,19 +106,15 @@ export default function DashboardPage() {
   useEffect(() => {
     setSelectedTab(selectedTab);
     if (!isStudent) {
-      getQuizzesForDashboard("draft", "instructor").then((fetchedPayload) => {
+      getQuizzesForDashboard("draft").then((fetchedPayload) => {
         draftQuizListSet(fetchedPayload ?? []);
       });
+    } else {
+      draftQuizListSet([]);
     }
-    getQuizzesForDashboard(
-      "upcoming",
-      isStudent ? "student" : "instructor"
-    ).then((fetchedPayload) => {
+    getQuizzesForDashboard("upcoming").then((fetchedPayload) => {
       upcomingQuizListSet(fetchedPayload ?? []);
-      getQuizzesForDashboard(
-        "active",
-        isStudent ? "student" : "instructor"
-      ).then((fetchedPayload) => {
+      getQuizzesForDashboard("active").then((fetchedPayload) => {
         activeQuizListSet(fetchedPayload ?? []);
         fetchCourses().then((fetchedPayload) => {
           if (fetchedPayload) {

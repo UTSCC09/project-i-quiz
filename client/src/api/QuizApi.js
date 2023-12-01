@@ -70,8 +70,8 @@ const getQuiz = async (quizId) => {
     });
 };
 
-const getQuizzesForDashboard = async (quizStatus, userType) => {
-  return fetch(`/api/quizzes/${quizStatus}/${userType}`, {
+const getQuizzesForDashboard = async (quizStatus) => {
+  return fetch(`/api/quizzes/${quizStatus}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
