@@ -7,8 +7,7 @@ import CLO from "../models/CLO.js";
 import OEQ from "../models/OEQ.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
-import { isValidObjectId, ObjectId } from "mongoose";
-import { getMyResponseForQuiz } from "./quizResponseController.js";
+import { isValidObjectId } from "mongoose";
 import QuizResponse from "../models/QuizResponse.js";
 
 //@route  POST api/quizzes
