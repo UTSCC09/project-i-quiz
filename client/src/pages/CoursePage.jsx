@@ -42,23 +42,23 @@ export default function CoursePage() {
 
   const isStudent = isStudentUserType();
 
-  const getFilteredQuizzes = (filter) => {
-    if (!quizList) {
+  const getFilteredQuizzes = (filter, list) => {
+    if (!list) {
       return [];
     }
     const currentDateTime = new Date();
     switch (filter) {
       case "New Quizzes":
-        return quizList.filter((quiz) => {
+        return list.filter((quiz) => {
           const endTime = new Date(quiz.endTime);
           return !quiz.isDraft && currentDateTime <= endTime;
         });
       case "All Quizzes":
-        return quizList.filter((quiz) => {
+        return list.filter((quiz) => {
           return !quiz.isDraft;
         });
       case "Past Quizzes":
-        return quizList.filter((quiz) => {
+        return list.filter((quiz) => {
           const endTime = new Date(quiz.endTime);
           return !quiz.isDraft && currentDateTime > endTime;
         });
@@ -95,7 +95,7 @@ export default function CoursePage() {
 
   function onSelectionChange(selection) {
     setSelection(selection);
-    filteredQuizListSet(getFilteredQuizzes(selection));
+    filteredQuizListSet(getFilteredQuizzes(selection, quizList));
   }
 
   const variants = {
@@ -169,10 +169,16 @@ export default function CoursePage() {
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
+          filteredQuizListSet(
+            getFilteredQuizzes("New Quizzes", resultPayload)
+          );
         });
       } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
+          filteredQuizListSet(
+            getFilteredQuizzes("New Quizzes", resultPayload)
+          );
           draftQuizListSet(resultPayload.filter((quiz) => quiz.isDraft));
         });
       }
