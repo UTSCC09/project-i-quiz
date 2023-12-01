@@ -21,6 +21,29 @@ const createQuiz = async (quizData) => {
     });
 };
 
+const updateQuiz = async (quizData) => {
+  return fetch("/api/quizzes/update", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify(quizData),
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 const getQuiz = async (quizId) => {
   return fetch(`/api/quizzes/${quizId}/questions`, {
     method: "GET",
@@ -196,6 +219,7 @@ const addQuizQuestions = async (quizQuestionsData) => {
 
 export {
   createQuiz,
+  updateQuiz,
   getQuiz,
   getQuizzesForDashboard,
   getQuizzesForInstructedCourse,

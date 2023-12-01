@@ -133,7 +133,7 @@ function OptionInput({
           toggleAnswerIdList(option.id);
         }}
       >
-        <CheckIcon className="h-4" />
+        <CheckIcon className="h-4 stroke-[1.5]" />
       </div>
       <div
         title="Remove option"

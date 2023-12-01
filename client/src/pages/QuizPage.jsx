@@ -153,9 +153,9 @@ const QuizPage = () => {
                   <div className="">
                     <QuestionWrapper
                       questionType={questionObject.type}
-                      question={questionObject.question}
+                      question={questionObject}
                       savedQuestionResponse={
-                        savedQuizResponse[questionObject.question._id]
+                        savedQuizResponse[questionObject._id]
                       }
                       updateQuestionResponse={(
                         questionId,

@@ -7,7 +7,7 @@ import CLO from "../models/CLO.js";
 import OEQ from "../models/OEQ.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
-import { getMyResponseForQuiz } from "./quizResponseController.js";
+import { isValidObjectId } from "mongoose";
 import QuizResponse from "../models/QuizResponse.js";
 
 //@route  POST api/quizzes
@@ -86,7 +86,7 @@ const createQuiz = asyncHandler(async (req, res) => {
     try {
       switch (questions[i].type) {
         case "MCQ":
-          const validMCQChoices = questions[i].question.choices.every(
+          const validMCQChoices = questions[i].choices.every(
             (choice) => choice.id && choice.content
           );
           if (!validMCQChoices) {
@@ -94,10 +94,10 @@ const createQuiz = asyncHandler(async (req, res) => {
               .status(400)
               .json(formatMessage(false, "Invalid choices in MCQ question"));
           }
-          createdQuestion = await MCQ.create(questions[i].question);
+          createdQuestion = await MCQ.create(questions[i]);
           break;
         case "MSQ":
-          const validMSQChoices = questions[i].question.choices.every(
+          const validMSQChoices = questions[i].choices.every(
             (choice) => choice.id && choice.content
           );
           if (!validMSQChoices) {
@@ -105,13 +105,13 @@ const createQuiz = asyncHandler(async (req, res) => {
               .status(400)
               .json(formatMessage(false, "Invalid choices in MSQ question"));
           }
-          createdQuestion = await MSQ.create(questions[i].question);
+          createdQuestion = await MSQ.create(questions[i]);
           break;
         case "CLO":
-          createdQuestion = await CLO.create(questions[i].question);
+          createdQuestion = await CLO.create(questions[i]);
           break;
         case "OEQ":
-          createdQuestion = await OEQ.create(questions[i].question);
+          createdQuestion = await OEQ.create(questions[i]);
           break;
         default:
           return res
@@ -158,6 +158,80 @@ const createQuiz = asyncHandler(async (req, res) => {
   } else {
     return res.status(400).json(formatMessage(false, "Quiz creation failed"));
   }
+});
+
+//@route  POST api/quizzes/update
+//@desc   Allow instructor to update a quiz
+//@access Private
+const updateQuiz = asyncHandler(async (req, res) => {
+  const { quizId, quizName, course, questions } = req.body;
+
+  //Verify all fields exist
+  if (!quizName || !course || !questions) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Check if valid user
+  try {
+    const instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  //Verify valid course
+  let courseToAddTo;
+  try {
+    courseToAddTo = await Course.findById(course);
+    if (!courseToAddTo) {
+      return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding course"));
+  }
+
+  // verify quiz id
+  const existingQuiz = await Quiz.findById(quizId);
+  if (!existingQuiz) {
+    return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+  }
+
+  const quizQuestions = await Promise.all(
+    questions.map(async (question) => {
+      if (question._id && isValidObjectId(question._id)) {
+        const existingQuestion = await Promise.all([
+          MCQ.findById(question._id),
+          MSQ.findById(question._id),
+          OEQ.findById(question._id),
+          CLO.findById(question._id),
+        ]);
+        if (existingQuestion) {
+          await editQuestion(question, res);
+          return { question: question._id, type: question.type };
+        }
+      } else {
+        const createdQuestion = await createQuestion(question, res);
+        return { question: createdQuestion._id, type: question.type };
+      }
+    })
+  );
+
+  existingQuiz.quizName = quizName;
+  existingQuiz.course = course;
+  existingQuiz.questions = quizQuestions;
+
+  await existingQuiz.save();
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  GET api/quizzes/:quizId
@@ -503,7 +577,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
 
   //Verify valid question
   if (action === "edit") {
-    if (!question._id || !question.type || !question.question) {
+    if (!question._id || !question.type) {
       return res
         .status(400)
         .json(formatMessage(false, "Missing fields in question"));
@@ -553,7 +627,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
   //Check if question exists in quiz
   const questionIndex = quiz.questions.findIndex(
     (currQuestion) =>
-      currQuestion.question.toString() === question._id &&
+      currQuestion.toString() === question._id &&
       currQuestion.type === question.type
   );
   if (questionIndex === -1) {
@@ -598,7 +672,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
     try {
       switch (question.type) {
         case "MCQ":
-          const validMCQChoices = question.question.choices.every(
+          const validMCQChoices = question.choices.every(
             (choice) => choice.id && choice.content
           );
           if (!validMCQChoices) {
@@ -606,10 +680,10 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
               .status(400)
               .json(formatMessage(false, "Invalid choices in MCQ question"));
           }
-          await MCQ.findByIdAndUpdate(question._id, question.question);
+          await MCQ.findByIdAndUpdate(question._id, question);
           break;
         case "MSQ":
-          const validMSQChoices = question.question.choices.every(
+          const validMSQChoices = question.choices.every(
             (choice) => choice.id && choice.content
           );
           if (!validMSQChoices) {
@@ -617,13 +691,13 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
               .status(400)
               .json(formatMessage(false, "Invalid choices in MSQ question"));
           }
-          await MSQ.findByIdAndUpdate(question._id, question.question);
+          await MSQ.findByIdAndUpdate(question._id, question);
           break;
         case "CLO":
-          await CLO.findByIdAndUpdate(question._id, question.question);
+          await CLO.findByIdAndUpdate(question._id, question);
           break;
         case "OEQ":
-          await OEQ.findByIdAndUpdate(question._id, question.question);
+          await OEQ.findByIdAndUpdate(question._id, question);
           break;
         default:
           return res
@@ -704,7 +778,7 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
     try {
       switch (questions[i].type) {
         case "MCQ":
-          const validMCQChoices = questions[i].question.choices.every(
+          const validMCQChoices = questions[i].choices.every(
             (choice) => choice.id && choice.content
           );
           if (!validMCQChoices) {
@@ -712,10 +786,10 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
               .status(400)
               .json(formatMessage(false, "Invalid choices in MCQ question"));
           }
-          createdQuestion = await MCQ.create(questions[i].question);
+          createdQuestion = await MCQ.create(questions[i]);
           break;
         case "MSQ":
-          const validMSQChoices = questions[i].question.choices.every(
+          const validMSQChoices = questions[i].choices.every(
             (choice) => choice.id && choice.content
           );
           if (!validMSQChoices) {
@@ -723,13 +797,13 @@ const addQuizQuestions = asyncHandler(async (req, res) => {
               .status(400)
               .json(formatMessage(false, "Invalid choices in MSQ question"));
           }
-          createdQuestion = await MSQ.create(questions[i].question);
+          createdQuestion = await MSQ.create(questions[i]);
           break;
         case "CLO":
-          createdQuestion = await CLO.create(questions[i].question);
+          createdQuestion = await CLO.create(questions[i]);
           break;
         case "OEQ":
-          createdQuestion = await OEQ.create(questions[i].question);
+          createdQuestion = await OEQ.create(questions[i]);
           break;
         default:
           return res
@@ -808,8 +882,8 @@ const getQuizObject = asyncHandler(async (req, res) => {
           .json(formatMessage(false, "Invalid question id"));
       }
       formattedQuesions.push({
+        ...question.toObject(),
         type: quiz.questions[i].type,
-        question: question,
       });
     } catch (error) {
       return res
@@ -836,6 +910,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
     formatMessage(true, "Quiz found", {
       quizName: quiz.quizName,
       courseCode: course.courseCode,
+      courseId: course._id,
       startTime: quiz.startTime,
       endTime: quiz.endTime,
       questions: formattedQuesions,
@@ -895,6 +970,7 @@ const getUpcomingQuizzesForInstructedCourses = asyncHandler(
               quizId: quiz._id,
               quizName: quiz.quizName,
               courseCode: course.courseCode,
+              courseId: course._id,
               accentColor: accentColor,
               startTime: quiz.startTime,
               endTime: quiz.endTime,
@@ -965,6 +1041,7 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
             quizId: quiz._id,
             quizName: quiz.quizName,
             courseCode: course.courseCode,
+            courseId: course._id,
             accentColor: accentColor,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
@@ -1037,6 +1114,7 @@ const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
             quizId: quiz._id,
             quizName: quiz.quizName,
             courseCode: course.courseCode,
+            courseId: course._id,
             accentColor: accentColor,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
@@ -1113,6 +1191,7 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
             quizId: quiz._id,
             quizName: quiz.quizName,
             courseCode: course.courseCode,
+            courseId: course._id,
             accentColor: accentColor,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
@@ -1134,8 +1213,100 @@ const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
     .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
 });
 
+/* --- helper functions --- */
+
+/* Edit a question in the database */
+async function editQuestion(question, res) {
+  try {
+    switch (question.type) {
+      case "MCQ":
+        const validMCQChoices = question.choices.every(
+          (choice) => choice.id && choice.content
+        );
+        if (!validMCQChoices) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "Invalid choices in MCQ question"));
+        }
+        await MCQ.findByIdAndUpdate(question._id, question);
+        break;
+      case "MSQ":
+        const validMSQChoices = question.choices.every(
+          (choice) => choice.id && choice.content
+        );
+        if (!validMSQChoices) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "Invalid choices in MSQ question"));
+        }
+        await MSQ.findByIdAndUpdate(question._id, question);
+        break;
+      case "CLO":
+        await CLO.findByIdAndUpdate(question._id, question);
+        break;
+      case "OEQ":
+        await OEQ.findByIdAndUpdate(question._id, question);
+        break;
+      default:
+        return res
+          .status(400)
+          .json(formatMessage(false, "Invalid question type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, error.message));
+  }
+}
+
+/* Create a question object in the database and return */
+async function createQuestion(question, res) {
+  if (question._id && !isValidObjectId(question._id)) {
+    delete question._id;
+  }
+  let createdQuestion;
+  try {
+    switch (question.type) {
+      case "MCQ":
+        const validMCQChoices = question.choices.every(
+          (choice) => choice.id && choice.content
+        );
+        if (!validMCQChoices) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "Invalid choices in MCQ question"));
+        }
+        createdQuestion = await MCQ.create(question);
+        break;
+      case "MSQ":
+        const validMSQChoices = question.choices.every(
+          (choice) => choice.id && choice.content
+        );
+        if (!validMSQChoices) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "Invalid choices in MSQ question"));
+        }
+        createdQuestion = await MSQ.create(question);
+        break;
+      case "CLO":
+        createdQuestion = await CLO.create(question);
+        break;
+      case "OEQ":
+        createdQuestion = await OEQ.create(question);
+        break;
+      default:
+        return res
+          .status(400)
+          .json(formatMessage(false, "Invalid question type"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, error.message));
+  }
+  return createdQuestion;
+}
+
 export {
   createQuiz,
+  updateQuiz,
   getQuiz,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,

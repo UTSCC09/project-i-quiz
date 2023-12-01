@@ -11,6 +11,7 @@ import CoursePage from "pages/CoursePage";
 import ProtectedRoute from "components/ProtectedRoute";
 import QuizEditorPage from "pages/QuizEditorPage";
 import PasswordResetPage from "pages/PasswordResetPage";
+import QuizRedirect from "pages/QuizRedirect";
 
 const App = () => {
   return (
@@ -37,7 +38,7 @@ const App = () => {
         path="/quiz/:quizId"
         element={
           <ProtectedRoute>
-            <QuizPage />
+            <QuizRedirect />
           </ProtectedRoute>
         }
       />
