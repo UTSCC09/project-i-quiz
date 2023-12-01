@@ -290,12 +290,17 @@ const updateQuiz = asyncHandler(async (req, res) => {
           OEQ.findById(question._id),
           CLO.findById(question._id),
         ]);
-        if (existingQuestion) {
+        if (existingQuestion.filter((q) => q).length === 1) {
           await editQuestion(question, res);
           return { question: question._id, type: question.type };
         }
+      }
+      const createdQuestion = await createQuestion(question, res);
+      if (!createdQuestion) {
+        return res
+          .status(400)
+          .json(formatMessage(false, "Question creation failed"));
       } else {
-        const createdQuestion = await createQuestion(question, res);
         return { question: createdQuestion._id, type: question.type };
       }
     })
