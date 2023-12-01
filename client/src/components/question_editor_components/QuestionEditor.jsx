@@ -58,11 +58,7 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
           }}
         />
         <div className="w-28 hover:bg-gray-50">
-          <SingleLineInput
-            label="Max score"
-            name="maxScore"
-            defaultValue={1}
-          />
+          <SingleLineInput label="Max score" name="maxScore" />
         </div>
       </div>
       {questionType === "OEQ" ? (

@@ -89,7 +89,7 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
             initial={"hide"}
             exit={"hide"}
           >
-            <div className="relative mt-12 sm:mt-0 h-screen sm:h-fit w-full sm:w-fit bg-white sm:rounded-lg sm:shadow-lg flex flex-col items-center">
+            <div className="relative mt-12 sm:mt-0 h-screen max-h-screen sm:h-fit w-full sm:w-fit bg-white sm:rounded-lg sm:shadow-lg flex flex-col items-center">
               <div className="w-full flex justify-end">
                 <button
                   className="m-4 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
@@ -102,7 +102,7 @@ export default function Modal({ modalShow, modalShowSet, onClose, content }) {
                   <XMarkIcon className="h-6" />
                 </button>
               </div>
-              <div className="overflow-y-auto w-full sm:w-auto px-12 sm:px-24 mb-16">
+              <div className="overflow-y-auto w-full sm:w-auto px-12 sm:px-24 pb-16">
                 {content}
               </div>
             </div>
