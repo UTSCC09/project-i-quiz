@@ -8,13 +8,8 @@ import {
   updateQuizQuestion,
   addQuizQuestions,
   getQuizObject,
-  getUpcomingQuizzesForEnrolledCourses,
-  getUpcomingQuizzesForInstructedCourses,
-  getActiveQuizzesForEnrolledCourses,
-  getActiveQuizzesForInstructedCourses,
   updateQuiz,
   releaseQuiz,
-  getDraftQuizzesForInstructedCourses,
   getMyQuizzes,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
@@ -34,21 +29,6 @@ router.route("/question")
 
 router.route("/:status")
   .get(protect, getMyQuizzes);
-
-router.route("/draft/instructor")
-  .get(protect, getDraftQuizzesForInstructedCourses);
-
-router.route("/upcoming/student")
-  .get(protect, getUpcomingQuizzesForEnrolledCourses);
-
-router.route("/upcoming/instructor")
-  .get(protect, getUpcomingQuizzesForInstructedCourses);
-
-router.route("/active/student")
-  .get(protect, getActiveQuizzesForEnrolledCourses);
-
-router.route("/active/instructor")
-  .get(protect, getActiveQuizzesForInstructedCourses);
 
 router.route("/:quizId")
   .get(protect, getQuiz)
