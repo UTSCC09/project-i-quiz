@@ -34,7 +34,7 @@ router.route("/:quizId")
   .get(protect, getQuiz)
 
 router.route("/:quizId/release")
-  .patch(protect, releaseQuiz);
+  .post(protect, releaseQuiz);
 
 router.route("/:quizId/questions")
   .get(protect, getQuizObject)
