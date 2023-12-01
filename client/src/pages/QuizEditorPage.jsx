@@ -226,11 +226,11 @@ export default function QuizEditorPage() {
       <div className="min-h-screen w-full bg-gray-100 -z-50 flex flex-col items-center">
         <div className="px-8 md:px-24 w-full lg:w-[64rem] py-36 flex flex-col gap-6">
           <div
-            className="bg-white border-l-[12px] h-28 rounded-md shadow-sm"
+            className="bg-white border-l-[12px] h-fit rounded-md shadow-sm"
             style={{ borderLeftColor: courseObject.accentColor }}
           >
-            <div className="relative border-l-0 h-full w-full border pl-5 sm:pl-9 lg:pl-[52px] pr-8 sm:pr-12 lg:pr-16 flex items-center rounded-r-md">
-              <div className="flex flex-col w-full items-end md:flex-row md:justify-between gap-8">
+            <div className="relative border-l-0 h-full w-full py-4 sm:py-8 border pl-5 sm:pl-9 lg:pl-[52px] pr-8 sm:pr-12 lg:pr-16 flex items-center rounded-r-md">
+              <div className="flex flex-col w-full items-end md:flex-row md:justify-between gap-4 sm:gap-8">
                 <div className="border-b focus-within:border-b-blue-600 transition w-full">
                   <input
                     placeholder="Quiz Title"
