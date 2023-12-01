@@ -299,13 +299,6 @@ export default function CoursePage() {
                 sectionName="Released Quizzes"
                 content={
                   <div>
-                    {getFilteredQuizzes(selection).length === 0 && (
-                      <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                        {selection === "All Quizzes"
-                          ? `No released quizzes`
-                          : `No ${selection.toLowerCase()} available`}
-                      </div>
-                    )}
                     <AnimatePresence initial={false}>
                       <motion.div
                         key={getFilteredQuizzes(selection)}
@@ -314,11 +307,19 @@ export default function CoursePage() {
                         initial={"hide"}
                         exit={"hide"}
                       >
-                        <QuizList
-                          accentColor={courseObject.accentColor}
-                          quizArr={getFilteredQuizzes(selection)}
-                          courseCode={courseObject.courseCode}
-                        />
+                        {getFilteredQuizzes(selection).length === 0 ? (
+                          <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                            {selection === "All Quizzes"
+                              ? `No released quizzes`
+                              : `No ${selection.toLowerCase()} available`}
+                          </div>
+                        ) : (
+                          <QuizList
+                            accentColor={courseObject.accentColor}
+                            quizArr={getFilteredQuizzes(selection)}
+                            courseCode={courseObject.courseCode}
+                          />
+                        )}
                       </motion.div>
                     </AnimatePresence>
                   </div>
