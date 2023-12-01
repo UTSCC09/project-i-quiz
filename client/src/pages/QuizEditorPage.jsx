@@ -263,28 +263,31 @@ export default function QuizEditorPage() {
                   updateQuestion={updateQuestion}
                 />
                 <div className="absolute flex gap-8 right-6 top-6">
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      title="Move up"
-                      className="h-8 w-8 flex items-center justify-center text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all rotate-180"
-                      onClick={() => {
-                        moveQuestion(question, idx, true);
-                      }}
-                    >
-                      <ChevronIcon className="h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      title="Move down"
-                      className="h-8 w-8 flex items-center justify-center text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
-                      onClick={() => {
-                        moveQuestion(question, idx, false);
-                      }}
-                    >
-                      <ChevronIcon className="h-4" />
-                    </button>
-                  </div>
+                  {/* Move up & down buttons */}
+                  {questionList.length > 1 && (
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        title="Move up"
+                        className="h-8 w-8 flex items-center justify-center text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all rotate-180"
+                        onClick={() => {
+                          moveQuestion(question, idx, true);
+                        }}
+                      >
+                        <ChevronIcon className="h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Move down"
+                        className="h-8 w-8 flex items-center justify-center text-gray-400 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
+                        onClick={() => {
+                          moveQuestion(question, idx, false);
+                        }}
+                      >
+                        <ChevronIcon className="h-4" />
+                      </button>
+                    </div>
+                  )}
                   <button
                     type="button"
                     title="Remove question"
