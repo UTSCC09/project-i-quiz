@@ -14,8 +14,8 @@ import QuizResponse from "../models/QuizResponse.js";
 //@desc   Allow instructor to create a quiz
 //@access Private
 const createQuiz = asyncHandler(async (req, res) => {
-  const { quizName, startTime, endTime, course, questions } = req.body;
-
+  const { quizName, startTime, endTime, isDraft, course, questions } =
+    req.body;
   //Check if valid user
   try {
     const instructor = await User.findOne({ email: req.session.email });
@@ -31,7 +31,13 @@ const createQuiz = asyncHandler(async (req, res) => {
   }
 
   //Verify all fields exist
-  if (!quizName || !startTime || !endTime || !course || !questions) {
+  if (
+    !quizName ||
+    !isDraft ||
+    ((!startTime || !endTime) && !isDraft) ||
+    !course ||
+    !questions
+  ) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -48,19 +54,22 @@ const createQuiz = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Mongoose error finding course"));
   }
 
-  //Convert startTime and endTime to Date objects
-  const startTimeConverted = new Date(startTime);
-  const endTimeConverted = new Date(endTime);
+  let startTimeConverted, endTimeConverted;
+  if (!isDraft) {
+    //Convert startTime and endTime to Date objects
+    startTimeConverted = new Date(startTime);
+    endTimeConverted = new Date(endTime);
 
-  //Verify startTime and endTime are valid dates and startTime is before endTime
-  if (
-    isNaN(startTimeConverted) ||
-    isNaN(endTimeConverted) ||
-    startTime >= endTime
-  ) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Invalid start and/or end time"));
+    //Verify startTime and endTime are valid dates and startTime is before endTime
+    if (
+      isNaN(startTimeConverted) ||
+      isNaN(endTimeConverted) ||
+      startTime >= endTime
+    ) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Invalid start and/or end time"));
+    }
   }
 
   //Check if there is a pre-existing quiz
@@ -144,8 +153,9 @@ const createQuiz = asyncHandler(async (req, res) => {
   //Create quiz
   const quiz = await Quiz.create({
     quizName: quizName,
-    startTime: startTimeConverted,
-    endTime: endTimeConverted,
+    isDraft: isDraft,
+    startTime: startTimeConverted ?? undefined,
+    endTime: endTimeConverted ?? undefined,
     course: course,
     questions: quizQuestions,
   });
@@ -160,10 +170,16 @@ const createQuiz = asyncHandler(async (req, res) => {
   }
 });
 
-//@route  PATCH api/quizzes/:quizId/release
+//@route  POST api/quizzes/:quizId/release
 //@desc   Allow instructor to release a quiz
 //@access Private
 const releaseQuiz = asyncHandler(async (req, res) => {
+  const { startTime, endTime } = req.body;
+  //Verify all fields exist
+  if (!startTime || !endTime) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
   //Check if valid user
   let instructor;
   try {
@@ -185,16 +201,40 @@ const releaseQuiz = asyncHandler(async (req, res) => {
     if (!quiz) {
       return res.status(400).json(formatMessage(false, "Invalid quiz id"));
     }
+    if (!quiz.isDraft) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Quiz has already been released"));
+    }
   } catch (error) {
     return res
       .status(400)
       .json(formatMessage(false, "Mongoose error finding quiz"));
   }
+
+  //Convert startTime and endTime to Date objects
+  const startTimeConverted = new Date(startTime);
+  const endTimeConverted = new Date(endTime);
+
+  //Verify startTime and endTime are valid dates and startTime is before endTime
+  if (
+    isNaN(startTimeConverted) ||
+    isNaN(endTimeConverted) ||
+    startTime >= endTime
+  ) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Invalid start and/or end time"));
+  }
+
   quiz.isDraft = false;
+  quiz.startTime = startTimeConverted;
+  quiz.endTime = endTimeConverted;
+
   await quiz.save();
   return res
     .status(200)
-    .json(formatMessage(true, "Quiz released successfully"));
+    .json(formatMessage(true, "Quiz released successfully", quiz));
 });
 
 //@route  POST api/quizzes/update
