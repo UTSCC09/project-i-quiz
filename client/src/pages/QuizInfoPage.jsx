@@ -6,7 +6,7 @@ import { createQuizReponse, getQuizResponse } from "api/QuizResponseApi";
 import NavBar from "components/page_components/NavBar";
 import { isStudentUserType } from "utils/CookieUtils";
 
-const QuizMiscellaneousPage = () => {
+const QuizInfoPage = () => {
   const isStudent = isStudentUserType();
   const { quizId } = useParams();
   const [quizObject, quizObjectSet] = useState();
@@ -86,4 +86,4 @@ const QuizMiscellaneousPage = () => {
   );
 };
 
-export default QuizMiscellaneousPage;
+export default QuizInfoPage;

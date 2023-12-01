@@ -95,7 +95,7 @@ const QuizPage = () => {
                 console.log("Submitted quiz response");
                 setCanEdit(true);
                 setCanSubmit(true);
-                navigate("/quiz-miscellaneous/" + quizId);
+                navigate("/quiz-info/" + quizId);
               }
             })
             .catch((error) => {
@@ -120,7 +120,7 @@ const QuizPage = () => {
             console.error(result.message);
           }
           if (result.payload.status === "submitted") {
-            navigate("/quiz-miscellaneous/" + quizId);
+            navigate("/quiz-info/" + quizId);
             return;
           }
           locallyStoreQuizResponse(result.payload.questionResponses);
