@@ -303,6 +303,7 @@ export default function CoursePage() {
               )}
               <Accordion
                 sectionName="Released Quizzes"
+                hideHeader={draftQuizList.length === 0}
                 content={
                   <div>
                     <AnimatePresence initial={false}>

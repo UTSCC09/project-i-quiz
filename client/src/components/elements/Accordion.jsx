@@ -23,6 +23,7 @@ const variants = {
 export default function Accordion({
   sectionName,
   content,
+  hideHeader = false,
   collapsed = false,
 }) {
   const [show, setShow] = useState(!collapsed);
@@ -32,6 +33,7 @@ export default function Accordion({
       <div className="flex flex-col">
         <div
           className="flex w-fit items-center gap-2.5 mb-4 cursor-pointer hover:opacity-60 transition-all"
+          style={{ display: hideHeader ? "none" : "flex" }}
           onClick={() => setShow(!show)}
         >
           <input
@@ -47,7 +49,6 @@ export default function Accordion({
           <ChevronIcon className="text-slate-600 peer-checked:opacity-50 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-90" />
         </div>
         <AnimatePresence initial={false}>
-          {" "}
           {show && (
             <motion.div
               variants={variants}
