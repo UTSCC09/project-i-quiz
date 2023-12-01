@@ -26,7 +26,7 @@ export default function QuizInviteModal({
           <AlertBanner ref={alertRef} />
           <div className="flex flex-col gap-3 text-gray-800">
             <span>
-              Are you sure you want to send quiz email invitations for{" "}
+              Are you sure you want to send email invitations for{" "}
               <b>{quizObject.quizName}</b> to all your students enrolled in{" "}
               <b>{quizObject.courseCode}</b>?
             </span>
