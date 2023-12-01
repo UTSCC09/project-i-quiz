@@ -949,6 +949,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
   return res.status(200).json(
     formatMessage(true, "Quiz found", {
       quizName: quiz.quizName,
+      isDraft: quiz.isDraft,
       courseCode: course.courseCode,
       courseId: course._id,
       startTime: quiz.startTime,
