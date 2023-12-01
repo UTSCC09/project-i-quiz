@@ -38,7 +38,6 @@ const releaseQuiz = async (quizId, startTime, endTime) => {
       return response.json();
     })
     .then((result) => {
-      console.log(result);
       return result;
     })
     .catch((err) => {
