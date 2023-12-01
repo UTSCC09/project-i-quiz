@@ -8,7 +8,6 @@ import OEQ from "../models/OEQ.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
 import { isValidObjectId, ObjectId } from "mongoose";
-import formatMessage from "../utils/utils.js";
 import { getMyResponseForQuiz } from "./quizResponseController.js";
 import QuizResponse from "../models/QuizResponse.js";
 
