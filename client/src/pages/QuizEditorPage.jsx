@@ -1,5 +1,5 @@
 import { fetchCourseObject, fetchInstructedCourses } from "api/CourseApi";
-import { createQuiz, getQuiz, updateQuiz } from "api/QuizApi";
+import { createQuiz, deleteDraftQuiz, getQuiz, updateQuiz } from "api/QuizApi";
 import DropdownSelection from "components/elements/DropdownSelection";
 import { ChevronIcon, XMarkIcon } from "components/elements/SVGIcons";
 import Toast from "components/elements/Toast";
@@ -13,7 +13,6 @@ import { useParams } from "react-router-dom";
 import ObjectID from "bson-objectid";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
-import colors from "tailwindcss/colors";
 
 export default function QuizEditorPage() {
   const location = useLocation();
@@ -33,6 +32,7 @@ export default function QuizEditorPage() {
   ]);
   const [quizReleaseModalShow, quizReleaseModalShowSet] = useState(false);
   const [quizEditSaveModalShow, quizEditSaveModalShowSet] = useState(false);
+  const [quizDeleteModalShow, quizDeleteModalShowSet] = useState(false);
   const [jsonImportModalShow, jsonImportModalShowSet] = useState(false);
   const [quizIsDraft, quizIsDraftSet] = useState(true);
   const [activeCourseList, activeCourseListSet] = useState();
@@ -107,6 +107,10 @@ export default function QuizEditorPage() {
   useEffect(() => {
     if (quizId) {
       getQuiz(quizId).then((quizPayload) => {
+        if (!quizPayload) {
+          navigate("/page-not-found");
+          return;
+        }
         quizIsDraftSet(quizPayload.isDraft);
         questionListSet(quizPayload.questions);
         quizNameSet(quizPayload.quizName);
@@ -117,7 +121,7 @@ export default function QuizEditorPage() {
         });
       });
     }
-  }, [quizId, questionListSet]);
+  }, [quizId, questionListSet, navigate]);
 
   useEffect(() => {
     fetchInstructedCourses().then((payload) => {
@@ -198,6 +202,59 @@ export default function QuizEditorPage() {
               <button
                 className="btn-secondary"
                 onClick={() => quizEditSaveModalShowSet(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        }
+      />
+      <Modal
+        modalShow={quizDeleteModalShow}
+        modalShowSet={quizDeleteModalShowSet}
+        content={
+          <div className="flex flex-col sm:w-96 gap-6">
+            <h1 className="text-2xl font-bold">Deleting draft quiz</h1>
+            <AlertBanner ref={alertRef} />
+            <div className="flex flex-col gap-4 text-gray-600">
+              <span>
+                Are you sure you want to delete the draft quiz{" "}
+                <b>{quizName}</b> in{" "}
+                <b>
+                  {courseObject.courseCode} {courseObject.courseSemester}
+                </b>
+                ?
+              </span>
+              <span className="mt-2 text-red-600">
+                <b>Warning:</b> This action can <b>NOT</b> be undone.
+              </span>
+            </div>
+            <div className="flex gap-4 mt-2">
+              <button
+                className="btn-primary bg-red-600 border-red-600 hover:text-red-600 focus:ring-red-200"
+                onClick={() => {
+                  alertRef.current.hide();
+                  deleteDraftQuiz(quizId).then((result) => {
+                    if (result.success) {
+                      navigate("/course/" + courseObject.courseId, {
+                        state: {
+                          passInMessage: `Draft quiz "${quizName}" has been deleted`,
+                        },
+                      });
+                    } else {
+                      alertRef.current.setMessage(
+                        "Could not delete quiz: " + result.message
+                      );
+                      alertRef.current.show();
+                    }
+                  });
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => quizDeleteModalShowSet(false)}
               >
                 Cancel
               </button>
@@ -318,7 +375,7 @@ export default function QuizEditorPage() {
               </div>
             );
           })}
-          <div className="flex flex-col sm:flex-row justify-between px-2">
+          <div className="flex flex-col lg:flex-row justify-between px-2 gap-4">
             <div className="flex gap-4">
               <button
                 type="button"
@@ -414,6 +471,14 @@ export default function QuizEditorPage() {
                     }}
                   >
                     Save {quizId ? "changes" : "as draft"}
+                  </button>
+                  <button
+                    className="btn-outline border-red-600 text-red-600 hover:bg-red-600 focus:ring-red-200 w-fit text-start text-sm px-4 py-2 mt-2"
+                    onClick={() => {
+                      quizDeleteModalShowSet(true);
+                    }}
+                  >
+                    Delete draft
                   </button>
                 </>
               )}
