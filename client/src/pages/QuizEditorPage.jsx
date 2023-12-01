@@ -34,7 +34,7 @@ export default function QuizEditorPage() {
   const [quizReleaseModalShow, quizReleaseModalShowSet] = useState(false);
   const [quizEditSaveModalShow, quizEditSaveModalShowSet] = useState(false);
   const [jsonImportModalShow, jsonImportModalShowSet] = useState(false);
-  const [quizIsDraft, quizIsDraftSet] = useState(false);
+  const [quizIsDraft, quizIsDraftSet] = useState(true);
   const [activeCourseList, activeCourseListSet] = useState();
   const [quizName, quizNameSet] = useState("");
   const [quizCreationData, quizCreationDataSet] = useState({});
@@ -135,6 +135,17 @@ export default function QuizEditorPage() {
       questions: questionList,
     });
   }, [quizName, questionList, courseObject.courseId]);
+
+  useEffect(() => {
+    const { passInMessage } = location.state ?? "";
+    if (passInMessage) {
+      toastMessageSet(passInMessage);
+      navigate("", {});
+      setTimeout(() => {
+        toastMessageSet();
+      }, 3000);
+    }
+  }, [location.state, navigate, toastMessageSet]);
 
   return (
     <>
@@ -327,7 +338,7 @@ export default function QuizEditorPage() {
               </button>
             </div>
             <div className="flex gap-4">
-              {quizId && !quizIsDraft ? (
+              {quizId && !quizIsDraft && (
                 <button
                   className="btn-primary w-fit text-start text-sm px-4 py-2 mt-2"
                   onClick={() => {
@@ -338,7 +349,8 @@ export default function QuizEditorPage() {
                 >
                   Save changes
                 </button>
-              ) : (
+              )}
+              {quizIsDraft && (
                 <>
                   <button
                     type="submit"
@@ -390,19 +402,18 @@ export default function QuizEditorPage() {
                             isDraft: true,
                           }).then((result) => {
                             if (result.success) {
-                              toastMessageSet(
-                                `Quiz "${quizName}" has been created. It will not be visible to students until you release it.`
-                              );
-                              setTimeout(() => {
-                                toastMessageSet();
-                              }, 3000);
+                              navigate("/quiz/" + result.payload._id, {
+                                state: {
+                                  passInMessage: `Quiz "${quizName}" has been saved as draft`,
+                                },
+                              });
                             }
                           });
                         }
                       }
                     }}
                   >
-                    Save as draft
+                    Save {quizId ? "changes" : "as draft"}
                   </button>
                 </>
               )}
