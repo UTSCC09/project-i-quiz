@@ -236,11 +236,11 @@ const getAllQuizRemarks = asyncHandler(async (req, res) => {
     }
     return res
       .status(400)
-      .json(formatMessage(false, "No response found for this quiz"));
+      .json(formatMessage(false, "No remark request found for this quiz"));
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error fetching quiz response"));
+      .json(formatMessage(false, "Mongoose error fetching quiz remark"));
   }
 });
 
