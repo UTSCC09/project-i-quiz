@@ -6,21 +6,21 @@ const sendGradedQuizEmail = async (course, user, quiz, totalScore, maxScore) => 
     }
 
     let gradedQuizOptions = {
-    ...defaultMailOptions,
-    to: user.email,
-    subject: course.courseName + " - " + quiz.quizName + " Grades",
-    html: `
-        <p>Hi ${user.firstName} ${user.lastName}, </p>
-        <p><b>${quiz.quizName}</b> has been marked!</p>
-        <p><b>Your grade:</b> ${totalScore} out of ${maxScore}</p>
-        <p>© iQuiz 2023. All rights reserved.</p>
-    `
+        ...defaultMailOptions,
+        to: user.email,
+        subject: course.courseName + " - " + quiz.quizName + " Grades",
+        html: `
+            <p>Hi ${user.firstName} ${user.lastName}, </p>
+            <p><b>${quiz.quizName}</b> has been marked!</p>
+            <p><b>Your grade:</b> ${totalScore} out of ${maxScore}</p>
+            <p>© iQuiz 2023. All rights reserved.</p>
+        `
     }
 
     try {
-    await transporter.sendMail(gradedQuizOptions);
+        await transporter.sendMail(gradedQuizOptions);
     } catch (err) { 
-    console.log("Fail to send quiz invitation email to: " + user.email);
+        console.log("Fail to send quiz invitation email to: " + user.email);
     }
 
 };
