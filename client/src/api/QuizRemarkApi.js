@@ -78,7 +78,7 @@ const resolveQuizRemark = async (quizRemarkId, questionRemarks) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         quizId: quizId,
-        questionRemarks,
+        questionRemarks: questionRemarks,
       }),
       withCredentials: true,
     })
