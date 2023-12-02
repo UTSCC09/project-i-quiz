@@ -107,9 +107,36 @@ const submitQuizResponse = async (quizId) => {
     });
 };
 
+const generateQuizPDF = async(quizId) => {
+  return fetch(`/api/quiz-responses/generate/${quizId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      if (!result.success) {
+        console.error(result.message);
+      }
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+
 export {
   createQuizReponse,
   getQuizResponse,
   editQuizResponse,
-  submitQuizResponse
+  submitQuizResponse,
+  generateQuizPDF,
 };
