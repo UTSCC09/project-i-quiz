@@ -27,6 +27,7 @@ function generatePDF(course, quiz, questions, user, quizResponse) {
     let index = 0;
 
     let finalScore = 0;
+    let totalScore = 0;
 
     // Questions
     for (const questionResponse of quizResponse.questionResponses) {
@@ -34,6 +35,7 @@ function generatePDF(course, quiz, questions, user, quizResponse) {
         if (question) { 
             const response = questionResponse.response ? questionResponse.response.join(', ') : "N/A";
             const score = questionResponse.score ? questionResponse.score : "0";
+            const maxScore = question.maxScore ? question.maxScore : "0";
             
             pdf.setFontSize(12);
             pdf.setFont(undefined, "bold")
@@ -60,6 +62,7 @@ function generatePDF(course, quiz, questions, user, quizResponse) {
             yPos += 40; 
             index += 1;
             finalScore += parseInt(score);
+            totalScore += parseInt(maxScore);
         }
     }
 
@@ -67,7 +70,7 @@ function generatePDF(course, quiz, questions, user, quizResponse) {
     yPos += 5;
     pdf.setFontSize(14);
     pdf.setFont(undefined, "bold")
-    .text(`Final Score: ${finalScore}`, 20, yPos);
+    .text(`Final Score: ${finalScore}/${totalScore}`, 20, yPos);
 
     return pdf;
 }

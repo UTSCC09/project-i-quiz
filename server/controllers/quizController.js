@@ -1149,7 +1149,6 @@ const getMyQuizzes = asyncHandler(async (req, res) => {
               quiz: quiz._id,
               student: user._id,
             });
-            console.log(quizResponse);
           }
           formattedQuizzes.push({
             quizId: quiz._id,
@@ -1300,6 +1299,7 @@ async function getQuestions(quizId) {
     formattedQuestions.push({
       ...question.toObject(),
       type: quiz.questions[i].type,
+      maxScore: quiz.questions[i].maxScore ? quiz.questions[i].maxScore : "0",
     });
 
   } 
@@ -1319,10 +1319,6 @@ export {
   updateQuizQuestion,
   addQuizQuestions,
   getQuizObject,
-  getUpcomingQuizzesForEnrolledCourses,
-  getUpcomingQuizzesForInstructedCourses,
-  getActiveQuizzesForEnrolledCourses,
-  getActiveQuizzesForInstructedCourses,
   getQuestions,
   getMyQuizzes,
 };
