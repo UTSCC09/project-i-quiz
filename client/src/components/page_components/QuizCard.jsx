@@ -39,27 +39,27 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   const startTime = new Date(quizObject.startTime);
   const endTime = new Date(quizObject.endTime);
   const responseStatus = quizObject.responseStatus;
-  const gradingStatus = quizObject.gradingStatus;
+  const isGradeReleased = quizObject.isGradeReleased;
   const quizState = getQuizState(quizObject);
   const startTimeStr = getFormattedDateStr(startTime);
   const endTimeStr = getFormattedDateStr(endTime);
 
-  let quizAvailabilityPrompt, isAvailable, isClosed;
+  let quizAvailabilityPrompt;
+  let isUpcoming = false;
+  let isAvailable = false;
+  let isClosed = false;
 
   switch (quizState) {
     case "available":
       quizAvailabilityPrompt = "Available until " + endTimeStr;
       isAvailable = true;
-      isClosed = false;
       break;
     case "upcoming":
       quizAvailabilityPrompt = "Unlocks on " + startTimeStr;
-      isAvailable = false;
-      isClosed = false;
+      isUpcoming = true;
       break;
     case "closed":
       quizAvailabilityPrompt = "Closed on " + endTimeStr;
-      isAvailable = false;
       isClosed = true;
       break;
     default:
@@ -72,8 +72,8 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
         className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer"
         style={{
           borderLeftColor: accentColor,
-          pointerEvents: isAvailable ? "auto" : "none",
-          opacity: isAvailable ? 1 : 0.5,
+          //pointerEvents: isUpcoming ? "none" : "auto",
+          opacity: isUpcoming ? 0.5 : 1,
         }}
       >
         <div
@@ -86,8 +86,8 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
           <div className="flex-col justify-center items-start inline-flex">
             <div className="items-center gap-2.5 inline-flex w-full overflow-hidden">
               <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words mb-1">
-			    {quizName}
-			  </div>
+                {quizName}
+              </div>
               {isStudentUserType() &&
                 (isAvailable && responseStatus !== "submitted" && (
                   <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
@@ -110,7 +110,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
                     responseStatus !== "submitted" && (
                       <Badge iconId="missed" accentColor={colors.red[500]} />
                     ) ||
-                    gradingStatus === "fully" && (
+                    isGradeReleased && (
                       <Badge iconId="graded" accentColor={colors.green[500]} />
                     )
                   )

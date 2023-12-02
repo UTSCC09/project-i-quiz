@@ -137,10 +137,15 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
 
   try {
     const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
-    if (quizResponse) {
+    if (!quizResponse) {
+      return res.status(400).json(formatMessage(false, "No response found for this quiz"));
+    } 
+    const quiz = await Quiz.findById(quizId);
+    if (quizResponse.status === "submitted" && !quiz.isGradeReleased) {
+      return res.status(403).json(formatMessage(false, "Quiz grades not released yet"));
+    } else {
       return res.status(200).json(formatMessage(true, "Quiz response fetched successfully", quizResponse));
     }
-    return res.status(400).json(formatMessage(false, "No response found for this quiz"));
   } catch (error) {
     return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz response", null, error));
   }

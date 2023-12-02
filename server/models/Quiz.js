@@ -9,6 +9,10 @@ const QuestionSchema = new mongoose.Schema({
     type: String,
     enum: ["MCQ", "MSQ", "CLO", "OEQ"]
   },
+  maxScore: {
+    type: Number,
+    default: 0
+  },
 });
 
 const QuizSchema = new mongoose.Schema({
@@ -29,7 +33,11 @@ const QuizSchema = new mongoose.Schema({
     ref: "Course",
     required: [true, "Please provide a course"]
   },
-  questions: [QuestionSchema]
+  questions: [QuestionSchema],
+  isGradeReleased: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Quiz = mongoose.model("Quiz", QuizSchema);

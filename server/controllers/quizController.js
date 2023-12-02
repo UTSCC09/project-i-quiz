@@ -1269,6 +1269,7 @@ const getPastQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
             accentColor: accentColor,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
+            isGradeReleased: quiz.isGradeReleased,
           });
         }
       } catch (error) {
@@ -1346,8 +1347,8 @@ const getPastQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
             accentColor: accentColor,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
+            isGradeReleased: quiz.isGradeReleased,
             responseStatus: quizResponse ? quizResponse.status : "",
-            gradingStatus: quizResponse ? quizResponse.graded : "",
           });
         }
       } catch (error) {
