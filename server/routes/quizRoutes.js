@@ -8,49 +8,41 @@ import {
   updateQuizQuestion,
   addQuizQuestions,
   getQuizObject,
-  getUpcomingQuizzesForEnrolledCourses,
-  getUpcomingQuizzesForInstructedCourses,
-  getActiveQuizzesForEnrolledCourses,
-  getActiveQuizzesForInstructedCourses,
   updateQuiz,
+  releaseQuiz,
+  getMyQuizzes,
+  deleteDraftQuiz,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.route("/")
-  .post(protect, createQuiz)
-  .patch(protect, basicUpdateQuiz);
+router.route("/").post(protect, createQuiz).patch(protect, basicUpdateQuiz);
 
-router.route("/update")
-  .post(protect, updateQuiz);
+router.route("/update").post(protect, updateQuiz);
 
-router.route("/question")
+router
+  .route("/question")
   .post(protect, addQuizQuestions)
   .patch(protect, updateQuizQuestion);
 
-router.route("/upcoming/student")
-  .get(protect, getUpcomingQuizzesForEnrolledCourses);
+router.route("/:status").get(protect, getMyQuizzes);
 
-router.route("/upcoming/instructor")
-  .get(protect, getUpcomingQuizzesForInstructedCourses);
-
-router.route("/active/student")
-  .get(protect, getActiveQuizzesForEnrolledCourses);
-
-router.route("/active/instructor")
-  .get(protect, getActiveQuizzesForInstructedCourses);
-
-router.route("/:quizId")
+router
+  .route("/:quizId")
   .get(protect, getQuiz)
+  .delete(protect, deleteDraftQuiz);
 
-router.route("/:quizId/questions")
-  .get(protect, getQuizObject)
+router.route("/:quizId/release").post(protect, releaseQuiz);
 
-router.route("/course/instructed/:courseId")
+router.route("/:quizId/questions").get(protect, getQuizObject);
+
+router
+  .route("/course/instructed/:courseId")
   .get(protect, getQuizzesForInstructedCourse);
 
-  router.route("/course/enrolled/:courseId")
+router
+  .route("/course/enrolled/:courseId")
   .get(protect, getQuizzesForEnrolledCourse);
 
 export default router;
