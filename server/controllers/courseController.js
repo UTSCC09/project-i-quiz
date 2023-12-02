@@ -585,14 +585,13 @@ const sendStudentsGrades = asyncHandler (async (req, res) => {
   const questions = await getQuestions(quizId);
   let totalMaxScore = 0;
   for (const question of questions) {
-    totalMaxScore += parseInt(question.maxScore ? question.maxScore : "0");
+    totalMaxScore += question.maxScore ? question.maxScore : 0;
   }
 
   for (const student of students) {
     const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
     let studentScore = 0;
     for (const questionResponse of quizResponse.questionResponses) {
-      console.log(questionResponse);
       studentScore += questionResponse.score;
     }
     if (quizResponse) {

@@ -1308,7 +1308,7 @@ async function getQuestions(quizId) {
     formattedQuestions.push({
       ...question.toObject(),
       type: quiz.questions[i].type,
-      maxScore: quiz.questions[i].maxScore ? quiz.questions[i].maxScore : "0",
+      maxScore: quiz.questions[i].maxScore ? quiz.questions[i].maxScore : 0,
     });
 
   } 
