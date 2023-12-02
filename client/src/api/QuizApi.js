@@ -34,7 +34,6 @@ const releaseQuiz = async (quizId, startTime, endTime) => {
           window.location.reload();
         });
       }
-      console.log(response);
       return response.json();
     })
     .then((result) => {
