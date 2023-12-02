@@ -17,5 +17,6 @@ const defaultMailOptions = {
 };
 
 const backendUrl = process.env.SERVER_BASE_URL + "/";
+const frontendUrl = process.env.CLIENT_BASE_URL + "/";
 
-export { transporter, defaultMailOptions, backendUrl };
+export { transporter, defaultMailOptions, backendUrl, frontendUrl };

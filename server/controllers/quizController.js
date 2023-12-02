@@ -1284,6 +1284,38 @@ async function createQuestion(question, res) {
   return createdQuestion;
 }
 
+async function getQuestions(quizId) {
+  let quiz = await Quiz.findById(quizId);
+
+  const formattedQuestions = [];
+  for (let i = 0; i < quiz.questions.length; i++) {
+    let question;
+    switch (quiz.questions[i].type) {
+      case "MCQ":
+        question = await MCQ.findById(quiz.questions[i].question);
+        break;
+      case "MSQ":
+        question = await MSQ.findById(quiz.questions[i].question);
+        break;
+      case "CLO":
+        question = await CLO.findById(quiz.questions[i].question);
+        break;
+      case "OEQ":
+        question = await OEQ.findById(quiz.questions[i].question);
+        break;
+    }
+
+    formattedQuestions.push({
+      ...question.toObject(),
+      type: quiz.questions[i].type,
+      maxScore: quiz.questions[i].maxScore ? quiz.questions[i].maxScore : "0",
+    });
+
+  } 
+
+  return formattedQuestions;
+}
+
 export {
   createQuiz,
   updateQuiz,
@@ -1297,4 +1329,5 @@ export {
   addQuizQuestions,
   getQuizObject,
   getMyQuizzes,
+  getQuestions,
 };
