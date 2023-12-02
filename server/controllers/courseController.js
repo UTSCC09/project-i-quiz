@@ -2,7 +2,6 @@ import asyncHandler from "express-async-handler";
 import Course from "../models/Course.js";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
-import Quiz from "../models/Quiz.js";
 
 
 //@route  POST api/courses
