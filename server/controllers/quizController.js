@@ -14,11 +14,13 @@ import QuizResponse from "../models/QuizResponse.js";
 //@desc   Allow instructor to create a quiz
 //@access Private
 const createQuiz = asyncHandler(async (req, res) => {
-  const { quizName, startTime, endTime, course, questions } = req.body;
+  const { quizName, startTime, endTime, isDraft, course, questions } =
+    req.body;
 
   //Check if valid user
+  let instructor;
   try {
-    const instructor = await User.findOne({ email: req.session.email });
+    instructor = await User.findOne({ email: req.session.email });
     if (!instructor) {
       return res.status(400).json(formatMessage(false, "Invalid user"));
     } else if (instructor.type !== "instructor") {
@@ -31,7 +33,13 @@ const createQuiz = asyncHandler(async (req, res) => {
   }
 
   //Verify all fields exist
-  if (!quizName || !startTime || !endTime || !course || !questions) {
+  if (
+    !quizName ||
+    isDraft === undefined ||
+    ((!startTime || !endTime) && !isDraft) ||
+    !course ||
+    !questions
+  ) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -42,25 +50,33 @@ const createQuiz = asyncHandler(async (req, res) => {
     if (!courseToAddTo) {
       return res.status(400).json(formatMessage(false, "Invalid course id"));
     }
+    if (!courseToAddTo.instructor.equals(instructor._id)) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "No access to the course"));
+    }
   } catch (error) {
     return res
       .status(400)
       .json(formatMessage(false, "Mongoose error finding course"));
   }
 
-  //Convert startTime and endTime to Date objects
-  const startTimeConverted = new Date(startTime);
-  const endTimeConverted = new Date(endTime);
+  let startTimeConverted, endTimeConverted;
+  if (!isDraft) {
+    //Convert startTime and endTime to Date objects
+    startTimeConverted = new Date(startTime);
+    endTimeConverted = new Date(endTime);
 
-  //Verify startTime and endTime are valid dates and startTime is before endTime
-  if (
-    isNaN(startTimeConverted) ||
-    isNaN(endTimeConverted) ||
-    startTime >= endTime
-  ) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Invalid start and/or end time"));
+    //Verify startTime and endTime are valid dates and startTime is before endTime
+    if (
+      isNaN(startTimeConverted) ||
+      isNaN(endTimeConverted) ||
+      startTime >= endTime
+    ) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Invalid start and/or end time"));
+    }
   }
 
   //Check if there is a pre-existing quiz
@@ -69,7 +85,14 @@ const createQuiz = asyncHandler(async (req, res) => {
       $and: [{ quizName: quizName }, { course: course }],
     });
     if (existingQuiz) {
-      return res.status(400).json(formatMessage(false, "Quiz already exists"));
+      return res
+        .status(400)
+        .json(
+          formatMessage(
+            false,
+            `Quiz named "${quizName}" already exists in ${courseToAddTo.courseCode} ${courseToAddTo.courseSemester}`
+          )
+        );
     }
   } catch (error) {
     return res
@@ -141,8 +164,9 @@ const createQuiz = asyncHandler(async (req, res) => {
   //Create quiz
   const quiz = await Quiz.create({
     quizName: quizName,
-    startTime: startTimeConverted,
-    endTime: endTimeConverted,
+    isDraft: isDraft,
+    startTime: startTimeConverted ?? undefined,
+    endTime: endTimeConverted ?? undefined,
     course: course,
     questions: quizQuestions,
   });
@@ -157,6 +181,73 @@ const createQuiz = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  POST api/quizzes/:quizId/release
+//@desc   Allow instructor to release a quiz
+//@access Private
+const releaseQuiz = asyncHandler(async (req, res) => {
+  const { startTime, endTime } = req.body;
+  //Verify all fields exist
+  if (!startTime || !endTime) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  let quiz;
+  try {
+    quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+    if (!quiz.isDraft) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Quiz has already been released"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  //Convert startTime and endTime to Date objects
+  const startTimeConverted = new Date(startTime);
+  const endTimeConverted = new Date(endTime);
+
+  //Verify startTime and endTime are valid dates and startTime is before endTime
+  if (
+    isNaN(startTimeConverted) ||
+    isNaN(endTimeConverted) ||
+    startTime >= endTime
+  ) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Invalid start and/or end time"));
+  }
+
+  quiz.isDraft = false;
+  quiz.startTime = startTimeConverted;
+  quiz.endTime = endTimeConverted;
+
+  await quiz.save();
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz released successfully", quiz));
+});
+
 //@route  POST api/quizzes/update
 //@desc   Allow instructor to update a quiz
 //@access Private
@@ -169,8 +260,9 @@ const updateQuiz = asyncHandler(async (req, res) => {
   }
 
   //Check if valid user
+  let instructor;
   try {
-    const instructor = await User.findOne({ email: req.session.email });
+    instructor = await User.findOne({ email: req.session.email });
     if (!instructor) {
       return res.status(400).json(formatMessage(false, "Invalid user"));
     } else if (instructor.type !== "instructor") {
@@ -188,6 +280,9 @@ const updateQuiz = asyncHandler(async (req, res) => {
     courseToAddTo = await Course.findById(course);
     if (!courseToAddTo) {
       return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+    if (!courseToAddTo.instructor.equals(instructor._id)) {
+      return res.status(400).json(formatMessage(false, "Access denied"));
     }
   } catch (error) {
     return res
@@ -210,12 +305,17 @@ const updateQuiz = asyncHandler(async (req, res) => {
           OEQ.findById(question._id),
           CLO.findById(question._id),
         ]);
-        if (existingQuestion) {
+        if (existingQuestion.filter((q) => q).length === 1) {
           await editQuestion(question, res);
           return { question: question._id, type: question.type };
         }
+      }
+      const createdQuestion = await createQuestion(question, res);
+      if (!createdQuestion) {
+        return res
+          .status(400)
+          .json(formatMessage(false, "Question creation failed"));
       } else {
-        const createdQuestion = await createQuestion(question, res);
         return { question: createdQuestion._id, type: question.type };
       }
     })
@@ -227,6 +327,68 @@ const updateQuiz = asyncHandler(async (req, res) => {
 
   await existingQuiz.save();
   return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
+});
+
+//@route  DELETE api/quizzes/:quizId
+//@desc   Allow instructor to update a quiz
+//@access Private
+const deleteDraftQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  //Verify all fields exist
+  if (!quizId) {
+    return res.status(400).json(formatMessage(false, "Missing parameter"));
+  }
+
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  // verify quiz id
+  const existingQuiz = await Quiz.findById(quizId);
+  if (!existingQuiz) {
+    return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+  }
+
+  // verify quiz status
+  if (!existingQuiz.isDraft) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Cannot delete released quizzes"));
+  }
+
+  // verify access to the quiz
+  let course;
+  try {
+    course = await Course.findById(existingQuiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+    if (!course.instructor.equals(instructor._id)) {
+      return res.status(400).json(formatMessage(false, "Access denied"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding course"));
+  }
+  await Quiz.deleteOne({ _id: quizId });
+  await Course.updateOne({ _id: course }, { $pull: { quizzes: quizId } });
+
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz deleted successfully"));
 });
 
 //@route  GET api/quizzes/:quizId
@@ -337,6 +499,7 @@ const getQuizzesForInstructedCourse = asyncHandler(async (req, res) => {
           return {
             quizId: quiz._id,
             quizName: quiz.quizName,
+            isDraft: quiz.isDraft,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
           };
@@ -401,29 +564,31 @@ const getQuizzesForEnrolledCourse = asyncHandler(async (req, res) => {
       if (!quiz) {
         return res.status(400).json(formatMessage(false, "Invalid quiz id"));
       }
-      const currentDateTime = new Date();
-      let currentQuizStatus = "";
-      if (currentDateTime < quiz.startTime) {
-        currentQuizStatus = "Upcoming";
-      } else if (currentDateTime > quiz.endTime) {
-        currentQuizStatus = "Past";
-      } else {
-        currentQuizStatus = "Active";
+      if (!quiz.isDraft) {
+        const currentDateTime = new Date();
+        let currentQuizStatus = "";
+        if (currentDateTime < quiz.startTime) {
+          currentQuizStatus = "Upcoming";
+        } else if (currentDateTime > quiz.endTime) {
+          currentQuizStatus = "Past";
+        } else {
+          currentQuizStatus = "Active";
+        }
+
+        const quizResponse = await QuizResponse.findOne({
+          quiz: quiz._id,
+          student: student._id,
+        });
+
+        formattedQuizzes.push({
+          quizId: quiz._id,
+          quizName: quiz.quizName,
+          status: currentQuizStatus,
+          responseStatus: quizResponse ? quizResponse.status : "",
+          startTime: quiz.startTime,
+          endTime: quiz.endTime,
+        });
       }
-
-      const quizResponse = await QuizResponse.findOne({
-        quiz: quiz._id,
-        student: student._id,
-      });
-
-      formattedQuizzes.push({
-        quizId: quiz._id,
-        quizName: quiz.quizName,
-        status: currentQuizStatus,
-        responseStatus: quizResponse ? quizResponse.status : "",
-        startTime: quiz.startTime,
-        endTime: quiz.endTime,
-      });
     } catch (error) {
       return res
         .status(400)
@@ -900,6 +1065,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
   return res.status(200).json(
     formatMessage(true, "Quiz found", {
       quizName: quiz.quizName,
+      isDraft: quiz.isDraft,
       courseCode: course.courseCode,
       courseId: course._id,
       startTime: quiz.startTime,
@@ -909,125 +1075,82 @@ const getQuizObject = asyncHandler(async (req, res) => {
   );
 });
 
-//@route  GET api/quizzes/upcoming/instructor
-//@desc   Allow instructors to get all upcoming quizzes for courses they instruct
+//@route  GET api/quizzes/:status
+//@desc   Allow users to get draft, active, or upcoming quizzes for their enrolled or instructed courses
 //@access Private
-const getUpcomingQuizzesForInstructedCourses = asyncHandler(
-  async (req, res) => {
-    //Check if valid user
-    let instructor;
+const getMyQuizzes = asyncHandler(async (req, res) => {
+  const { status } = req.params;
+
+  if (status !== "draft" && status !== "active" && status !== "upcoming") {
+    return res.status(400).json(formatMessage(false, "Invalid parameter"));
+  }
+
+  //Check if valid user
+  let user;
+  try {
+    user = await User.findOne({ email: req.session.email });
+    if (!user) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  let formattedQuizzes = [];
+
+  //Get quizzes for every course
+  for (let j = 0; j < user.courses.length; j++) {
+    const accentColor = user.courses[j].accentColor;
+    let course;
     try {
-      instructor = await User.findOne({ email: req.session.email });
-      if (!instructor) {
-        return res.status(400).json(formatMessage(false, "Invalid user"));
-      } else if (instructor.type !== "instructor") {
-        return res.status(400).json(formatMessage(false, "Invalid user type"));
+      course = await Course.findById(user.courses[j].courseId);
+      if (!course) {
+        return res
+          .status(400)
+          .json(formatMessage(false, "Invalid course id in quiz"));
       }
     } catch (error) {
       return res
         .status(400)
-        .json(formatMessage(false, "Mongoose error finding user"));
+        .json(formatMessage(false, "Mongoose error finding quiz course"));
     }
 
-    let formattedQuizzes = [];
-    //Get quizzes for every enrolled course
-    for (let j = 0; j < instructor.courses.length; j++) {
-      const accentColor = instructor.courses[j].accentColor;
-      let course;
+    for (let i = 0; i < course.quizzes.length; i++) {
       try {
-        course = await Course.findById(instructor.courses[j].courseId);
-        if (!course) {
-          return res
-            .status(400)
-            .json(formatMessage(false, "Invalid course id in quiz"));
+        const quiz = await Quiz.findById(course.quizzes[i]);
+        if (!quiz) {
+          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
         }
-      } catch (error) {
-        return res
-          .status(400)
-          .json(formatMessage(false, "Mongoose error finding quiz course"));
-      }
+        const currentDateTime = new Date();
+        let flag;
+        switch (status) {
+          case "draft":
+            flag = quiz.isDraft && user.type === "instructor";
+            break;
+          case "active":
+            flag =
+              !quiz.isDraft &&
+              currentDateTime >= quiz.startTime &&
+              currentDateTime <= quiz.endTime;
+            break;
+          case "upcoming":
+            flag = !quiz.isDraft && currentDateTime < quiz.startTime;
+            break;
+          default:
+            break;
+        }
 
-      for (let i = 0; i < course.quizzes.length; i++) {
-        try {
-          const quiz = await Quiz.findById(course.quizzes[i]);
-          if (!quiz) {
-            return res
-              .status(400)
-              .json(formatMessage(false, "Invalid quiz id"));
-          }
-          const currentDateTime = new Date();
-          if (currentDateTime < quiz.startTime) {
-            formattedQuizzes.push({
-              quizId: quiz._id,
-              quizName: quiz.quizName,
-              courseCode: course.courseCode,
-              courseId: course._id,
-              accentColor: accentColor,
-              startTime: quiz.startTime,
-              endTime: quiz.endTime,
+        if (flag) {
+          let quizResponse;
+          if (user.type === "student") {
+            quizResponse = await QuizResponse.findOne({
+              quiz: quiz._id,
+              student: user._id,
             });
+            console.log(quizResponse);
           }
-        } catch (error) {
-          return res
-            .status(400)
-            .json(
-              formatMessage(false, "Mongoose error finding quizzes for course")
-            );
-        }
-      }
-    }
-
-    return res
-      .status(200)
-      .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
-  }
-);
-
-//@route  GET api/quizzes/upcoming/student
-//@desc   Allow students to get all upcoming quizzes for courses they are enrolled in
-//@access Private
-const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
-  //Check if valid user
-  let student;
-  try {
-    student = await User.findOne({ email: req.session.email });
-    if (!student) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    } else if (student.type !== "student") {
-      return res.status(400).json(formatMessage(false, "Invalid user type"));
-    }
-  } catch (error) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
-  }
-
-  let formattedQuizzes = [];
-  //Get quizzes for every enrolled course
-  for (let j = 0; j < student.courses.length; j++) {
-    const accentColor = student.courses[j].accentColor;
-    let course;
-    try {
-      course = await Course.findById(student.courses[j].courseId);
-      if (!course) {
-        return res
-          .status(400)
-          .json(formatMessage(false, "Invalid course id in quiz"));
-      }
-    } catch (error) {
-      return res
-        .status(400)
-        .json(formatMessage(false, "Mongoose error finding quiz course"));
-    }
-
-    for (let i = 0; i < course.quizzes.length; i++) {
-      try {
-        const quiz = await Quiz.findById(course.quizzes[i]);
-        if (!quiz) {
-          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
-        }
-        const currentDateTime = new Date();
-        if (currentDateTime < quiz.startTime) {
           formattedQuizzes.push({
             quizId: quiz._id,
             quizName: quiz.quizName,
@@ -1036,6 +1159,8 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
             accentColor: accentColor,
             startTime: quiz.startTime,
             endTime: quiz.endTime,
+            isDraft: quiz.isDraft,
+            responseStatus: quizResponse ? quizResponse.status : undefined,
           });
         }
       } catch (error) {
@@ -1050,158 +1175,13 @@ const getUpcomingQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
-});
-
-//@route  GET api/quizzes/active/instructor
-//@desc   Allow instructors to get all active quizzes for courses they instruct
-//@access Private
-const getActiveQuizzesForInstructedCourses = asyncHandler(async (req, res) => {
-  //Check if valid user
-  let instructor;
-  try {
-    instructor = await User.findOne({ email: req.session.email });
-    if (!instructor) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    } else if (instructor.type !== "instructor") {
-      return res.status(400).json(formatMessage(false, "Invalid user type"));
-    }
-  } catch (error) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
-  }
-
-  let formattedQuizzes = [];
-  //Get quizzes for every enrolled course
-  for (let j = 0; j < instructor.courses.length; j++) {
-    const accentColor = instructor.courses[j].accentColor;
-    let course;
-    try {
-      course = await Course.findById(instructor.courses[j].courseId);
-      if (!course) {
-        return res
-          .status(400)
-          .json(formatMessage(false, "Invalid course id in quiz"));
-      }
-    } catch (error) {
-      return res
-        .status(400)
-        .json(formatMessage(false, "Mongoose error finding quiz course"));
-    }
-
-    for (let i = 0; i < course.quizzes.length; i++) {
-      try {
-        const quiz = await Quiz.findById(course.quizzes[i]);
-        if (!quiz) {
-          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
-        }
-        const currentDateTime = new Date();
-        if (
-          currentDateTime >= quiz.startTime &&
-          currentDateTime <= quiz.endTime
-        ) {
-          formattedQuizzes.push({
-            quizId: quiz._id,
-            quizName: quiz.quizName,
-            courseCode: course.courseCode,
-            courseId: course._id,
-            accentColor: accentColor,
-            startTime: quiz.startTime,
-            endTime: quiz.endTime,
-          });
-        }
-      } catch (error) {
-        return res
-          .status(400)
-          .json(
-            formatMessage(false, "Mongoose error finding quizzes for course")
-          );
-      }
-    }
-  }
-
-  return res
-    .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
-});
-
-//@route  GET api/quizzes/active/student
-//@desc   Allow students to get all active quizzes for courses they are enrolled in
-//@access Private
-const getActiveQuizzesForEnrolledCourses = asyncHandler(async (req, res) => {
-  //Check if valid user
-  let student;
-  try {
-    student = await User.findOne({ email: req.session.email });
-    if (!student) {
-      return res.status(400).json(formatMessage(false, "Invalid user"));
-    } else if (student.type !== "student") {
-      return res.status(400).json(formatMessage(false, "Invalid user type"));
-    }
-  } catch (error) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
-  }
-
-  let formattedQuizzes = [];
-  //Get quizzes for every enrolled course
-  for (let j = 0; j < student.courses.length; j++) {
-    const accentColor = student.courses[j].accentColor;
-    let course;
-    try {
-      course = await Course.findById(student.courses[j].courseId);
-      if (!course) {
-        return res
-          .status(400)
-          .json(formatMessage(false, "Invalid course id in quiz"));
-      }
-    } catch (error) {
-      return res
-        .status(400)
-        .json(formatMessage(false, "Mongoose error finding quiz course"));
-    }
-
-    for (let i = 0; i < course.quizzes.length; i++) {
-      try {
-        const quiz = await Quiz.findById(course.quizzes[i]);
-        if (!quiz) {
-          return res.status(400).json(formatMessage(false, "Invalid quiz id"));
-        }
-        const currentDateTime = new Date();
-        if (
-          currentDateTime >= quiz.startTime &&
-          currentDateTime <= quiz.endTime
-        ) {
-          const quizResponse = await QuizResponse.findOne({
-            quiz: quiz._id,
-            student: student._id,
-          });
-          formattedQuizzes.push({
-            quizId: quiz._id,
-            quizName: quiz.quizName,
-            courseCode: course.courseCode,
-            courseId: course._id,
-            accentColor: accentColor,
-            startTime: quiz.startTime,
-            endTime: quiz.endTime,
-            responseStatus: quizResponse ? quizResponse.status : "",
-          });
-        }
-      } catch (error) {
-        return res
-          .status(400)
-          .json(
-            formatMessage(false, "Mongoose error finding quizzes for course")
-          );
-      }
-    }
-  }
-
-  return res
-    .status(200)
-    .json(formatMessage(true, "Upcoming quizzes found", formattedQuizzes));
+    .json(
+      formatMessage(
+        true,
+        `${status} quizzes fetched for the user`,
+        formattedQuizzes
+      )
+    );
 });
 
 /* --- helper functions --- */
@@ -1330,6 +1310,8 @@ async function getQuestions(quizId) {
 export {
   createQuiz,
   updateQuiz,
+  releaseQuiz,
+  deleteDraftQuiz,
   getQuiz,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
@@ -1342,4 +1324,5 @@ export {
   getActiveQuizzesForEnrolledCourses,
   getActiveQuizzesForInstructedCourses,
   getQuestions,
+  getMyQuizzes,
 };

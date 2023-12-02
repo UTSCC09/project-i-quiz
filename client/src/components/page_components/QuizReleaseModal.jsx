@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
-import { createQuiz } from "api/QuizApi";
+import { createQuiz, releaseQuiz } from "api/QuizApi";
 
 export default function QuizReleaseModal({
   modalShow,
   modalShowSet,
   quizData,
+  quizId,
   onSuccess,
 }) {
   const alertRef = useRef();
@@ -42,17 +43,31 @@ export default function QuizReleaseModal({
     addQuizCreationData("startTime", quizStartTimeInputRef.current.value);
     addQuizCreationData("endTime", quizEndTimeInputRef.current.value);
 
-    createQuiz(quizCreationData).then((result) => {
-      if (result.success) {
-        onSuccess(result.payload.quizName);
-        modalShowSet(false);
-      } else {
-        alertRef.current.setMessage(
-          result.message || "Could not release quiz. Please try again later"
-        );
-        alertRef.current.show();
-      }
-    });
+    if (quizId) {
+      releaseQuiz(quizId, startTime, endTime).then((result) => {
+        if (result.success) {
+          onSuccess(result.payload.quizName);
+          modalShowSet(false);
+        } else {
+          alertRef.current.setMessage(
+            result.message || "Could not release quiz. Please try again later"
+          );
+          alertRef.current.show();
+        }
+      });
+    } else {
+      createQuiz({ ...quizCreationData, isDraft: false }).then((result) => {
+        if (result.success) {
+          onSuccess(result.payload.quizName);
+          modalShowSet(false);
+        } else {
+          alertRef.current.setMessage(
+            result.message || "Could not release quiz. Please try again later"
+          );
+          alertRef.current.show();
+        }
+      });
+    }
   };
 
   return (
