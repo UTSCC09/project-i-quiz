@@ -181,20 +181,6 @@ async function enrollInCourse(courseId, accentColor, sessionNumber, onSuccess, o
     });
 }
 
-async function sendQuizInvitations(courseId, quizId) {
-  return fetch("/api/courses/sendQuizInvitations", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-    body: JSON.stringify(
-      courseId,
-      quizId,
-    )
-  })
-    .then((response) => response.json())
-    .then((result) => result);
-}
-
 export {
   updateAccentColor,
   archiveCourse,
@@ -206,5 +192,4 @@ export {
   updateAccessCode,
   fetchCourseObject,
   enrollInCourse,
-  sendQuizInvitations,
 };

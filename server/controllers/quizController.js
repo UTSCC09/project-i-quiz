@@ -9,6 +9,7 @@ import User from "../models/User.js";
 import Course from "../models/Course.js";
 import { isValidObjectId } from "mongoose";
 import QuizResponse from "../models/QuizResponse.js";
+import sendQuizInvitation from "../utils/quizInvitationUtils.js";
 
 //@route  POST api/quizzes
 //@desc   Allow instructor to create a quiz
@@ -176,6 +177,9 @@ const createQuiz = asyncHandler(async (req, res) => {
   if (quiz) {
     courseToAddTo.quizzes.push(quiz._id);
     await courseToAddTo.save();
+    const emails = await getCourseStudentEmails(courseToAddTo._id, instructor.email);
+    await sendQuizInvitation(courseToAddTo, emails, quiz);
+
     return res
       .status(201)
       .json(formatMessage(true, "Quiz created successfully", quiz));
@@ -226,6 +230,14 @@ const releaseQuiz = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Mongoose error finding quiz"));
   }
 
+  const courseObject = await Course.findById(quiz.course);
+  if (!courseObject) {
+    return res.status(400).json(formatMessage(false, "Invalid courseId"));
+  } else if (!courseObject.instructor.equals(instructor._id)) {
+    return res.status(400).json(formatMessage(false, "Access denied"));
+  }
+  const emails = await getCourseStudentEmails(quiz.course, instructor.email);
+
   //Convert startTime and endTime to Date objects
   const startTimeConverted = new Date(startTime);
   const endTimeConverted = new Date(endTime);
@@ -246,6 +258,8 @@ const releaseQuiz = asyncHandler(async (req, res) => {
   quiz.endTime = endTimeConverted;
 
   await quiz.save();
+  await sendQuizInvitation(courseObject, emails, quiz);
+
   return res
     .status(200)
     .json(formatMessage(true, "Quiz released successfully", quiz));
@@ -1282,6 +1296,27 @@ async function createQuestion(question, res) {
     return res.status(400).json(formatMessage(false, error.message));
   }
   return createdQuestion;
+}
+
+// Get Students Emails
+async function getCourseStudentEmails(courseId, instructorEmail) {
+  if (!courseId) {
+    return [];
+  }
+
+  let emails = [];
+  const users = await User.find({});
+
+  users.forEach(function(user) {
+    for (const course of user.courses) {
+      if (course.courseId.toString() === courseId.toString() 
+      && user.email !== instructorEmail) {
+        emails.push(user.email);
+      }
+    }
+  });
+
+  return emails;
 }
 
 export {

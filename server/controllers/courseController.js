@@ -3,7 +3,6 @@ import Course from "../models/Course.js";
 import User from "../models/User.js";
 import formatMessage from "../utils/utils.js";
 import Quiz from "../models/Quiz.js";
-import sendQuizInvitation from "../utils/quizInvitationUtils.js";
 
 
 //@route  POST api/courses
@@ -79,42 +78,6 @@ const createCourse = asyncHandler(async (req, res) => {
   } else {
     return res.status(400).json(formatMessage(false, "Course creation failed"));
   }
-});
-
-//@route  post api/courses/sendQuizInvitations
-//@desc   Allow instructor to get their students' email in their course
-//@access Private
-const sendQuizInvitations = asyncHandler (async (req, res) => {
-  const {courseId, quizId} = req.body;
-
-  if (!courseId || !quizId) {
-    return res.status(400).json(formatMessage(false, "Missing fields"));
-  }
-
-  const instructor = await User.findOne({ email: req.session.email });
-  if (!instructor) {
-    return res.status(400).json(formatMessage(false, "Invalid user"));
-  } else if (instructor.type !== "instructor") {
-    return res.status(400).json(formatMessage(false, "Invalid user type"));
-  }
-
-  const courseObject = await Course.findById(courseId);
-  if (!courseObject) {
-    return res.status(400).json(formatMessage(false, "Invalid courseId"));
-  } else if (!courseObject.instructor.equals(instructor._id)) {
-    return res.status(400).json(formatMessage(false, "Access denied"));
-  }
-
-  const quizObject = await Quiz.findById(quizId);
-  if (!quizObject) {
-    return res.status(400).json(formatMessage(false, "Invalid quizId"));
-  } 
-
-  const emails = await getCourseStudentEmails(courseId, instructor.email);
-  await sendQuizInvitation(courseObject, emails, quizObject);
-
-  return res.json(formatMessage(true, "Sent quiz email to students successfully!"));
-
 });
 
 //@route  POST api/courses/access_code
@@ -614,24 +577,6 @@ async function getEnrolledCourses(studentEmail) {
   return enrolledCourses;
 }
 
-async function getCourseStudentEmails(courseId, instructorEmail) {
-  if (!courseId) {
-    return [];
-  }
-
-  let emails = [];
-  const users = await User.find({});
-  users.forEach(function(user) {
-    for (const course of user.courses) {
-      if (course.courseId.toString() === courseId 
-      && user.email !== instructorEmail) {
-        emails.push(user.email);
-      }
-    }
-  });
-  return emails;
-}
-
 async function getInstructedCourses(instructorEmail) {
   const instructor = await User.findOne({ email: instructorEmail });
   if (!instructor || instructor.type !== "instructor") {
@@ -696,7 +641,6 @@ async function fetchFormattedCourse(course, accentColor, instructor, archived) {
 
 export {
   createCourse,
-  sendQuizInvitations,
   setAccessCode,
   getMyInstructedCourses,
   getMyEnrolledCourses,
