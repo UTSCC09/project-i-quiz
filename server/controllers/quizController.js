@@ -1172,7 +1172,6 @@ const getMyQuizzes = asyncHandler(async (req, res) => {
               quiz: quiz._id,
               student: user._id,
             });
-            console.log(quizResponse);
           }
           formattedQuizzes.push({
             quizId: quiz._id,
