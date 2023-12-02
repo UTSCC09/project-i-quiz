@@ -455,6 +455,13 @@ export default function QuizEditorPage() {
                                   passInMessage: `Quiz "${quizName}" has been saved as draft`,
                                 },
                               });
+                            } else {
+                              toastMessageSet(
+                                "Could not save the quiz: " + result.message
+                              );
+                              setTimeout(() => {
+                                toastMessageSet();
+                              }, 3000);
                             }
                           });
                         }
@@ -463,15 +470,17 @@ export default function QuizEditorPage() {
                   >
                     Save {quizId ? "changes" : "as draft"}
                   </button>
-                  <button
-                    className="btn-outline border-red-600 text-red-600 hover:bg-red-600 focus:ring-red-200 w-fit text-start text-sm px-4 py-2 mt-2"
-                    onClick={() => {
-                      quizDeleteModalShowSet(true);
-                    }}
-                  >
-                    Delete draft
-                  </button>
                 </>
+              )}
+              {quizId && quizIsDraft && (
+                <button
+                  className="btn-outline border-red-600 text-red-600 hover:bg-red-600 focus:ring-red-200 w-fit text-start text-sm px-4 py-2 mt-2"
+                  onClick={() => {
+                    quizDeleteModalShowSet(true);
+                  }}
+                >
+                  Delete draft
+                </button>
               )}
             </div>
 

@@ -16,9 +16,11 @@ import QuizResponse from "../models/QuizResponse.js";
 const createQuiz = asyncHandler(async (req, res) => {
   const { quizName, startTime, endTime, isDraft, course, questions } =
     req.body;
+
   //Check if valid user
+  let instructor;
   try {
-    const instructor = await User.findOne({ email: req.session.email });
+    instructor = await User.findOne({ email: req.session.email });
     if (!instructor) {
       return res.status(400).json(formatMessage(false, "Invalid user"));
     } else if (instructor.type !== "instructor") {
@@ -83,7 +85,14 @@ const createQuiz = asyncHandler(async (req, res) => {
       $and: [{ quizName: quizName }, { course: course }],
     });
     if (existingQuiz) {
-      return res.status(400).json(formatMessage(false, "Quiz already exists"));
+      return res
+        .status(400)
+        .json(
+          formatMessage(
+            false,
+            `Quiz named "${quizName}" already exists in ${courseToAddTo.courseCode} ${courseToAddTo.courseSemester}`
+          )
+        );
     }
   } catch (error) {
     return res
