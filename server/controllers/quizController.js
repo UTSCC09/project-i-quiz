@@ -35,7 +35,7 @@ const createQuiz = asyncHandler(async (req, res) => {
   //Verify all fields exist
   if (
     !quizName ||
-    !isDraft ||
+    isDraft === undefined ||
     ((!startTime || !endTime) && !isDraft) ||
     !course ||
     !questions
