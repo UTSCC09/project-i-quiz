@@ -164,11 +164,11 @@ export default function QuizInfoPage() {
       <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
         <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
           {/* Header */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between mb-6 md:mb-8 h-28 sm:h-16">
-            <div className="flex flex-col pr-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between mb-6 md:mb-8">
+            <div className="flex flex-col pr-4 h-24 justify-end">
               {quizObject && (
                 <div className="flex items-center gap-3">
-                  <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
+                  <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1 max-w-full line-clamp-2 text-ellipsis break-words">
                     {quizObject.quizName}
                   </span>
                   {isStudent && quizResponseStatus !== "submitted" && (
@@ -226,28 +226,36 @@ export default function QuizInfoPage() {
                   options={quizOptions}
                   menuAlignLeft
                 />
-                {isStudent && !quizResponseStatus && (
-                  <button
-                    className="bg-white shadow-sm font-semibold h-8 sm:h-10 px-4 text-sm text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                    onClick={onStartQuiz}
-                  >
-                    Start Quiz
-                  </button>
-                )}
-                {isStudent && quizResponseStatus === "writing" && (
-                  <Link
-                    to={"/quiz/" + quizId}
-                    className="bg-white shadow-sm font-semibold h-8 sm:h-10 px-4 text-sm text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  >
-                    Continue Quiz
-                  </Link>
-                )}
               </div>
             </div>
           </div>
           {/* Body */}
           {courseObject && quizObject && (
             <div className="flex flex-col gap-4">
+              {isStudent && !quizResponseStatus && (
+                <div className="flex gap-4 flex-col lg:flex-row">
+                  <button
+                    className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                    onClick={onStartQuiz}
+                  >
+                    <PenIcon className="h-3" />
+                    <span>Start Quiz</span>
+                  </button>
+                </div>
+              )}
+              {isStudent && quizResponseStatus === "writing" && (
+                <div className="flex gap-4 flex-col lg:flex-row">
+                  <Link
+                    to={"/quiz/" + quizId}
+                    className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <PenIcon className="h-3" />
+                    <span>Continue Writing</span>
+                  </Link>
+                </div>
+              )}
               {!isStudent && quizObject && !quizObject.isDraft && (
                 <>
                   <div className="flex gap-4 flex-col lg:flex-row">
