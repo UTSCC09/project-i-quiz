@@ -7,7 +7,12 @@ import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
 import { fetchCourseObject } from "api/CourseApi";
 import { getQuiz } from "api/QuizApi";
-import { AdjustmentsIcon, PenIcon } from "components/elements/SVGIcons";
+import {
+  AdjustmentsIcon,
+  DocumentIcon,
+  EnvelopeIcon,
+  PenIcon,
+} from "components/elements/SVGIcons";
 import colors from "tailwindcss/colors";
 import {
   createQuizReponse,
@@ -174,42 +179,51 @@ export default function QuizInfoPage() {
                     Continue Quiz
                   </Link>
                 )}
-
-                {!isStudent && quizObject && !quizObject.isDraft && (
-                  <>
-                    <Link
-                      to={"/quiz/" + quizId}
-                      className="bg-white shadow-sm h-8 sm:h-10 text-sm px-4 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                    >
-                      View Quiz
-                    </Link>
-                  </>
-                )}
               </div>
             </div>
           </div>
           {/* Body */}
           {courseObject && quizObject && (
             <div className="flex flex-col gap-4">
-              {!isStudent && (
-                <div className="flex gap-4 flex-col lg:flex-row">
-                  <SubmissionCountCard
-                    accentColor={courseObject.accentColor}
-                    numReceived={10}
-                    numTotal={78}
-                  />
-                  <MarkingProgressCard
-                    accentColor={courseObject.accentColor}
-                    quizId={quizId}
-                    numMarked={1}
-                    numTotal={10}
-                  />
-                  <GradeStatsCard
-                    accentColor={courseObject.accentColor}
-                    averagePercentage={63}
-                    medianPercentage={72}
-                  />
-                </div>
+              {!isStudent && quizObject && !quizObject.isDraft && (
+                <>
+                  <div className="flex gap-4 flex-col lg:flex-row">
+                    <Link
+                      to={"/quiz/" + quizId}
+                      className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                      style={{ "--accentColor": courseObject.accentColor }}
+                    >
+                      <DocumentIcon className="h-5" />
+                      <span>View Quiz</span>
+                    </Link>
+                    <button
+                      type="button"
+                      className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                      style={{ "--accentColor": courseObject.accentColor }}
+                    >
+                      <EnvelopeIcon className="h-5" />
+                      <span>Release grades to all students</span>
+                    </button>
+                  </div>
+                  <div className="flex gap-4 flex-col lg:flex-row">
+                    <SubmissionCountCard
+                      accentColor={courseObject.accentColor}
+                      numReceived={10}
+                      numTotal={78}
+                    />
+                    <MarkingProgressCard
+                      accentColor={courseObject.accentColor}
+                      quizId={quizId}
+                      numMarked={1}
+                      numTotal={10}
+                    />
+                    <GradeStatsCard
+                      accentColor={courseObject.accentColor}
+                      averagePercentage={63}
+                      medianPercentage={72}
+                    />
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -228,8 +242,8 @@ function MarkingProgressCard({
   return (
     <Link
       to={"/mark-quiz/" + quizId}
-      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--borderColor] transition"
-      style={{ "--borderColor": accentColor }}
+      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition"
+      style={{ "--accentColor": accentColor }}
     >
       <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
         <div
@@ -261,7 +275,10 @@ function MarkingProgressCard({
 
 function SubmissionCountCard({ accentColor, numReceived = 0, numTotal = 0 }) {
   return (
-    <div className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full">
+    <Link
+      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition"
+      style={{ "--accentColor": accentColor }}
+    >
       <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
         <div
           className="w-1.5 h-3.5"
@@ -274,7 +291,7 @@ function SubmissionCountCard({ accentColor, numReceived = 0, numTotal = 0 }) {
         <span className="mx-2 font-thin">/</span>
         <b>{numTotal}</b>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -284,7 +301,10 @@ function GradeStatsCard({
   medianPercentage = 0,
 }) {
   return (
-    <div className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full">
+    <Link
+      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition"
+      style={{ "--accentColor": accentColor }}
+    >
       <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
         <div
           className="w-1.5 h-3.5"
@@ -316,6 +336,6 @@ function GradeStatsCard({
           </span>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
