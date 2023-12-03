@@ -117,7 +117,9 @@ const QuizPage = () => {
             !result.payload ||
             !result.payload.questionResponses
           ) {
+            navigate("/quiz-info/" + quizId);
             console.error(result.message);
+            return;
           }
           if (result.payload.status === "submitted") {
             navigate("/quiz-info/" + quizId);
