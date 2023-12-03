@@ -9,6 +9,7 @@ import { fetchCourseObject } from "api/CourseApi";
 import { getQuiz } from "api/QuizApi";
 import {
   AdjustmentsIcon,
+  DocumentCheckIcon,
   DocumentIcon,
   EnvelopeIcon,
   PenIcon,
@@ -279,6 +280,14 @@ export default function QuizInfoPage() {
                       <span>Release Grades</span>
                     </button>
                   </div>
+                  <Link
+                    to={"/mark-quiz/" + quizId}
+                    className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <DocumentCheckIcon className="h-5" />
+                    <span>Mark Student Responses</span>
+                  </Link>
                   <div className="flex gap-4 flex-col lg:flex-row">
                     <SubmissionCountCard
                       accentColor={courseObject.accentColor}
@@ -349,10 +358,7 @@ function MarkingProgressCard({
 
 function SubmissionCountCard({ accentColor, numReceived = 0, numTotal = 0 }) {
   return (
-    <Link
-      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition"
-      style={{ "--accentColor": accentColor }}
-    >
+    <div className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full transition">
       <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
         <div
           className="w-1.5 h-3.5"
@@ -365,7 +371,7 @@ function SubmissionCountCard({ accentColor, numReceived = 0, numTotal = 0 }) {
         <span className="mx-2 font-thin">/</span>
         <b>{numTotal}</b>
       </div>
-    </Link>
+    </div>
   );
 }
 
