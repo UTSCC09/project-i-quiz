@@ -12,6 +12,7 @@ import {
   releaseQuiz,
   getMyQuizzes,
   deleteDraftQuiz,
+  generateQuizPDF,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -44,5 +45,8 @@ router
 router
   .route("/course/enrolled/:courseId")
   .get(protect, getQuizzesForEnrolledCourse);
+
+router.route("/generate/:quizId")
+  .get(protect, generateQuizPDF);
 
 export default router;

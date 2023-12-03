@@ -3,7 +3,8 @@ import Badge from "components/elements/Badge.jsx";
 import colors, { inherit } from "tailwindcss/colors";
 import { Link } from "react-router-dom";
 import { isStudentUserType } from "utils/CookieUtils";
-import { generateQuizPDF } from "api/QuizResponseApi";
+import { generateStudentQuizPDF } from "api/QuizResponseApi";
+import { generateInstructorQuizPDF } from "api/QuizApi";
 import DropdownMenu from "components/elements/DropdownMenu";
 import { AdjustmentsIcon } from "components/elements/SVGIcons";
 
@@ -71,18 +72,25 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
 
   if (!isStudent) {
     isAvailable = true;
-  } else {
     quizEditOptions.push({
       label: "Download PDF",
       onClick: () => {
-        generateQuizPDF(quizObject.quizId);
+        generateInstructorQuizPDF(quizObject.quizId);
+      },
+    });
+  } 
+  if (isStudent && responseStatus === 'submitted'){
+    quizEditOptions.push({
+      label: "Download PDF",
+      onClick: () => {
+        generateStudentQuizPDF(quizObject.quizId);
       },
     });
   }
 
   return (
     <>
-      <Link
+    <Link
         to={"/quiz-info/" + quizObject.quizId}
         className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer"
         style={{
@@ -124,19 +132,21 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
           </div>
         </div>
       </Link>
-      <div className="flex gap-2 sm:gap-4 text-gray-700">
-        <div className="flex gap-2 sm:gap-4">
-          <DropdownMenu
-            buttonElement={
-              <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
-                <AdjustmentsIcon className="h-[18px] sm:h-5" />
-              </button>
-            }
-            options={quizEditOptions}
-            menuAlignRight
-          />
+      { quizEditOptions.length !== 0 &&
+        <div className="flex gap-2 sm:gap-4 text-gray-700">
+          <div className="flex gap-2 sm:gap-4">
+            <DropdownMenu
+              buttonElement={
+                <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
+                  <AdjustmentsIcon className="h-[18px] sm:h-5" />
+                </button>
+              }
+              options={quizEditOptions}
+              menuAlignRight
+            />
+          </div>
         </div>
-      </div>
+      }
     </>
   );
 }

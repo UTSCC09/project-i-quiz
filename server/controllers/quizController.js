@@ -1203,6 +1203,48 @@ const getMyQuizzes = asyncHandler(async (req, res) => {
     );
 });
 
+//@route  GET api/quizzes/generate/:quizId
+//@desc   Allow instructor to export quiz to pdf
+//@access Private
+const generateQuizPDF = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  const instructor = await User.findOne({ email: req.session.email });
+  if (!instructor) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  } 
+  else if (instructor.type !== "instructor") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  const quiz = await Quiz.findById(quizId);
+  if (quiz) {
+    const course = await Course.findById(quiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Fail to get course"));
+    }
+    if (course.instructor.toString() !== instructor._id.toString()) {
+      return res.status(400).json(formatMessage(false, "Not the course instructor"));
+    }
+
+    const questions = await getQuestions(quiz._id);
+    let fileName = `${course.courseName}_${quiz.quizName}.pdf`;
+
+    //Sends pdf back in response
+    res.json(formatMessage(true, "Success", {
+      course: course,
+      quiz: quiz,
+      questions: questions,
+      fileName: fileName
+    }));
+    
+  } 
+  else {
+    return res.status(400).json(formatMessage(false, "Fail to get quiz"));
+  }
+
+}); 
+
 /* --- helper functions --- */
 
 /* Edit a question in the database */
@@ -1366,4 +1408,5 @@ export {
   getQuizObject,
   getMyQuizzes,
   getQuestions,
+  generateQuizPDF
 };
