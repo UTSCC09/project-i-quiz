@@ -7,6 +7,7 @@ import sendGradedQuizEmail from "../utils/gradedQuizUtils.js";
 import formatMessage from "../utils/utils.js";
 import { getQuestions } from "./quizController.js";
 
+
 //@route  POST api/courses
 //@desc   Allow instructor to create a course
 //@access Private
