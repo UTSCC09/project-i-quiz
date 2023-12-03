@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "media/iquiz_logo.svg";
 import DropdownMenu from "components/elements/DropdownMenu";
-import { BellIcon, CogIcon, Spinner } from "components/elements/SVGIcons";
+import { BellIcon, CogIcon } from "components/elements/SVGIcons";
 
 export default function NavBar({ additionalButtons }) {
   /* Scroll to top on load */
@@ -20,9 +20,6 @@ export default function NavBar({ additionalButtons }) {
         <div className="flex items-center gap-2 md:gap-4">
           {/* <NotificationButton /> */}
           <SettingsButton />
-          <button className="button-loading btn-primary w-24 flex justify-center">
-            <Spinner />
-          </button>
         </div>
       </div>
     </header>
