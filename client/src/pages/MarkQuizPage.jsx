@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import NavBar from "components/page_components/NavBar";
 import { ChevronIcon } from "components/elements/SVGIcons";
+import { useNavigate, useParams } from "react-router";
 
 const questionResponses = [
   {
@@ -22,8 +23,11 @@ const questionResponses = [
 ];
 
 export default function MarkQuizPage() {
+  const navigate = useNavigate();
+  const { quizId } = useParams();
   const [currResponseIdx, currResponseIdxSet] = useState(0);
   const [selectedScore, selectedScoreSet] = useState(-1);
+
   const gradeRequestsRef = useRef(
     questionResponses.map((item) => {
       return {
@@ -44,6 +48,7 @@ export default function MarkQuizPage() {
             className="btn-outline px-4 text-sm"
             onClick={() => {
               /* TODO: Submit grade request*/
+              navigate("/quiz-info/" + quizId);
             }}
           >
             Finish Grading
