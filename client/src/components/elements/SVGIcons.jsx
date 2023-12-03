@@ -219,6 +219,21 @@ function FileEditIcon({ className }) {
   );
 }
 
+function PenIcon({ className }) {
+  /* [Credit]: svg from https://www.flaticon.com/uicons */
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M1.172,19.119A4,4,0,0,0,0,21.947V24H2.053a4,4,0,0,0,2.828-1.172L18.224,9.485,14.515,5.776Z" />
+      <path d="M23.145.855a2.622,2.622,0,0,0-3.71,0L15.929,4.362l3.709,3.709,3.507-3.506A2.622,2.622,0,0,0,23.145.855Z" />
+    </svg>
+  );
+}
+
 export {
   EllipsisIcon,
   ChevronIcon,
@@ -232,4 +247,5 @@ export {
   AdjustmentsIcon,
   PlusIcon,
   FileEditIcon,
+  PenIcon,
 };
