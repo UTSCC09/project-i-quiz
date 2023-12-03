@@ -200,6 +200,7 @@ export default function QuizInfoPage() {
                   />
                   <MarkingProgressCard
                     accentColor={courseObject.accentColor}
+                    quizId={quizId}
                     numMarked={1}
                     numTotal={10}
                   />
