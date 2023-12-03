@@ -151,12 +151,11 @@ const getRemarkInfoForInstructor = async (quizRemarkId) => {
     });
 };
 
-
 export {
   createQuizRemark,
   getQuizRemark,
   getAllQuizRemarks,
   resolveQuizRemark,
   getRemarkInfoForStudent,
-  getRemarkInfoForInstructor
+  getRemarkInfoForInstructor,
 };

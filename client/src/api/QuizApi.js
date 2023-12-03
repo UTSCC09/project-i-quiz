@@ -265,7 +265,7 @@ const deleteDraftQuiz = async (quizId) => {
     });
 };
 
-const generateInstructorQuizPDF = async(quizId) => {
+const generateInstructorQuizPDF = async (quizId) => {
   return fetch(`/api/quizzes/generate/${quizId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -283,8 +283,11 @@ const generateInstructorQuizPDF = async(quizId) => {
     .then((result) => {
       if (result.success) {
         const data = result.payload;
-        const pdf = generateInstructorPDF(data.course, data.quiz,
-          data.questions);
+        const pdf = generateInstructorPDF(
+          data.course,
+          data.quiz,
+          data.questions
+        );
         if (pdf) {
           pdf.save(data.fileName);
         }
@@ -296,7 +299,6 @@ const generateInstructorQuizPDF = async(quizId) => {
       console.error(err);
     });
 };
-
 
 export {
   createQuiz,
@@ -310,5 +312,5 @@ export {
   updateQuizQuestion,
   releaseQuiz,
   generateInstructorQuizPDF,
-  deleteDraftQuiz
+  deleteDraftQuiz,
 };

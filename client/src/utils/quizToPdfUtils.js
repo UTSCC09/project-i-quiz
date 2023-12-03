@@ -53,9 +53,7 @@ function generateStudentPDF(course, quiz, questions, user, quizResponse) {
       pdf
         .setFont(undefined, "bold")
         .text(
-          `Question ${index + 1}: ${
-            question.prompt ? question.prompt : "N/A"
-          }`,
+          `Question ${index + 1}: ${question.prompt ? question.prompt : "N/A"}`,
           20,
           yPos
         )
@@ -112,12 +110,10 @@ function generateInstructorPDF(course, quiz, questions) {
 
   // Student Name
   pdf.setFontSize(14);
-  pdf.setFont(undefined, "bold")
-    .text(`Name: _________________`, 20, 25);
+  pdf.setFont(undefined, "bold").text(`Name: _________________`, 20, 25);
 
   // Date
-  pdf.text(`Date:   _________________`, 20, 32)
-    .setFont(undefined, "normal");
+  pdf.text(`Date:   _________________`, 20, 32).setFont(undefined, "normal");
 
   // Setting Y-Position
   let yPos = 45;
@@ -128,13 +124,14 @@ function generateInstructorPDF(course, quiz, questions) {
   // Questions
   for (const question of questions) {
     pdf.setFontSize(14);
-    pdf.setFont(undefined, "bold")
+    pdf
+      .setFont(undefined, "bold")
       .text(`Question ${index + 1}`, 20, yPos)
       .setFont(undefined, "normal");
     yPos += 7;
 
-    for (const s of question.prompt.split('\n')) {
-      pdf.text(`${s}`, 20, yPos)
+    for (const s of question.prompt.split("\n")) {
+      pdf.text(`${s}`, 20, yPos);
       yPos += 6;
     }
 
@@ -151,9 +148,7 @@ function generateInstructorPDF(course, quiz, questions) {
       yPos += 50;
     }
 
-
     index += 1;
-  
   }
   return pdf;
 }

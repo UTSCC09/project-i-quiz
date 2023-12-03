@@ -375,7 +375,9 @@ const deleteQuizRemark = asyncHandler(async (req, res) => {
   if (!existingQuizRemark) {
     return res.status(400).json(formatMessage(false, "Invalid quiz remark id"));
   } else if (existingQuizRemark.status !== "resolved") {
-    return res.status(400).json(formatMessage(false, "Remark request isn't resolved yet"));
+    return res
+      .status(400)
+      .json(formatMessage(false, "Remark request isn't resolved yet"));
   }
 
   // get quiz to verify access to the quiz remark deletion
