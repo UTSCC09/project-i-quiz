@@ -177,8 +177,14 @@ const createQuiz = asyncHandler(async (req, res) => {
   if (quiz) {
     courseToAddTo.quizzes.push(quiz._id);
     await courseToAddTo.save();
-    const emails = await getCourseStudentEmails(courseToAddTo._id, instructor.email);
-    await sendQuizInvitation(courseToAddTo, emails, quiz);
+    const emails = await getCourseStudentEmails(
+      courseToAddTo._id,
+      instructor.email
+    );
+
+    if (!isDraft) {
+      await sendQuizInvitation(courseToAddTo, emails, quiz);
+    }
 
     return res
       .status(201)
@@ -1306,10 +1312,12 @@ async function getCourseStudentEmails(courseId, instructorEmail) {
   let emails = [];
   const users = await User.find({});
 
-  users.forEach(function(user) {
+  users.forEach(function (user) {
     for (const course of user.courses) {
-      if (course.courseId.toString() === courseId.toString() 
-      && user.email !== instructorEmail) {
+      if (
+        course.courseId.toString() === courseId.toString() &&
+        user.email !== instructorEmail
+      ) {
         emails.push(user.email);
       }
     }
