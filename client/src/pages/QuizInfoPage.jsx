@@ -45,7 +45,11 @@ const QuizInfoPage = () => {
       setIsLoading(true);
       getQuiz(quizId).then((quizObj) => {
         const quizState = getQuizState(quizObj);
-        if (quizState === "upcoming") {
+
+        if (quizState === "pending") {
+          setPageHeader("Quiz Pending");
+          setMessage("You should not be here. Please contact your instructor for more information");
+        } else if (quizState === "upcoming") {
           setPageHeader("Quiz Unavailable");
           setMessage("This quiz is not available yet.");
         } else {
@@ -132,7 +136,9 @@ function getQuizState(quizObject) {
   const endTime = new Date(quizObject.endTime);
   const currentTime = new Date();
 
-  if (startTime > currentTime) {
+  if (quizObject.isDraft) {
+    return "pending";
+  } else if (startTime > currentTime) {
     return "upcoming";
   } else if (endTime >= currentTime) {
     return "available";

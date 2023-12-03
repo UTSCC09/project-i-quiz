@@ -5,7 +5,7 @@ const QuestionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "Please provide a question"]
   },
-  type : {
+  type: {
     type: String,
     enum: ["MCQ", "MSQ", "CLO", "OEQ"]
   },
@@ -20,13 +20,27 @@ const QuizSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a quiz name"]
   },
+  isDraft: {
+    type: Boolean,
+    required: [true, "Please provide the released status"]
+  },
   startTime: {
     type: Date,
-    required: [true, "Please provide a start time"]
+    required: [
+      function () {
+        return !this.isDraft;
+      },
+      "Please provide a start time"
+    ]
   },
   endTime: {
     type: Date,
-    required: [true, "Please provide an end time"]
+    required: [
+      function () {
+        return !this.isDraft;
+      },
+      "Please provide an end time"
+    ]
   },
   course: {
     type: mongoose.Schema.Types.ObjectId,

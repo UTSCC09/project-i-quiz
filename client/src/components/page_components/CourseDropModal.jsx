@@ -40,7 +40,7 @@ export default function CourseDropModal({
               course that you wish to drop.
             </span>
             <span className="mt-2 text-red-600">
-              <b>Warning:</b> This action can <b>NOT</b> be undone
+              <b>Warning:</b> This action can <b>NOT</b> be undone.
             </span>
           </div>
           <div className="flex flex-col gap-4 sm:grid sm:grid-cols-2 sm:gap-3">

@@ -206,6 +206,7 @@ function PlusIcon({ className }) {
 }
 
 function FileEditIcon({ className }) {
+  /* [Credit]: svg from https://www.flaticon.com/uicons */
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

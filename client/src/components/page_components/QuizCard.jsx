@@ -9,7 +9,9 @@ function getQuizState(quizObject) {
   const endTime = new Date(quizObject.endTime);
   const currentTime = new Date();
 
-  if (startTime > currentTime) {
+  if (quizObject.isDraft) {
+    return "pending";
+  } else if (startTime > currentTime) {
     return "upcoming";
   } else if (endTime >= currentTime) {
     return "available";
@@ -65,6 +67,11 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
     default:
       break;
   }
+
+  if (!isStudentUserType()) {
+    isAvailable = true;
+  }
+
   return (
     <>
       <Link
@@ -88,13 +95,16 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
               <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words mb-1">
                 {quizName}
               </div>
+
               {isStudentUserType() &&
                 (isAvailable && responseStatus !== "submitted" && (
                   <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
                 ))
               }
+
               <Badge label={courseCode} accentColor={accentColor} />
-              {isStudentUserType() &&
+
+              {isStudentUserType() && (
                 (isAvailable &&
                   (
                     responseStatus === "submitted" && (
@@ -115,11 +125,13 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
                     )
                   )
                 )
-              }
+              )}
             </div>
-            <div className="text-gray-500 text-xs font-normal">
-              {quizAvailabilityPrompt}
-            </div>
+            {quizAvailabilityPrompt && (
+              <div className="text-gray-500 text-xs font-normal mt-1">
+                {quizAvailabilityPrompt}
+              </div>
+            )}
           </div>
         </div>
       </Link>

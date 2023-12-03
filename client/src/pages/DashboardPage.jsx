@@ -20,6 +20,7 @@ import {
 import AccessCodeUpdateModal from "components/page_components/AccessCodeUpdateModal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getQuizzesForDashboard } from "api/QuizApi";
+import colors from "tailwindcss/colors";
 
 /* -- API function calls -- */
 
@@ -44,6 +45,7 @@ export default function DashboardPage() {
   const [activeCourseList, activeCourseListSet] = useState();
   const [archivedCourseList, archivedCourseListSet] = useState();
 
+  const [draftQuizList, draftQuizListSet] = useState();
   const [upcomingQuizList, upcomingQuizListSet] = useState();
   const [activeQuizList, activeQuizListSet] = useState();
   const [pastQuizList, pastQuizListSet] = useState();
@@ -89,42 +91,40 @@ export default function DashboardPage() {
       }, 3000);
     });
 
-    getQuizzesForDashboard(
-      "upcoming",
-      isStudent ? "student" : "instructor"
-    ).then((upcomingQuizzes) => {
+    if (!isStudent) {
+      getQuizzesForDashboard("draft").then((fetchedPayload) => {
+        draftQuizListSet(fetchedPayload ?? []);
+      });
+    } else {
+      draftQuizListSet([]);
+    }
+    getQuizzesForDashboard("upcoming").then((upcomingQuizzes) => {
       upcomingQuizListSet(upcomingQuizzes ?? []);
     });
-    getQuizzesForDashboard(
-      "active",
-      isStudent ? "student" : "instructor"
-    ).then((activeQuizzes) => {
+    getQuizzesForDashboard("active").then((activeQuizzes) => {
       activeQuizListSet(activeQuizzes ?? []);
     });
-    getQuizzesForDashboard(
-      "past",
-      isStudent ? "student" : "instructor"
-    ).then((pastQuizzes) => {
+    getQuizzesForDashboard("past").then((pastQuizzes) => {
       pastQuizListSet(pastQuizzes ?? []);
     });
   }
 
   useEffect(() => {
     setSelectedTab(selectedTab);
-    getQuizzesForDashboard(
-      "upcoming",
-      isStudent ? "student" : "instructor"
-    ).then((upcomingQuizzes) => {
+
+    if (!isStudent) {
+      getQuizzesForDashboard("draft").then((fetchedPayload) => {
+        draftQuizListSet(fetchedPayload ?? []);
+      });
+    } else {
+      draftQuizListSet([]);
+    }
+
+    getQuizzesForDashboard("upcoming").then((upcomingQuizzes) => {
       upcomingQuizListSet(upcomingQuizzes ?? []);
-      getQuizzesForDashboard(
-        "active",
-        isStudent ? "student" : "instructor"
-      ).then((activeQuizzes) => {
+      getQuizzesForDashboard("active").then((activeQuizzes) => {
         activeQuizListSet(activeQuizzes ?? []);
-        getQuizzesForDashboard(
-          "past",
-          isStudent ? "student" : "instructor"
-        ).then((pastQuizzes) => {
+        getQuizzesForDashboard("past").then((pastQuizzes) => {
           pastQuizListSet(pastQuizzes ?? []);
           fetchCourses().then((fetchedCourses) => {
             if (fetchedCourses) {
@@ -193,9 +193,11 @@ export default function DashboardPage() {
         courseObject={targetCourseObject}
         archiveCourse={archiveCourse}
         onSuccess={() => {
-          const successMessage = `${targetCourseObject.courseCode} ${targetCourseObject.courseSemester
-            } has been ${targetCourseObject.archived ? "unarchived" : "archived"
-            }`;
+          const successMessage = `${targetCourseObject.courseCode} ${
+            targetCourseObject.courseSemester
+          } has been ${
+            targetCourseObject.archived ? "unarchived" : "archived"
+          }`;
           refetchDataAndShowToast(successMessage);
         }}
       />
@@ -226,8 +228,8 @@ export default function DashboardPage() {
               isStudent
                 ? () => enrollModalShowSet(true)
                 : () => {
-                  courseCreateModalShowSet(true);
-                }
+                    courseCreateModalShowSet(true);
+                  }
             }
           >
             {isStudent ? "Add course" : "Create course"}
@@ -279,6 +281,24 @@ export default function DashboardPage() {
                   <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
                     You have no quizzes
                   </div>
+                )}
+                {draftQuizList.length !== 0 && (
+                  <Accordion
+                    sectionName="Draft Quizzes"
+                    content={
+                      <div className="flex flex-col gap-4 lg:gap-6">
+                        {draftQuizList.map((quizObject, idx) => {
+                          return (
+                            <QuizCard
+                              accentColor={colors.gray[500]}
+                              quizObject={quizObject}
+                              key={idx}
+                            />
+                          );
+                        })}
+                      </div>
+                    }
+                  />
                 )}
                 {activeQuizList.length !== 0 && (
                   <Accordion
@@ -355,11 +375,12 @@ export default function DashboardPage() {
           >
             {activeCourseList && archivedCourseList ? (
               <>
-                {(activeCourseList.length === 0 && archivedCourseList.length === 0) && (
-                  <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                    You have no courses
-                  </div>
-                )}
+                {activeCourseList.length === 0 &&
+                  archivedCourseList.length === 0 && (
+                    <div className="bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                      You have no courses
+                    </div>
+                  )}
                 {activeCourseList.length !== 0 && (
                   <Accordion
                     sectionName={"Active Courses"}
