@@ -529,6 +529,7 @@ const getRemarkInstructorInfo = asyncHandler(async (req, res) => {
 
     return res.json(
       formatMessage(true, "Success", {
+        course: course,
         quiz: quiz,
         questions: questions,
         quizResponse: quizResponse,
