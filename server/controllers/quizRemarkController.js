@@ -345,7 +345,7 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
 });
 
 //@route  DELETE api/quiz-remarks/:quizRemarkId
-//@desc   Allow instructor to update a quiz
+//@desc   Allow instructor to delete a resolved remark request
 //@access Private
 const deleteQuizRemark = asyncHandler(async (req, res) => {
   const { quizRemarkId } = req.params;
@@ -374,6 +374,8 @@ const deleteQuizRemark = asyncHandler(async (req, res) => {
   const existingQuizRemark = await QuizRemark.findById(quizRemarkId);
   if (!existingQuizRemark) {
     return res.status(400).json(formatMessage(false, "Invalid quiz remark id"));
+  } else if (existingQuizRemark.status !== "resolved") {
+    return res.status(400).json(formatMessage(false, "Remark request isn't resolved yet"));
   }
 
   // get quiz to verify access to the quiz remark deletion
