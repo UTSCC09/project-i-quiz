@@ -176,12 +176,14 @@ export default function QuizInfoPage() {
                 )}
 
                 {!isStudent && quizObject && !quizObject.isDraft && (
-                  <Link
-                    to={"/quiz/" + quizId}
-                    className="bg-white shadow-sm h-8 sm:h-10 text-sm px-4 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  >
-                    View Quiz
-                  </Link>
+                  <>
+                    <Link
+                      to={"/quiz/" + quizId}
+                      className="bg-white shadow-sm h-8 sm:h-10 text-sm px-4 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
+                    >
+                      View Quiz
+                    </Link>
+                  </>
                 )}
               </div>
             </div>
@@ -190,11 +192,16 @@ export default function QuizInfoPage() {
           {courseObject && quizObject && (
             <div className="flex flex-col gap-4">
               {!isStudent && (
-                <div className="flex gap-4 flex-col sm:flex-row">
+                <div className="flex gap-4 flex-col lg:flex-row">
                   <SubmissionCountCard
                     accentColor={courseObject.accentColor}
                     numReceived={10}
                     numTotal={78}
+                  />
+                  <MarkingProgressCard
+                    accentColor={courseObject.accentColor}
+                    numMarked={1}
+                    numTotal={10}
                   />
                   <GradeStatsCard
                     accentColor={courseObject.accentColor}
@@ -211,9 +218,48 @@ export default function QuizInfoPage() {
   );
 }
 
+function MarkingProgressCard({
+  accentColor,
+  numMarked = 0,
+  numTotal = 0,
+  quizId,
+}) {
+  return (
+    <Link
+      to={"/mark-quiz/" + quizId}
+      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border transition"
+    >
+      <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
+        <div
+          className="w-1.5 h-3.5"
+          style={{ backgroundColor: accentColor }}
+        ></div>
+        Marking Progress
+      </div>
+      <div className="flex gap-1 items-end">
+        <span
+          className="text-xs font-bold text-gray-500 mb-0.5 opacity-70"
+          style={{ color: accentColor }}
+        >
+          MARKED
+        </span>
+        <span
+          className="text-3xl tracking-tight font-bold"
+          style={{ color: accentColor }}
+        >
+          {numMarked}
+        </span>
+        <span className="text-2xl mx-1 font-thin">/</span>
+        <span className="text-xs font-bold text-gray-500 mb-0.5">TOTAL</span>
+        <span className="text-3xl tracking-tight font-bold">{numTotal}</span>
+      </div>
+    </Link>
+  );
+}
+
 function SubmissionCountCard({ accentColor, numReceived = 0, numTotal = 0 }) {
   return (
-    <div className="h-36 sm:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center">
+    <div className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full">
       <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
         <div
           className="w-1.5 h-3.5"
@@ -222,7 +268,9 @@ function SubmissionCountCard({ accentColor, numReceived = 0, numTotal = 0 }) {
         Submission Count
       </div>
       <div className="text-3xl">
-        <b style={{ color: accentColor }}>{numReceived}</b> / <b>{numTotal}</b>
+        <b style={{ color: accentColor }}>{numReceived}</b>
+        <span className="mx-2 font-thin">/</span>
+        <b>{numTotal}</b>
       </div>
     </div>
   );
@@ -234,7 +282,7 @@ function GradeStatsCard({
   medianPercentage = 0,
 }) {
   return (
-    <div className="h-36 sm:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center">
+    <div className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full">
       <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
         <div
           className="w-1.5 h-3.5"
