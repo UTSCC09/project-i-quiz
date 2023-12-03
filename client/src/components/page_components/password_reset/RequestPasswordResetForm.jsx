@@ -4,13 +4,14 @@ import { getUserCookie } from "utils/CookieUtils";
 import { AnimatePresence, motion } from "framer-motion";
 import SingleLineInput from "components/elements/SingleLineInput";
 import AlertBanner from "components/elements/AlertBanner";
-import { QuestionMarkCircleIcon } from "components/elements/SVGIcons";
+import { QuestionMarkCircleIcon, Spinner } from "components/elements/SVGIcons";
 
 export default function RequestPasswordResetPage({
   stepSet,
   toastMessageSet,
 }) {
   const [helpMessageShow, helpMessageShowSet] = useState(false);
+  const [isLoading, isLoadingSet] = useState(false);
 
   const alertRef = useRef();
   const emailInputRef = useRef();
@@ -30,6 +31,7 @@ export default function RequestPasswordResetPage({
     }
 
     buttonRef.current.classList.add("button-loading");
+    isLoadingSet(true);
 
     const formData = new FormData(e.target);
 
@@ -53,6 +55,7 @@ export default function RequestPasswordResetPage({
           alertRef.current.setMessage(result.message);
           alertRef.current.show();
           buttonRef.current.classList.remove("button-loading");
+          isLoadingSet(false);
         }
       })
       .catch((err) => {
@@ -142,7 +145,7 @@ export default function RequestPasswordResetPage({
           </div>
           <div className="mt-4 col-span-6 flex flex-col items-center">
             <button ref={buttonRef} className="btn-primary">
-              Send code
+              {isLoading ? <Spinner className="-mt-1" /> : "Send code"}
             </button>
           </div>
         </form>
