@@ -1,5 +1,10 @@
 import React from "react";
-import { CheckIcon, FileEditIcon } from "./SVGIcons";
+import {
+  CheckIcon,
+  FileEditIcon,
+  ExclamationTriangleIcon,
+  ClipboardDocumentListIcon
+} from "./SVGIcons";
 
 export default function Badge({ accentColor = "#0366FF", label, iconId }) {
   return (
@@ -12,6 +17,8 @@ export default function Badge({ accentColor = "#0366FF", label, iconId }) {
           <>
             {iconId === "submitted" && <CheckIcon className="h-3 stroke-[5]" />}
             {iconId === "writing" && <FileEditIcon className="h-3" />}
+            {iconId === "missed" && <ExclamationTriangleIcon className="h-3" />}
+            {iconId === "graded" && <ClipboardDocumentListIcon className="h-3" />}
           </>
         )}
         {label}

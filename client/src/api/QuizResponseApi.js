@@ -99,10 +99,7 @@ const submitQuizResponse = async (quizId) => {
       return response.json();
     })
     .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-      }
-      return result.success;
+      return result;
     })
     .catch((err) => {
       console.error(err);

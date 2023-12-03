@@ -17,7 +17,7 @@ function getQuizState(quizObject) {
     return "pending";
   } else if (startTime > currentTime) {
     return "upcoming";
-  } else if (endTime > currentTime) {
+  } else if (endTime >= currentTime) {
     return "available";
   } else {
     return "closed";
@@ -45,12 +45,16 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   const startTime = new Date(quizObject.startTime);
   const endTime = new Date(quizObject.endTime);
   const responseStatus = quizObject.responseStatus;
+  const isGradeReleased = quizObject.isGradeReleased;
   const quizState = getQuizState(quizObject);
   const startTimeStr = getFormattedDateStr(startTime);
   const endTimeStr = getFormattedDateStr(endTime);
 
-  let quizAvailabilityPrompt, isAvailable;
-  let isStudent = isStudentUserType();
+  let quizAvailabilityPrompt;
+  let isUpcoming = false;
+  let isAvailable = false;
+  let isClosed = false;
+  const isStudent = isStudentUserType();
   let quizEditOptions = [];
 
   switch (quizState) {
@@ -60,11 +64,11 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
       break;
     case "upcoming":
       quizAvailabilityPrompt = "Unlocks on " + startTimeStr;
-      isAvailable = false;
+      isUpcoming = true;
       break;
     case "closed":
       quizAvailabilityPrompt = "Closed on " + endTimeStr;
-      isAvailable = false;
+      isClosed = true;
       break;
     default:
       break;
@@ -95,8 +99,8 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
         className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer"
         style={{
           borderLeftColor: accentColor,
-          pointerEvents: isAvailable ? "auto" : "none",
-          opacity: isAvailable ? 1 : 0.5,
+          //pointerEvents: isUpcoming ? "none" : "auto",
+          opacity: isUpcoming ? 0.5 : 1,
         }}
       >
         <div
@@ -108,20 +112,39 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
         >
           <div className="flex-col justify-center items-start inline-flex">
             <div className="items-center gap-2.5 inline-flex w-full overflow-hidden">
-              <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words">
+              <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words mb-1">
                 {quizName}
               </div>
-              {isAvailable &&
-                isStudentUserType() &&
-                responseStatus !== "submitted" && (
+
+              {isStudent &&
+                (isAvailable && responseStatus !== "submitted" && (
                   <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
-                )}
+                ))
+              }
+
               <Badge label={courseCode} accentColor={accentColor} />
-              {responseStatus === "submitted" && (
-                <Badge iconId="submitted" accentColor={colors.green[600]} />
-              )}
-              {(responseStatus === "writing" || quizState === "pending") && (
-                <Badge iconId="writing" accentColor={colors.gray[500]} />
+
+              {isStudent && (
+                (isAvailable &&
+                  (
+                    responseStatus === "submitted" && (
+                      <Badge iconId="submitted" accentColor={colors.green[600]} />
+                    ) ||
+                    responseStatus === "writing" && (
+                      <Badge iconId="writing" accentColor={colors.gray[500]} />
+                    )
+                  )
+                ) ||
+                (isClosed &&
+                  (
+                    responseStatus !== "submitted" && (
+                      <Badge iconId="missed" accentColor={colors.red[500]} />
+                    ) ||
+                    isGradeReleased && (
+                      <Badge iconId="graded" accentColor={colors.green[500]} />
+                    )
+                  )
+                )
               )}
             </div>
             {quizAvailabilityPrompt && (

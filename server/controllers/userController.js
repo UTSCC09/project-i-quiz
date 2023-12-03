@@ -228,7 +228,7 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
     .status(400)
-    .json(formatMessage(false, "Mongoose error finding user"));    
+    .json(formatMessage(false, "Mongoose error finding user", null, error));    
   }
 
   //Generate, store and send password reset code
@@ -281,7 +281,7 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
     .status(400)
-    .json(formatMessage(false, "Mongoose error finding user"));    
+    .json(formatMessage(false, "Mongoose error finding user", null, error));    
   }
 
   //Verify code
@@ -334,7 +334,7 @@ const resetPassword = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
     .status(400)
-    .json(formatMessage(false, "Mongoose error finding user"));    
+    .json(formatMessage(false, "Mongoose error finding user", null, error));    
   }
 
   //Salt and hash new password
