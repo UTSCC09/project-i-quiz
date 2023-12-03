@@ -3,6 +3,8 @@ import formatMessage from "../utils/utils.js";
 import QuizResponse from "../models/QuizResponse.js";
 import User from "../models/User.js";
 import Quiz from "../models/Quiz.js";
+import { getQuestions } from "./quizController.js";
+import Course from "../models/Course.js";
 
 //@route  POST api/quiz-responses
 //@desc   Allow student to create a quiz response
@@ -390,6 +392,44 @@ const gradeStudentQuizResponse = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  GET api/quiz-responses/generate/:quizId
+//@desc   Allow student to export quiz to pdf
+//@access Private
+const generateQuizPDF = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  const student = await User.findOne({ email: req.session.email });
+  if (!student) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  } 
+  else if (student.type !== "student") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
+  if (quizResponse) {
+    const quiz = await Quiz.findById(quizResponse.quiz);
+    const course = await Course.findById(quiz.course);
+    const questions = await getQuestions(quiz._id);
+    let fileName = `${quiz.quizName}_${student.firstName}_${student.lastName}.pdf`;
+
+    //Sends pdf back in response
+    res.json(formatMessage(true, "Success", {
+      course: course,
+      quiz: quiz,
+      questions: questions,
+      user: student,
+      quizResponse: quizResponse,
+      fileName: fileName
+    }));
+    
+  } 
+  else {
+    return res.status(400).json(formatMessage(false, "Fail to get quiz response"));
+  }
+
+}); 
+
 export {
   createQuizResponse,
   getAllMyQuizResponses,
@@ -397,5 +437,6 @@ export {
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
   submitMyResponseForQuiz,
-  gradeStudentQuizResponse
+  gradeStudentQuizResponse,
+  generateQuizPDF
 };
