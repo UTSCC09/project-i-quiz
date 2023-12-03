@@ -209,14 +209,6 @@ export default function QuizInfoPage() {
             </div>
             <div className="flex gap-2 sm:gap-4 text-gray-700">
               <div className="flex gap-2 sm:gap-4">
-                {!isStudent && quizObject && quizObject.isDraft && (
-                  <Link
-                    to={"/quiz/" + quizId}
-                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
-                  >
-                    <PenIcon className="h-3" />
-                  </Link>
-                )}
                 <DropdownMenu
                   buttonElement={
                     <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
@@ -256,6 +248,16 @@ export default function QuizInfoPage() {
                   </Link>
                 </div>
               )}
+              {!isStudent && quizObject && quizObject.isDraft && (
+                <Link
+                  to={"/quiz/" + quizId}
+                  className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                  style={{ "--accentColor": courseObject.accentColor }}
+                >
+                  <PenIcon className="h-3" />
+                  <span>Edit Draft</span>
+                </Link>
+              )}
               {!isStudent && quizObject && !quizObject.isDraft && (
                 <>
                   <div className="flex gap-4 flex-col lg:flex-row">
@@ -274,7 +276,7 @@ export default function QuizInfoPage() {
                       style={{ "--accentColor": courseObject.accentColor }}
                     >
                       <EnvelopeIcon className="h-5" />
-                      <span>Release grades to all students</span>
+                      <span>Release Grades</span>
                     </button>
                   </div>
                   <div className="flex gap-4 flex-col lg:flex-row">
