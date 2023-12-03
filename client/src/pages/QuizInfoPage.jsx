@@ -228,7 +228,8 @@ function MarkingProgressCard({
   return (
     <Link
       to={"/mark-quiz/" + quizId}
-      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border transition"
+      className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--borderColor] transition"
+      style={{ "--borderColor": accentColor }}
     >
       <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
         <div
