@@ -13,6 +13,7 @@ import {
   DocumentIcon,
   EnvelopeIcon,
   PenIcon,
+  Spinner
 } from "components/elements/SVGIcons";
 import colors from "tailwindcss/colors";
 import {
@@ -27,15 +28,16 @@ export default function QuizInfoPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { quizId } = useParams();
+  const alertRef = useRef();
+  const isStudent = isStudentUserType();
+  
   const { passInCourseObject } = useState() ?? {};
   const [courseObject, courseObjectSet] = useState(passInCourseObject ?? null);
   const [quizObject, quizObjectSet] = useState();
   const [gradeReleaseModalShow, gradeReleaseModalShowSet] = useState();
-  const alertRef = useRef();
-
   const [toastMessage, toastMessageSet] = useState();
-
-  const isStudent = isStudentUserType();
+  const [isLoading, isLoadingSet] = useState(true);
+  const [studentQuizCase, studentQuizCaseSet] = useState();
 
   let quizOptions = [
     {
@@ -45,7 +47,6 @@ export default function QuizInfoPage() {
       },
     },
   ];
-  const [quizResponseStatus, quizResponseStatusSet] = useState(false);
 
   const onStartQuiz = () => {
     const questionResponses = quizObject.questions.map((question) => {
@@ -54,12 +55,14 @@ export default function QuizInfoPage() {
         response: [""],
       };
     });
+    isLoadingSet(true);
     createQuizReponse(quizId, questionResponses).then((payload) => {
       if (payload) {
         navigate("/quiz/" + quizId);
       } else {
         alert("Failed to create blank quiz response");
       }
+      isLoadingSet(false);
     });
   };
 
@@ -73,30 +76,57 @@ export default function QuizInfoPage() {
       }, 3000);
     }
 
-    getQuiz(quizId).then((quizPayload) => {
-      quizObjectSet(quizPayload);
-      fetchCourseObject(quizPayload.courseId).then((result) => {
+    isLoadingSet(true);
+    getQuiz(quizId).then((quizObject) => {
+      quizObjectSet(quizObject);
+      fetchCourseObject(quizObject.courseId).then((result) => {
         courseObjectSet(result.payload);
+        if (isStudent) {
+          const quizState = getQuizState(quizObject);
+
+          if (quizState === "pending" || quizState === "upcoming") {
+            studentQuizCaseSet("invalid");
+          } else {
+            getQuizResponse(quizId).then((result) => {
+              //case 1: no response found
+              if (!result.success && result.message === "No response found for this quiz") {
+                //subcase 1: quiz is closed
+                if (quizState === "closed") {
+                  studentQuizCaseSet("missed");
+                } else { //subcase 2: quiz is available
+                  studentQuizCaseSet("canStart");
+                }
+              }
+              //case 2: response found, but not submitted
+              else if (result.success && result.payload.status !== "submitted") {
+                //subcase 1: quiz is closed
+                if (quizState === "closed") {
+                  studentQuizCaseSet("missed");
+                } else { //subcase 2: quiz is available
+                  studentQuizCaseSet("canContinue");
+                }
+              }
+              //case 3: response found, and submitted
+              //subcase 1: quiz grade not released
+              else if (!result.success && result.message === "Quiz grades not released yet") {
+                studentQuizCaseSet("notGraded");
+              }
+              //subcase 2: quiz grade released
+              else if (result.success && result.payload.status === "submitted") { //Assume grade released due to backned logic
+                studentQuizCaseSet("graded");
+              }
+              //case 4: error
+              else {
+                console.error(result.message);
+                alert("Failed to fetch quiz response");
+              }
+              isLoadingSet(false);
+            });
+          }
+        }
+        isLoadingSet(false);
       });
     });
-
-    if (isStudent) {
-      getQuizResponse(quizId).then((result) => {
-        if (
-          !result.success &&
-          result.message === "No response found for this quiz"
-        ) {
-          getQuiz(quizId).then((payload) => {
-            quizObjectSet(payload);
-          });
-        } else if (result.success) {
-          quizResponseStatusSet(result.payload.status);
-        } else {
-          console.error(result.message);
-          alert("Failed to fetch quiz response");
-        }
-      });
-    }
   }, [isStudent, location.state, navigate, quizId, toastMessageSet]);
 
   return (
@@ -149,13 +179,13 @@ export default function QuizInfoPage() {
                     });
                   }}
                 >
-                  Confirm
+                  {isLoading ? <Spinner className="-mt-1" /> : "Confirm"}
                 </button>
                 <button
                   className="btn-secondary"
                   onClick={() => gradeReleaseModalShowSet(false)}
                 >
-                  Cancel
+                  {isLoading ? <Spinner className="-mt-1" /> : "Cancel"}
                 </button>
               </div>
             </div>
@@ -172,7 +202,9 @@ export default function QuizInfoPage() {
                   <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1 max-w-full line-clamp-2 text-ellipsis break-words">
                     {quizObject.quizName}
                   </span>
-                  {isStudent && quizResponseStatus !== "submitted" && (
+                  {isStudent && (
+                    studentQuizCase === "canStart" || studentQuizCase === "canContinue"
+                    ) && (
                     <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
                   )}
                   {courseObject && (
@@ -185,11 +217,67 @@ export default function QuizInfoPage() {
                       accentColor={courseObject.accentColor}
                     />
                   )}
-                  {((isStudent && quizResponseStatus === "writing") ||
-                    (!isStudent && quizObject.isDraft)) && (
+                  {isStudent ? (
+                    studentQuizCase === "invalid" && (
+                      <h1 className="text-red-500 text-sm ml-0.5">
+                        YOU SHOULD NOT BE HERE!!
+                      </h1>
+                    ) ||
+                    studentQuizCase === "missed" && (
+                      <Badge
+                        iconId={"missed"}
+                        label={"Missed"}
+                        accentColor={colors.red[500]}
+                      />
+                    ) ||
+                    studentQuizCase === "canContinue" && (
+                      <Badge
+                        iconId={"writing"}
+                        label={"Writing"}
+                        accentColor={colors.gray[500]}
+                      />
+                    ) ||
+                    studentQuizCase === "notGraded" && (
+                      <>
+                        <Badge
+                          iconId={"submitted"}
+                          label={"Submitted"}
+                          accentColor={colors.green[500]}
+                        />
+                        <Badge
+                          iconId={"gradingInPrg"}
+                          label={"Not Graded"}
+                          accentColor={colors.gray[500]}
+                        />
+                      </>
+                    ) ||
+                    studentQuizCase === "graded" && (
+                      <Badge
+                        iconId={"graded"}
+                        label={"Graded"}
+                        accentColor={colors.blue[600]}
+                      />
+                    )
+                  ) : (
+                    quizObject.isDraft && (
+                      <Badge
+                        iconId={"writing"}
+                        label={"Draft"}
+                        accentColor={colors.gray[500]}
+                      />
+                    )
+                  )}
+                  {/* {!isStudent && quizObject.isDraft && (
                     <Badge
                       iconId={"writing"}
                       label={"Draft"}
+                      accentColor={colors.gray[500]}
+                    />
+                  )}
+                  {isStudent && studentQuizCase === "canContinue" && (
+                    <Badge
+                      iconId={"writing"}
+                      label={"Writing"}
                       accentColor={colors.gray[500]}
                     />
                   )}
@@ -199,7 +287,7 @@ export default function QuizInfoPage() {
                       label={"Submitted"}
                       accentColor={colors.green[500]}
                     />
-                  )}
+                  )} */}
                 </div>
               )}
               {courseObject && (
@@ -225,7 +313,123 @@ export default function QuizInfoPage() {
           {/* Body */}
           {courseObject && quizObject && (
             <div className="flex flex-col gap-4">
-              {isStudent && !quizResponseStatus && (
+              {isStudent ? (
+                studentQuizCase === "invalid" && (
+                  <h1 className="text-red-500 text-sm ml-0.5">
+                    YOU SHOULD NOT BE HERE!!
+                  </h1>
+                ) ||
+                studentQuizCase === "missed" && (
+                  <p className="text-lg">
+                    Seems like you missed the deadline for this quiz.
+                    Please contact your instructor for more information.
+                  </p>
+                ) ||
+                studentQuizCase === "canStart" && (
+                  <div className="flex gap-4 flex-col lg:flex-row">
+                    <button
+                      className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                      style={{ "--accentColor": courseObject.accentColor }}
+                      onClick={onStartQuiz}
+                    >
+                      {isLoading ? <Spinner className="-mt-1" /> : (
+                        <>
+                          <PenIcon className="h-3" />
+                          <span>Start Quiz</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ) ||
+                studentQuizCase === "canContinue" && (
+                  <div className="flex gap-4 flex-col lg:flex-row">
+                    <Link
+                      to={"/quiz/" + quizId}
+                      className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                      style={{ "--accentColor": courseObject.accentColor }}
+                    >
+                      <PenIcon className="h-3" />
+                      <span>Continue Writing</span>
+                    </Link>
+                  </div>
+                ) ||
+                studentQuizCase === "notGraded" && (
+                  <p className="text-lg">
+                    Your instructor is working on the grades.
+                    Please check back later.
+                  </p>
+                ) ||
+                studentQuizCase === "graded" && (
+                  <p className="text-lg">
+                    Your quiz grade.
+                  </p>
+                )
+              ) : (
+                quizObject.isDraft ? (
+                  <Link
+                    to={"/quiz/" + quizId}
+                    className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <PenIcon className="h-3" />
+                    <span>Edit Draft</span>
+                  </Link>
+                ) : (
+                  <>
+                    <div className="flex gap-4 flex-col lg:flex-row">
+                      <Link
+                        to={"/quiz/" + quizId}
+                        className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                        style={{ "--accentColor": courseObject.accentColor }}
+                      >
+                        <DocumentIcon className="h-5" />
+                        <span>View Quiz</span>
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => gradeReleaseModalShowSet(true)}
+                        className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                        style={{ "--accentColor": courseObject.accentColor }}
+                      >
+                        {isLoading ? <Spinner className="-mt-1" /> : (
+                          <>
+                            <EnvelopeIcon className="h-5" />
+                            <span>Release Grades</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    <Link
+                      to={"/mark-quiz/" + quizId}
+                      className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                      style={{ "--accentColor": courseObject.accentColor }}
+                    >
+                      <DocumentCheckIcon className="h-5" />
+                      <span>Mark Student Responses</span>
+                    </Link>
+                    <div className="flex gap-4 flex-col lg:flex-row">
+                      <SubmissionCountCard
+                        accentColor={courseObject.accentColor}
+                        numReceived={10}
+                        numTotal={78}
+                      />
+                      <MarkingProgressCard
+                        accentColor={courseObject.accentColor}
+                        quizId={quizId}
+                        numMarked={1}
+                        numTotal={10}
+                      />
+                      <GradeStatsCard
+                        accentColor={courseObject.accentColor}
+                        averagePercentage={63}
+                        medianPercentage={72}
+                      />
+                    </div>
+                  </>
+                )
+              )}
+
+              {/* {isStudent && studentQuizCase === "canStart" && (
                 <div className="flex gap-4 flex-col lg:flex-row">
                   <button
                     className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
@@ -237,7 +441,7 @@ export default function QuizInfoPage() {
                   </button>
                 </div>
               )}
-              {isStudent && quizResponseStatus === "writing" && (
+              {isStudent && studentQuizCase === "canContinue" && (
                 <div className="flex gap-4 flex-col lg:flex-row">
                   <Link
                     to={"/quiz/" + quizId}
@@ -249,7 +453,7 @@ export default function QuizInfoPage() {
                   </Link>
                 </div>
               )}
-              {!isStudent && quizObject && quizObject.isDraft && (
+              {!isStudent && quizObject.isDraft && (
                 <Link
                   to={"/quiz/" + quizId}
                   className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
@@ -259,7 +463,7 @@ export default function QuizInfoPage() {
                   <span>Edit Draft</span>
                 </Link>
               )}
-              {!isStudent && quizObject && !quizObject.isDraft && (
+              {!isStudent && !quizObject.isDraft && (
                 <>
                   <div className="flex gap-4 flex-col lg:flex-row">
                     <Link
@@ -307,13 +511,29 @@ export default function QuizInfoPage() {
                     />
                   </div>
                 </>
-              )}
+              )} */}
             </div>
           )}
         </main>
       </div>
     </>
   );
+}
+
+function getQuizState(quizObject) {
+  const startTime = new Date(quizObject.startTime);
+  const endTime = new Date(quizObject.endTime);
+  const currentTime = new Date();
+
+  if (quizObject.isDraft) {
+    return "pending";
+  } else if (startTime > currentTime) {
+    return "upcoming";
+  } else if (endTime >= currentTime) {
+    return "available";
+  } else {
+    return "closed";
+  }
 }
 
 function MarkingProgressCard({
