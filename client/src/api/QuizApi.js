@@ -21,52 +21,6 @@ const createQuiz = async (quizData) => {
     });
 };
 
-const releaseQuiz = async (quizId, startTime, endTime) => {
-  return fetch(`/api/quizzes/${quizId}/release`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-    body: JSON.stringify({ startTime: startTime, endTime: endTime }),
-  })
-    .then(async (response) => {
-      if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
-          window.location.reload();
-        });
-      }
-      return response.json();
-    })
-    .then((result) => {
-      return result;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
-
-const updateQuiz = async (quizData) => {
-  return fetch("/api/quizzes/update", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-    body: JSON.stringify(quizData),
-  })
-    .then(async (response) => {
-      if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
-          window.location.reload();
-        });
-      }
-      return response.json();
-    })
-    .then((result) => {
-      return result;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
-
 const getQuiz = async (quizId) => {
   return fetch(`/api/quizzes/${quizId}/questions`, {
     method: "GET",
@@ -87,28 +41,6 @@ const getQuiz = async (quizId) => {
         return null;
       }
       return result.payload;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
-
-const deleteDraftQuiz = async (quizId) => {
-  return fetch(`/api/quizzes/${quizId}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-  })
-    .then(async (response) => {
-      if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
-          window.location.reload();
-        });
-      }
-      return response.json();
-    })
-    .then((result) => {
-      return result;
     })
     .catch((err) => {
       console.error(err);
@@ -193,12 +125,12 @@ const getQuizzesForEnrolledCourse = async (courseId) => {
     });
 };
 
-const basicUpdateQuiz = async (basicQuizUpdateData) => {
-  return fetch("/api/quizzes", {
-    method: "PATCH",
+const updateQuiz = async (quizData) => {
+  return fetch("/api/quizzes/update", {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
-    body: JSON.stringify(basicQuizUpdateData),
+    body: JSON.stringify(quizData),
   })
     .then(async (response) => {
       if (response.status === 401) {
@@ -216,12 +148,12 @@ const basicUpdateQuiz = async (basicQuizUpdateData) => {
     });
 };
 
-const updateQuizQuestion = async (quizQuestionUpdateData) => {
-  return fetch("/api/quizzes/question", {
+const basicUpdateQuiz = async (basicQuizUpdateData) => {
+  return fetch("/api/quizzes", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
-    body: JSON.stringify(quizQuestionUpdateData),
+    body: JSON.stringify(basicQuizUpdateData),
   })
     .then(async (response) => {
       if (response.status === 401) {
@@ -262,16 +194,85 @@ const addQuizQuestions = async (quizQuestionsData) => {
     });
 };
 
+const updateQuizQuestion = async (quizQuestionUpdateData) => {
+  return fetch("/api/quizzes/question", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify(quizQuestionUpdateData),
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+const releaseQuiz = async (quizId, startTime, endTime) => {
+  return fetch(`/api/quizzes/${quizId}/release`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify({ startTime: startTime, endTime: endTime }),
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      console.log(response);
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+const deleteDraftQuiz = async (quizId) => {
+  return fetch(`/api/quizzes/${quizId}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 export {
   createQuiz,
-  updateQuiz,
   getQuiz,
-  deleteDraftQuiz,
   getQuizzesForDashboard,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
+  updateQuiz,
   basicUpdateQuiz,
-  updateQuizQuestion,
   addQuizQuestions,
+  updateQuizQuestion,
   releaseQuiz,
+  deleteDraftQuiz
 };

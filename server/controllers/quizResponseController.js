@@ -23,7 +23,7 @@ const createQuizResponse = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Verify all fields exist
@@ -38,7 +38,7 @@ const createQuizResponse = asyncHandler(async (req, res) => {
       return res.status(400).json(formatMessage(false, "Quiz response already exists"));
     }
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Mongoose error finding existing quiz response"));
+    return res.status(400).json(formatMessage(false, "Mongoose error finding existing quiz response", null, error));
   }
 
   let quiz;
@@ -50,6 +50,8 @@ const createQuizResponse = asyncHandler(async (req, res) => {
       (course) => course.courseId.toString() === quiz.course.toString()
       )) {
       return res.status(403).json(formatMessage(false, "Student not enrolled in course"));
+    } else if (quiz.isDraft) {
+      return res.status(403).json(formatMessage(false, "Unreleased quiz"));
     }
 
     const startTime = new Date(quiz.startTime);
@@ -65,7 +67,7 @@ const createQuizResponse = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz"));
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   //Verify question responses have same questions as quiz
@@ -87,7 +89,7 @@ const createQuizResponse = asyncHandler(async (req, res) => {
       return res.status(201).json(formatMessage(true, "Quiz response created successfully", quizResponse));
     }
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Mongoose error creating quiz response"));
+    return res.status(400).json(formatMessage(false, "Mongoose error creating quiz response", null, error));
   }
 });
 
@@ -106,14 +108,14 @@ const getAllMyQuizResponses = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   try {
     const quizResponses = await QuizResponse.find({ student: student._id });
     return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses"));
+    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses", null, error));
   }
 });
 
@@ -134,17 +136,22 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   try {
     const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
-    if (quizResponse) {
+    if (!quizResponse) {
+      return res.status(400).json(formatMessage(false, "No response found for this quiz"));
+    } 
+    const quiz = await Quiz.findById(quizId);
+    if (quizResponse.status === "submitted" && !quiz.isGradeReleased) {
+      return res.status(403).json(formatMessage(false, "Quiz grades not released yet"));
+    } else {
       return res.status(200).json(formatMessage(true, "Quiz response fetched successfully", quizResponse));
     }
-    return res.status(400).json(formatMessage(false, "No response found for this quiz"));
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz response"));
+    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz response", null, error));
   }
 });
 
@@ -166,7 +173,7 @@ const editMyResponseForQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Verify all fields exist
@@ -185,7 +192,7 @@ const editMyResponseForQuiz = asyncHandler(async (req, res) => {
       return res.status(400).json(formatMessage(false, "Quiz response already submitted"));
     }
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Mongoose error finding existing quiz response"));
+    return res.status(400).json(formatMessage(false, "Mongoose error finding existing quiz response", null, error));
   }
 
   let quiz;
@@ -205,7 +212,7 @@ const editMyResponseForQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding quiz"));
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   //Verify question responses have same questions as quiz
@@ -240,7 +247,7 @@ const submitMyResponseForQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   //Verify question response validity
@@ -289,7 +296,7 @@ const getAllStudentResponsesForQuiz = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .json(formatMessage(false, "Mongoose error finding user"));
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
   }
 
   try {
@@ -302,7 +309,7 @@ const getAllStudentResponsesForQuiz = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz"));
+    return res.status(400).json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
   try {
@@ -311,7 +318,77 @@ const getAllStudentResponsesForQuiz = asyncHandler(async (req, res) => {
       return res.status(200).json(formatMessage(true, "Quiz responses fetched successfully", quizResponses));
     }
   } catch (error) {
-    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses"));
+    return res.status(400).json(formatMessage(false, "Mongoose error fetching quiz responses", null, error));
+  }
+});
+
+//@route  PATCH api/quiz-responses/grade
+//@desc   Allow instructor to grade a student's quiz response (not necessarily all questions)
+//@access Private
+const gradeStudentQuizResponse = asyncHandler(async (req, res) => {
+  const { quizId, studentId, questionGrades, isFullyGraded } = req.body;
+
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
+  }
+
+  //Verify all fields exist
+  if (!quizId || !studentId || !questionGrades || isFullyGraded === undefined) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  let quizResponse;
+  try {
+    const quiz = await Quiz.findById(quizId);
+    const quizCourse = quiz.course;
+    if (!instructor.courses.some(
+      (course) => course.courseId.toString() === quizCourse.toString()
+      )) {
+      return res.status(403).json(formatMessage(false, "Instructor does not instruct course"));
+    }
+
+    quizResponse = await QuizResponse.findOne({ quiz: quizId, student: studentId });
+    if (!quizResponse) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz response"));
+    } else if (quizResponse.status !== "submitted") {
+      return res.status(400).json(formatMessage(false, "Quiz response not submitted"));
+    }
+    const currentTime = new Date();
+    const endTime = new Date(quiz.endTime);
+    if (endTime > currentTime) {
+      return res.status(400).json(formatMessage(false, "Quiz is still open"));
+    }
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error validating quiz response", null, error));
+  }
+
+  try {
+    for (const questionGrade of questionGrades) {
+      const questionIdx = quizResponse.questionResponses.findIndex(
+        (questionResponse) => questionResponse.question.toString() === questionGrade.question.toString()
+      );
+      if (questionIdx === -1) {
+        return res.status(400).json(formatMessage(false, "Invalid question id"));
+      }
+      quizResponse.questionResponses[questionIdx].score = questionGrade.score;
+      quizResponse.questionResponses[questionIdx].comment = questionGrade.comment;
+    }
+    quizResponse.graded = isFullyGraded ? "fully" : "partially";    
+    await quizResponse.save();
+    return res.status(200).json(formatMessage(true, "Quiz response graded successfully", quizResponse));
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(formatMessage(false, "Error grading quiz response", null, error));
   }
 });
 
@@ -360,5 +437,6 @@ export {
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
   submitMyResponseForQuiz,
-  generateQuizPDF,
+  gradeStudentQuizResponse,
+  generateQuizPDF
 };

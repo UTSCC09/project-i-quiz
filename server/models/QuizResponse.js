@@ -12,6 +12,10 @@ const QuestionResponseSchema = new mongoose.Schema({
   score: {
     type: Number,
     default: 0
+  },
+  comment: {
+    type: String,
+    default: ""
   }
 });
 
@@ -30,6 +34,11 @@ const QuizResponseSchema = new mongoose.Schema({
     type: String,
     enum: ["writing", "submitted"],
     default: "writing"
+  },
+  graded: {
+    type: String,
+    enum: ["not", "partially", "fully"],
+    default: "not"
   },
   questionResponses: [QuestionResponseSchema],
 });
