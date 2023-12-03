@@ -133,7 +133,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
                       <Badge iconId="missed" accentColor={colors.red[500]} />
                     ) ||
                     isGradeReleased && (
-                      <Badge iconId="graded" accentColor={colors.green[500]} />
+                      <Badge iconId="graded" accentColor={colors.blue[600]} />
                     )
                   )
                 )

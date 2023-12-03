@@ -17,8 +17,8 @@ export default function Badge({ accentColor = "#0366FF", label, iconId }) {
           <>
             {iconId === "submitted" && <CheckIcon className="h-3 stroke-[5]" />}
             {iconId === "writing" && <FileEditIcon className="h-3" />}
-            {iconId === "missed" && <ExclamationTriangleIcon className="h-3" />}
-            {iconId === "graded" && <ClipboardDocumentListIcon className="h-3" />}
+            {iconId === "missed" && <ExclamationTriangleIcon className="h-3 stroke-[3]" />}
+            {iconId === "graded" && <ClipboardDocumentListIcon className="h-3 stroke-[2]" />}
           </>
         )}
         {label}
