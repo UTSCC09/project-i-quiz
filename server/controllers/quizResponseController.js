@@ -447,7 +447,7 @@ export {
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
   submitMyResponseForQuiz,
-  generateQuizPDF,
+  getQuizResponse,
   gradeStudentQuizResponse,
   generateQuizPDF
 };
