@@ -15,8 +15,14 @@
   .input-invalid-state {
     @apply ring ring-red-200;
   }
+  .btn-disabled {
+    @apply opacity-50 pointer-events-none;
+  }
   .button-loading {
     @apply pointer-events-none opacity-60 animate-pulse;
+  }
+  .simple-input {
+    @apply border py-2 px-3 rounded-md outline-none focus:ring ring-blue-200 transition-all;
   }
 }
 
