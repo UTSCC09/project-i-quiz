@@ -30,7 +30,7 @@ const sendQuizInvitation = async (course, emails, quiz) => {
           <p>The quiz will start on <b>${quiz.startTime.toUTCString()}</b> and end on <b>${quiz.endTime.toUTCString()}</b>.</p>
           <p>Be prepared and good luck!</p>
           <p><a href=${
-            frontendUrl + "quiz/" + quiz._id
+            frontendUrl + "quiz-info/" + quiz._id
           }>Click here to view the quiz!</p>
           <p>Best,</p>
           <p>iQuiz Team</p>
