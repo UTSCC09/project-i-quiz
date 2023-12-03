@@ -101,9 +101,62 @@ const resolveQuizRemark = async (quizRemarkId, questionRemarks) => {
     });
 };
 
+const getRemarkInfoForStudent = async (quizRemarkId) => {
+  return fetch(`/api/quiz-remarks/studentInfo/${quizRemarkId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      if (!result.success) {
+        console.error(result.message);
+      }
+      return result.payload;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+const getRemarkInfoForInstructor = async (quizRemarkId) => {
+  return fetch(`/api/quiz-remarks/instructorInfo/${quizRemarkId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      if (!result.success) {
+        console.error(result.message);
+      }
+      return result.payload;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+
 export {
   createQuizRemark,
   getQuizRemark,
   getAllQuizRemarks,
   resolveQuizRemark,
+  getRemarkInfoForStudent,
+  getRemarkInfoForInstructor
 };

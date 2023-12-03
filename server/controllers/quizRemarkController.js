@@ -5,6 +5,8 @@ import User from "../models/User.js";
 import Quiz from "../models/Quiz.js";
 import Course from "../models/Course.js";
 import QuizResponse from "../models/QuizResponse.js";
+import { getQuestions } from "./quizController.js";
+import { getQuizResponse } from "./quizResponseController.js";
 
 //@route  POST api/quiz-remarks/
 //@desc   Allow student to create a quiz remark request
@@ -342,9 +344,210 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
     .json(formatMessage(true, "Quiz remark resolved successfully"));
 });
 
+//@route  DELETE api/quiz-remarks/:quizRemarkId
+//@desc   Allow instructor to update a quiz
+//@access Private
+const deleteQuizRemark = asyncHandler(async (req, res) => {
+  const { quizRemarkId } = req.params;
+
+  //Verify all fields exist
+  if (!quizRemarkId) {
+    return res.status(400).json(formatMessage(false, "Missing parameter"));
+  }
+
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  // verify quizRemark id
+  const existingQuizRemark = await QuizRemark.findById(quizRemarkId);
+  if (!existingQuizRemark) {
+    return res.status(400).json(formatMessage(false, "Invalid quiz remark id"));
+  }
+
+  // get quiz to verify access to the quiz remark deletion
+  let quiz;
+  try {
+    quiz = await Quiz.findById(existingQuizRemark.quiz);
+    if (!quiz) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Invalid quiz from remark id"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding quiz"));
+  }
+
+  let course;
+  try {
+    course = await Course.findById(quiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid course id"));
+    }
+    if (!course.instructor.equals(instructor._id)) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Access denied, not instructor"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding course"));
+  }
+
+  await QuizRemark.deleteOne({ _id: quizRemarkId });
+
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz Remark deleted successfully"));
+});
+
+//@route  GET api/quiz-remarks/studentInfo/:quizRemarkId
+//@desc   Get student remark request info to display on Student UI
+//@access Private
+const getRemarkStudentInfo = asyncHandler(async (req, res) => {
+  const { quizRemarkId } = req.params;
+
+  if (!quizRemarkId) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  let student;
+  try {
+    student = await User.findOne({ email: req.session.email });
+    if (!student) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (student.type !== "student") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  const quizRemark = await QuizRemark.findById(quizRemarkId);
+  if (!quizRemark) {
+    return res.status(400).json(formatMessage(false, "Invalid remarkId"));
+  } else if (
+    quizRemark &&
+    quizRemark.student.toString() !== student._id.toString()
+  ) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Not the student's remark request"));
+  }
+
+  if (quizRemark) {
+    const quiz = await Quiz.findById(quizRemark.quiz);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Fail to get quiz"));
+    }
+    let questions = await getQuestions(quizRemark.quiz);
+
+    //Removing the question's ACTUAL answer
+    questions = questions.map((question) => {
+      if (question.answers) {
+        question.answers = [];
+      }
+      return question;
+    });
+
+    const quizResponse = await getQuizResponse(quizRemark.quiz, student._id);
+
+    return res.json(
+      formatMessage(true, "Success", {
+        quiz: quiz,
+        questions: questions,
+        quizResponse: quizResponse,
+        quizRemark: quizRemark,
+      })
+    );
+  } else {
+    return res
+      .status(400)
+      .json(formatMessage(false, "No response found for this quiz"));
+  }
+});
+
+//@route  GET api/quiz-remarks/instructorInfo/:quizRemarkId
+//@desc   Get student remark request info to display on Instructor UI
+//@access Private
+const getRemarkInstructorInfo = asyncHandler(async (req, res) => {
+  const { quizRemarkId } = req.params;
+
+  if (!quizRemarkId) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user"));
+  }
+
+  const quizRemark = await QuizRemark.findById(quizRemarkId);
+  if (!quizRemark) {
+    return res.status(400).json(formatMessage(false, "Invalid remarkId"));
+  }
+
+  if (quizRemark) {
+    const quiz = await Quiz.findById(quizRemark.quiz);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Fail to get quiz"));
+    }
+
+    const course = await Course.findById(quiz.course);
+    if (course && course.instructor.toString() !== instructor._id.toString()) {
+      return res.status(400).json(formatMessage(false, "Not the instructor"));
+    }
+
+    const student = quizRemark.student;
+    const questions = await getQuestions(quizRemark.quiz);
+    const quizResponse = await getQuizResponse(quizRemark.quiz, student);
+
+    return res.json(
+      formatMessage(true, "Success", {
+        quiz: quiz,
+        questions: questions,
+        quizResponse: quizResponse,
+        quizRemark: quizRemark,
+      })
+    );
+  } else {
+    return res
+      .status(400)
+      .json(formatMessage(false, "No response found for this quiz"));
+  }
+});
+
 export {
   createQuizRemark,
   getMyQuizRemark,
   getAllQuizRemarks,
   resolveQuizRemark,
+  deleteQuizRemark,
+  getRemarkStudentInfo,
+  getRemarkInstructorInfo,
 };
