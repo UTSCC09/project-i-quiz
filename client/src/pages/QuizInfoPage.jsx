@@ -95,6 +95,7 @@ export default function QuizInfoPage() {
       <NavBar />
       <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
         <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
+          {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between mb-6 md:mb-8 h-28 sm:h-16">
             <div className="flex flex-col pr-4">
               {quizObject && (
@@ -173,11 +174,98 @@ export default function QuizInfoPage() {
                     Continue Quiz
                   </Link>
                 )}
+
+                {!isStudent && quizObject && !quizObject.isDraft && (
+                  <Link
+                    to={"/quiz/" + quizId}
+                    className="bg-white shadow-sm h-8 sm:h-10 text-sm px-4 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all"
+                  >
+                    View Quiz
+                  </Link>
+                )}
               </div>
             </div>
           </div>
+          {/* Body */}
+          {courseObject && quizObject && (
+            <div className="flex flex-col gap-4">
+              {!isStudent && (
+                <div className="flex gap-4 flex-col sm:flex-row">
+                  <SubmissionCountCard
+                    accentColor={courseObject.accentColor}
+                    numReceived={10}
+                    numTotal={78}
+                  />
+                  <GradeStatsCard
+                    accentColor={courseObject.accentColor}
+                    averagePercentage={63}
+                    medianPercentage={72}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </main>
       </div>
     </>
+  );
+}
+
+function SubmissionCountCard({ accentColor, numReceived = 0, numTotal = 0 }) {
+  return (
+    <div className="h-36 sm:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center">
+      <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
+        <div
+          className="w-1.5 h-3.5"
+          style={{ backgroundColor: accentColor }}
+        ></div>
+        Submission Count
+      </div>
+      <div className="text-3xl">
+        <b style={{ color: accentColor }}>{numReceived}</b> / <b>{numTotal}</b>
+      </div>
+    </div>
+  );
+}
+
+function GradeStatsCard({
+  accentColor,
+  averagePercentage = 0,
+  medianPercentage = 0,
+}) {
+  return (
+    <div className="h-36 sm:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center">
+      <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
+        <div
+          className="w-1.5 h-3.5"
+          style={{ backgroundColor: accentColor }}
+        ></div>
+        Grade Statistics
+      </div>
+      <div className="flex gap-4 font-semibold">
+        {averagePercentage && medianPercentage ? (
+          <div className="flex gap-1 items-end">
+            <span className="text-xs font-bold text-gray-500 mb-0.5">
+              AVG.
+            </span>
+            <span className="text-3xl tracking-tight font-bold">
+              {averagePercentage}
+            </span>
+            %
+            <span className="text-xs font-bold text-gray-500 mb-0.5 ml-2">
+              MED.
+            </span>
+            <span className="text-3xl tracking-tight font-bold">
+              {medianPercentage}
+            </span>
+            %
+          </div>
+        ) : (
+          <span className="text-2xl tracking-tight font-semibold text-gray-400">
+            Not graded yet
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
