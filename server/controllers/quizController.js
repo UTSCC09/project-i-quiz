@@ -1317,6 +1317,7 @@ async function getCourseStudentEmails(courseId, instructorEmail) {
   });
 
   return emails;
+}
 
 async function getQuestions(quizId) {
   let quiz = await Quiz.findById(quizId);
