@@ -45,7 +45,7 @@ export default function MarkQuizPage() {
         additionalButtons={
           <button
             type="button"
-            className="btn-outline px-4 text-sm"
+            className="btn-outline px-4 text-sm py-2"
             onClick={() => {
               /* TODO: Submit grade request*/
               navigate("/quiz-info/" + quizId);
@@ -118,7 +118,7 @@ function MarkerComponent({
     selectedScoreSet(gradeRequestsRef.current[currIndex].score);
     commentInputRef.current.value =
       gradeRequestsRef.current[currIndex].comment;
-  }, [currIndex, gradeRequestsRef]);
+  }, [currIndex, gradeRequestsRef, selectedScoreSet]);
 
   return (
     <div className="flex px-4 border-t bg-white py-8 items">
@@ -128,16 +128,16 @@ function MarkerComponent({
         onClick={() => {
           currResponseIdxSet(currIndex - 1);
         }}
-        className="btn-secondary mx-8 flex items-center justify-center pl-4 pr-6 w-fit h-fit mt-4 gap-2 text-sm"
+        className="btn-secondary mx-2 lg:mx-8 flex items-center justify-center px-2 lg:px-4 w-fit h-fit lg:mt-4 gap-2 text-sm"
         style={{
           opacity: currIndex === 0 ? "50%" : "100%",
           pointerEvents: currIndex === 0 ? "none" : "auto",
         }}
       >
         <ChevronIcon className="h-4 rotate-90" />
-        <span>Previous</span>
+        <span className="hidden lg:block">Previous</span>
       </button>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full mx-2">
         <div className="text-sm font-medium text-blue-600">Mark:</div>
         <div className="flex gap-4 py-4 flex-wrap">
           {[...Array(maxScore + 1).keys()].map((score) => {
@@ -179,13 +179,13 @@ function MarkerComponent({
         onClick={() => {
           currResponseIdxSet(currIndex + 1);
         }}
-        className="btn-secondary mx-8 flex items-center justify-center pr-4 pl-6 w-fit h-fit mt-4 gap-2 text-sm"
+        className="btn-secondary mx-2 lg:mx-8 flex items-center justify-center px-2 lg:px-4 w-fit h-fit lg:mt-4 gap-2 text-sm"
         style={{
           opacity: currIndex === responseCount - 1 ? "50%" : "100%",
           pointerEvents: currIndex === responseCount - 1 ? "none" : "auto",
         }}
       >
-        <span>Next</span>
+        <span className="hidden lg:block">Next</span>
         <ChevronIcon className="h-4 -rotate-90" />
       </button>
     </div>
