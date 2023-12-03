@@ -1,3 +1,5 @@
+import generatePDF from "utils/quizToPdfUtils";
+
 const createQuizReponse = async (quizId, questionResponses) => {
   return fetch("/api/quiz-responses", {
     method: "POST",
@@ -114,6 +116,7 @@ const generateQuizPDF = async(quizId) => {
     withCredentials: true,
   })
     .then(async (response) => {
+      console.log(response);
       if (response.status === 401) {
         await fetch("/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
@@ -122,10 +125,16 @@ const generateQuizPDF = async(quizId) => {
       return response.json();
     })
     .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
+      if (result.success) {
+        const data = result.payload;
+        const pdf = generatePDF(data.course, data.quiz,
+          data.questions, data.user, data.quizResponse);
+        if (pdf) {
+          pdf.save(data.fileName);
+        }
+      } else {
+        return console.log("Fail to generate PDF");
       }
-      return result;
     })
     .catch((err) => {
       console.error(err);

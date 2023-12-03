@@ -3,7 +3,6 @@ import formatMessage from "../utils/utils.js";
 import QuizResponse from "../models/QuizResponse.js";
 import User from "../models/User.js";
 import Quiz from "../models/Quiz.js";
-import generatePDF from "../utils/quizToPdfUtils.js";
 import { getQuestions } from "./quizController.js";
 import Course from "../models/Course.js";
 
@@ -335,14 +334,17 @@ const generateQuizPDF = asyncHandler(async (req, res) => {
     const quiz = await Quiz.findById(quizResponse.quiz);
     const course = await Course.findById(quiz.course);
     const questions = await getQuestions(quiz._id);
-    const pdf = generatePDF(course, quiz, questions, student, quizResponse);
-
-    let filename = `${quiz.quizName}_${student.firstName}_${student.lastName}.pdf`;
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=' + filename);
+    let fileName = `${quiz.quizName}_${student.firstName}_${student.lastName}.pdf`;
 
     //Sends pdf back in response
-    res.send(pdf.output());
+    res.json(formatMessage(true, "Success", {
+      course: course,
+      quiz: quiz,
+      questions: questions,
+      user: student,
+      quizResponse: quizResponse,
+      fileName: fileName
+    }));
     
   } 
   else {

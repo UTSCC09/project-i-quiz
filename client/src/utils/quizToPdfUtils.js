@@ -1,6 +1,9 @@
 import { jsPDF } from "jspdf";
 
 function generatePDF(course, quiz, questions, user, quizResponse) {
+    if (!course || !quiz || !questions || !user || !quizResponse) {
+        return;
+    }
     const pdf = new jsPDF();
 
     // Title
@@ -17,8 +20,10 @@ function generatePDF(course, quiz, questions, user, quizResponse) {
 
     // Date
     pdf.setFontSize(12);
-    pdf.text(`Start Date: ${quiz.startTime.toUTCString()}`, 20, 40);
-    pdf.text(`End Date: ${quiz.endTime.toUTCString()}`, 20, 50);
+    const start = new Date(quiz.startTime);
+    const end = new Date(quiz.endTime);
+    pdf.text(`Start Date: ${start.toUTCString()}`, 20, 40);
+    pdf.text(`End Date: ${end.toUTCString()}`, 20, 50);
 
     // Setting Y-Position
     let yPos = 65;
