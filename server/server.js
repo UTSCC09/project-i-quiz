@@ -11,6 +11,7 @@ import userRoutes from "./routes/userRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import quizResponseRoutes from "./routes/quizResponseRoutes.js";
+import quizRemarkRoutes from "./routes/quizRemarkRoutes.js"
 
 // Get environment variables
 dotenv.config();
@@ -75,6 +76,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/quiz-responses", quizResponseRoutes);
+app.use("/api/quiz-remarks/", quizRemarkRoutes);
 
 // Assign port
 const PORT = process.env.PORT || 8080;

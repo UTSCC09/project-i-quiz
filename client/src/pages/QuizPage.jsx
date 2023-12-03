@@ -12,15 +12,17 @@ import { useParams } from "react-router";
 import { isStudentUserType } from "utils/CookieUtils";
 
 const QuizPage = () => {
+  const navigate = useNavigate();
   const isStudent = isStudentUserType();
   const { quizId } = useParams();
-  const [quizObject, quizObjectSet] = useState();
+
   let savedQuizResponse = useMemo(() => {
     return JSON.parse(localStorage.getItem("savedQuizResponse")) ?? {};
   }, []);
+
+  const [quizObject, quizObjectSet] = useState();
   const [canEdit, setCanEdit] = useState(true);
   const [canSubmit, setCanSubmit] = useState(true);
-  const navigate = useNavigate();
 
   const locallyStoreQuizResponse = useCallback(
     (questionResponses) => {
@@ -64,7 +66,6 @@ const QuizPage = () => {
           console.log("Edited quiz response");
           setCanEdit(true);
           setCanSubmit(true);
-          locallyStoreQuizResponse(payload.questionResponses);
         }
       })
       .catch((error) => {
@@ -83,18 +84,18 @@ const QuizPage = () => {
         response: savedQuizResponse[questionId],
       });
     });
+
     editQuizResponse(quizId, editedQuestionResponses)
       .then((payload) => {
         if (payload?.questionResponses) {
           console.log("Edited quiz response before submitting");
-          locallyStoreQuizResponse(payload.questionResponses);
 
           submitQuizResponse(quizId)
-            .then((resultSuccess) => {
-              if (resultSuccess) {
+            .then((result) => {
+              console.log("result in submit:", result);
+              if ((!result.success && result.message === "Quiz grades not released yet")
+              || (result.success)) {
                 console.log("Submitted quiz response");
-                setCanEdit(true);
-                setCanSubmit(true);
                 navigate("/quiz-info/" + quizId);
               }
             })
@@ -112,18 +113,17 @@ const QuizPage = () => {
     getQuiz(quizId).then((quizPayload) => {
       if (isStudent) {
         getQuizResponse(quizId).then((result) => {
-          if (
-            !result.success ||
-            !result.payload ||
-            !result.payload.questionResponses
-          ) {
-            console.error(result.message);
-          }
-          if (result.payload.status === "submitted") {
+          console.log("result in get:", result);
+          if ((!result.success && result.message === "Quiz grades not released yet")
+            || (result.success && result.payload.status === "submitted")) {
             navigate("/quiz-info/" + quizId);
             return;
+          } else if (result.success) {
+            locallyStoreQuizResponse(result.payload.questionResponses);
+          } else if (!result.success) {
+            console.error(result.message);
+            return;
           }
-          locallyStoreQuizResponse(result.payload.questionResponses);
           quizObjectSet(quizPayload);
         });
       }
@@ -132,7 +132,7 @@ const QuizPage = () => {
     return () => {
       localStorage.removeItem("savedQuizResponse");
     };
-  }, [isStudent, locallyStoreQuizResponse, navigate, quizId, quizObjectSet]);
+  }, [isStudent, locallyStoreQuizResponse, quizId, quizObjectSet]);
 
   return (
     <>
@@ -178,7 +178,10 @@ const QuizPage = () => {
               style={{
                 pointerEvents: canEdit ? "auto" : "none",
               }}
-              onClick={editQuizResponseInDb}
+              onClick={(e) => {
+                e.preventDefault();
+                editQuizResponseInDb();
+              }}
             >
               Save
             </button>
@@ -188,7 +191,10 @@ const QuizPage = () => {
               style={{
                 pointerEvents: canSubmit ? "auto" : "none",
               }}
-              onClick={submitQuizResponseInDb}
+              onClick={(e) => {
+                e.preventDefault();
+                submitQuizResponseInDb();
+              }}
             >
               Submit
             </button>

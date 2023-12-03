@@ -5,7 +5,9 @@ import {
   getMyResponseForQuiz,
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
-  submitMyResponseForQuiz
+  submitMyResponseForQuiz,
+  gradeStudentQuizResponse,
+  generateQuizPDF
 } from "../controllers/quizResponseController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -19,10 +21,16 @@ router.route("/my/:quizId")
   .get(protect, getMyResponseForQuiz)
   .patch(protect, editMyResponseForQuiz);
 
+router.route("/generate/:quizId")
+  .get(protect, generateQuizPDF);
+  
 router.route("/submit/:quizId")
   .patch(protect, submitMyResponseForQuiz);
 
 router.route("/all/:quizId")
   .get(protect, getAllStudentResponsesForQuiz);
+
+router.route("/grade")
+  .patch(protect, gradeStudentQuizResponse);
 
 export default router;

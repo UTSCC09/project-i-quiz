@@ -1,12 +1,10 @@
-import generatePDF from "utils/quizToPdfUtils";
-
-const createQuizReponse = async (quizId, questionResponses) => {
-  return fetch("/api/quiz-responses", {
+const createQuizRemark = async (quizId, questionRemarks) => {
+  return fetch("/api/quiz-remarks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       quizId: quizId,
-      questionResponses: questionResponses
+      questionRemarks: questionRemarks,
     }),
     withCredentials: true,
   })
@@ -30,8 +28,8 @@ const createQuizReponse = async (quizId, questionResponses) => {
     });
 };
 
-const getQuizResponse = async (quizId) => {
-  return fetch(`/api/quiz-responses/my/${quizId}`, {
+const getQuizRemark = async (quizId) => {
+  return fetch(`/api/quiz-remarks/my/${quizId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
@@ -52,13 +50,10 @@ const getQuizResponse = async (quizId) => {
     });
 };
 
-const editQuizResponse = async (quizId, questionResponses) => {
-  return fetch(`/api/quiz-responses/my/${quizId}`, {
-    method: "PATCH",
+const getAllQuizRemarks = async (quizId) => {
+  return fetch(`/api/quiz-remarks/all/${quizId}`, {
+    method: "GET",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      questionResponses: questionResponses
-    }),
     withCredentials: true,
   })
     .then(async (response) => {
@@ -70,23 +65,20 @@ const editQuizResponse = async (quizId, questionResponses) => {
       return response.json();
     })
     .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-        return null;
-      }
-      return result.payload;
+      return result;
     })
     .catch((err) => {
       console.error(err);
     });
 };
 
-const submitQuizResponse = async (quizId) => {
-  return fetch(`/api/quiz-responses/submit/${quizId}`, {
+const resolveQuizRemark = async (quizRemarkId, questionRemarks) => {
+  return fetch(`/api/quiz-remarks/resolve/${quizRemarkId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       quizId: quizId,
+      questionRemarks: questionRemarks,
     }),
     withCredentials: true,
   })
@@ -99,50 +91,19 @@ const submitQuizResponse = async (quizId) => {
       return response.json();
     })
     .then((result) => {
-      return result;
+      if (!result.success) {
+        console.error(result.message);
+      }
+      return result.success;
     })
     .catch((err) => {
       console.error(err);
     });
 };
-
-const generateQuizPDF = async(quizId) => {
-  return fetch(`/api/quiz-responses/generate/${quizId}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    withCredentials: true,
-  })
-    .then(async (response) => {
-      console.log(response);
-      if (response.status === 401) {
-        await fetch("/api/users/logout", { method: "GET" }).then(() => {
-          window.location.reload();
-        });
-      }
-      return response.json();
-    })
-    .then((result) => {
-      if (result.success) {
-        const data = result.payload;
-        const pdf = generatePDF(data.course, data.quiz,
-          data.questions, data.user, data.quizResponse);
-        if (pdf) {
-          pdf.save(data.fileName);
-        }
-      } else {
-        return console.log("Fail to generate PDF");
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-};
-
 
 export {
-  createQuizReponse,
-  getQuizResponse,
-  editQuizResponse,
-  submitQuizResponse,
-  generateQuizPDF,
+  createQuizRemark,
+  getQuizRemark,
+  getAllQuizRemarks,
+  resolveQuizRemark,
 };

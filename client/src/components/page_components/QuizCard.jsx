@@ -3,6 +3,9 @@ import Badge from "components/elements/Badge.jsx";
 import colors, { inherit } from "tailwindcss/colors";
 import { Link } from "react-router-dom";
 import { isStudentUserType } from "utils/CookieUtils";
+import { generateQuizPDF } from "api/QuizResponseApi";
+import DropdownMenu from "components/elements/DropdownMenu";
+import { AdjustmentsIcon } from "components/elements/SVGIcons";
 
 function getQuizState(quizObject) {
   const startTime = new Date(quizObject.startTime);
@@ -13,7 +16,7 @@ function getQuizState(quizObject) {
     return "pending";
   } else if (startTime > currentTime) {
     return "upcoming";
-  } else if (endTime > currentTime) {
+  } else if (endTime >= currentTime) {
     return "available";
   } else {
     return "closed";
@@ -41,11 +44,17 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   const startTime = new Date(quizObject.startTime);
   const endTime = new Date(quizObject.endTime);
   const responseStatus = quizObject.responseStatus;
+  const isGradeReleased = quizObject.isGradeReleased;
   const quizState = getQuizState(quizObject);
   const startTimeStr = getFormattedDateStr(startTime);
   const endTimeStr = getFormattedDateStr(endTime);
 
-  let quizAvailabilityPrompt, isAvailable;
+  let quizAvailabilityPrompt;
+  let isUpcoming = false;
+  let isAvailable = false;
+  let isClosed = false;
+  const isStudent = isStudentUserType();
+  let quizEditOptions = [];
 
   switch (quizState) {
     case "available":
@@ -54,18 +63,25 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
       break;
     case "upcoming":
       quizAvailabilityPrompt = "Unlocks on " + startTimeStr;
-      isAvailable = false;
+      isUpcoming = true;
       break;
     case "closed":
       quizAvailabilityPrompt = "Closed on " + endTimeStr;
-      isAvailable = false;
+      isClosed = true;
       break;
     default:
       break;
   }
 
-  if (!isStudentUserType()) {
+  if (!isStudent) {
     isAvailable = true;
+  } else {
+    quizEditOptions.push({
+      label: "Download PDF",
+      onClick: () => {
+        generateQuizPDF(quizObject.quizId);
+      },
+    });
   }
 
   return (
@@ -75,8 +91,8 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
         className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer"
         style={{
           borderLeftColor: accentColor,
-          pointerEvents: isAvailable ? "auto" : "none",
-          opacity: isAvailable ? 1 : 0.5,
+          //pointerEvents: isUpcoming ? "none" : "auto",
+          opacity: isUpcoming ? 0.5 : 1,
         }}
       >
         <div
@@ -88,20 +104,39 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
         >
           <div className="flex-col justify-center items-start inline-flex">
             <div className="items-center gap-2.5 inline-flex w-full overflow-hidden">
-              <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words">
+              <div className="text-md 2xl:text-lg font-semibold overflow-hidden line-clamp-2 leading-tight 2xl:leading-tight text-ellipsis break-words mb-1">
                 {quizName}
               </div>
-              {isAvailable &&
-                isStudentUserType() &&
-                responseStatus !== "submitted" && (
+
+              {isStudent &&
+                (isAvailable && responseStatus !== "submitted" && (
                   <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
-                )}
+                ))
+              }
+
               <Badge label={courseCode} accentColor={accentColor} />
-              {responseStatus === "submitted" && (
-                <Badge iconId="submitted" accentColor={colors.green[600]} />
-              )}
-              {(responseStatus === "writing" || quizState === "pending") && (
-                <Badge iconId="writing" accentColor={colors.gray[500]} />
+
+              {isStudent && (
+                (isAvailable &&
+                  (
+                    responseStatus === "submitted" && (
+                      <Badge iconId="submitted" accentColor={colors.green[600]} />
+                    ) ||
+                    responseStatus === "writing" && (
+                      <Badge iconId="writing" accentColor={colors.gray[500]} />
+                    )
+                  )
+                ) ||
+                (isClosed &&
+                  (
+                    responseStatus !== "submitted" && (
+                      <Badge iconId="missed" accentColor={colors.red[500]} />
+                    ) ||
+                    isGradeReleased && (
+                      <Badge iconId="graded" accentColor={colors.green[500]} />
+                    )
+                  )
+                )
               )}
             </div>
             {quizAvailabilityPrompt && (
@@ -112,6 +147,19 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
           </div>
         </div>
       </Link>
+      <div className="flex gap-2 sm:gap-4 text-gray-700">
+        <div className="flex gap-2 sm:gap-4">
+          <DropdownMenu
+            buttonElement={
+              <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
+                <AdjustmentsIcon className="h-[18px] sm:h-5" />
+              </button>
+            }
+            options={quizEditOptions}
+            menuAlignRight
+          />
+        </div>
+      </div>
     </>
   );
 }
