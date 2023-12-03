@@ -141,10 +141,7 @@ const createQuiz = asyncHandler(async (req, res) => {
           return res
             .status(400)
             .json(
-              formatMessage(
-                false,
-                `Invalid question type ${questions[i].type}`
-              )
+              formatMessage(false, `Invalid question type ${questions[i].type}`)
             );
       }
     } catch (error) {
@@ -349,9 +346,7 @@ const updateQuiz = asyncHandler(async (req, res) => {
   existingQuiz.questions = quizQuestions;
 
   await existingQuiz.save();
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz updated successfully"));
+  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  DELETE api/quizzes/:quizId
@@ -722,9 +717,7 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   quiz.endTime = endTimeConverted;
   await quiz.save();
 
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz updated successfully"));
+  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  PATCH api/quizzes/question
@@ -755,9 +748,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
     !action ||
     (action !== "edit" && action !== "remove")
   ) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Missing/invalid fields"));
+    return res.status(400).json(formatMessage(false, "Missing/invalid fields"));
   }
 
   //Verify valid question
@@ -1303,6 +1294,7 @@ async function createQuestion(question, res) {
   return createdQuestion;
 }
 
+// Returns the list of questions from Quiz
 
 // Get Students Emails
 async function getCourseStudentEmails(courseId, instructorEmail) {
