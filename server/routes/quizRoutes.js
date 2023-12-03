@@ -13,7 +13,9 @@ import {
   addQuizQuestions,
   updateQuizQuestion,
   releaseQuiz,
-  deleteDraftQuiz
+  deleteDraftQuiz,
+
+  releaseQuizGrades
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -48,5 +50,8 @@ router.route("/:quizId")
 
 router.route("/:quizId/release")
   .post(protect, releaseQuiz);
+
+router.route("/:quizId/grades-release")
+  .patch(protect, releaseQuizGrades);
 
 export default router;

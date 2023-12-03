@@ -7,8 +7,8 @@ import CLO from "../models/CLO.js";
 import OEQ from "../models/OEQ.js";
 import User from "../models/User.js";
 import Course from "../models/Course.js";
-import { isValidObjectId } from "mongoose";
 import QuizResponse from "../models/QuizResponse.js";
+import { isValidObjectId } from "mongoose";
 
 //@route  POST api/quizzes
 //@desc   Allow instructor to create a quiz
@@ -1204,6 +1204,73 @@ const deleteDraftQuiz = asyncHandler(async (req, res) => {
     .json(formatMessage(true, "Quiz deleted successfully"));
 });
 
+//@route  PATCH api/quizzes/:quizId/grades-release
+//@desc   Allow instructor to release grades for a quiz
+//@access Private
+const releaseQuizGrades = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
+  }
+
+  //Verify all fields exist
+  if (!quizId) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  let course;
+  try {
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz"));
+    }
+    course = await Course.findById(quiz.course);
+    if (!course) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz course"));
+    } else if (course.instructor.toString() !== instructor._id.toString()) {
+      return res.status(403).json(formatMessage(false, "Instructor does not instruct course"));
+    }
+    
+    const currentTime = new Date();
+    if (quiz.endTime > currentTime) {
+      return res.status(400).json(formatMessage(false, "Quiz is still open"));
+    } else if (quiz.isGradeReleased) {
+      return res.status(400).json(formatMessage(false, "Quiz grades already released"));
+    }
+    
+    for (let i = 0; i < course.sessions.length; i++) {
+      for (let j = 0; j < course.sessions[i].students.length; j++) {
+        const quizResponse = await QuizResponse.findOne(
+          { quiz: quizId, student: course.sessions[i].students[j] }
+        );
+        // Only care if we've fully graded responses that have been submitted
+        if (
+          quizResponse &&
+          quizResponse.status === "submitted" &&
+          quizResponse.graded !== "fully"
+        ) {
+          return res.status(400).json(formatMessage(false, "Not all submitted responses fully graded"));
+        }
+      }
+    }
+    quiz.isGradeReleased = true;
+    await quiz.save();
+    return res.status(200).json(formatMessage(true, "Quiz grades released successfully"));
+  } catch (error) {
+    return res.status(400).json(formatMessage(false, "Mongoose error releasing grades", null, error));
+  }
+});
 
 /* ----------- HELPER FUNCTIONS ----------- */
 /* Edit a question in the database */
@@ -1310,5 +1377,7 @@ export {
   addQuizQuestions,
   updateQuizQuestion,
   releaseQuiz,
-  deleteDraftQuiz
+  deleteDraftQuiz,
+
+  releaseQuizGrades
 };

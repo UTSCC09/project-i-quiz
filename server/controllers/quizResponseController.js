@@ -48,6 +48,8 @@ const createQuizResponse = asyncHandler(async (req, res) => {
       (course) => course.courseId.toString() === quiz.course.toString()
       )) {
       return res.status(403).json(formatMessage(false, "Student not enrolled in course"));
+    } else if (quiz.isDraft) {
+      return res.status(403).json(formatMessage(false, "Unreleased quiz"));
     }
 
     const startTime = new Date(quiz.startTime);
@@ -319,7 +321,7 @@ const getAllStudentResponsesForQuiz = asyncHandler(async (req, res) => {
 });
 
 //@route  PATCH api/quiz-responses/grade
-//@desc   Allow instructor grade a student's quiz response (not necessarily all questions)
+//@desc   Allow instructor to grade a student's quiz response (not necessarily all questions)
 //@access Private
 const gradeStudentQuizResponse = asyncHandler(async (req, res) => {
   const { quizId, studentId, questionGrades, isFullyGraded } = req.body;
@@ -362,7 +364,7 @@ const gradeStudentQuizResponse = asyncHandler(async (req, res) => {
     const currentTime = new Date();
     const endTime = new Date(quiz.endTime);
     if (endTime > currentTime) {
-      return res.status(403).json(formatMessage(false, "Quiz is still open"));
+      return res.status(400).json(formatMessage(false, "Quiz is still open"));
     }
   } catch (error) {
     return res.status(400).json(formatMessage(false, "Mongoose error validating quiz response", null, error));
