@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Badge from "components/elements/Badge";
 import NavBar from "components/page_components/NavBar";
@@ -19,6 +19,8 @@ import {
   // generateQuizPDF,
   getQuizResponse,
 } from "api/QuizResponseApi";
+import Modal from "components/elements/Modal";
+import AlertBanner from "components/elements/AlertBanner";
 
 export default function QuizInfoPage() {
   const navigate = useNavigate();
@@ -27,6 +29,8 @@ export default function QuizInfoPage() {
   const { passInCourseObject } = useState() ?? {};
   const [courseObject, courseObjectSet] = useState(passInCourseObject ?? null);
   const [quizObject, quizObjectSet] = useState();
+  const [gradeReleaseModalShow, gradeReleaseModalShowSet] = useState();
+  const alertRef = useRef();
 
   const [toastMessage, toastMessageSet] = useState();
 
@@ -98,6 +102,65 @@ export default function QuizInfoPage() {
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <NavBar />
+      {courseObject && (
+        <Modal
+          modalShow={gradeReleaseModalShow}
+          modalShowSet={gradeReleaseModalShowSet}
+          content={
+            <div className="flex flex-col sm:w-96 gap-6">
+              <h1 className="text-2xl font-bold">Releasing grades</h1>
+              <AlertBanner ref={alertRef} />
+              <div className="flex flex-col gap-4 text-gray-600">
+                <span>
+                  Are you sure you want to release grades for{" "}
+                  <b>{quizObject.quizName}</b> in{" "}
+                  <b>
+                    {courseObject.courseCode} {courseObject.courseSemester}
+                  </b>{" "}
+                  to all enrolled students?
+                </span>
+                <span>
+                  Each student will get an email of their own grade of this
+                  quiz.
+                </span>
+              </div>
+              <div className="flex gap-4 mt-2">
+                <button
+                  className="btn-primary"
+                  onClick={() => {
+                    alertRef.current.hide();
+                    /* TODO: add API call*/
+                    (async () => {}).then((result) => {
+                      if (result.success) {
+                        gradeReleaseModalShowSet(false);
+                        toastMessageSet(
+                          "The grades have been released to your students"
+                        );
+                        setTimeout(() => {
+                          toastMessageSet();
+                        }, 3000);
+                      } else {
+                        alertRef.current.setMessage(
+                          "Cannot release grades: " + result.message
+                        );
+                        alertRef.current.show();
+                      }
+                    });
+                  }}
+                >
+                  Confirm
+                </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => gradeReleaseModalShowSet(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          }
+        />
+      )}
       <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
         <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
           {/* Header */}
@@ -198,6 +261,7 @@ export default function QuizInfoPage() {
                     </Link>
                     <button
                       type="button"
+                      onClick={() => gradeReleaseModalShowSet(true)}
                       className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
                       style={{ "--accentColor": courseObject.accentColor }}
                     >
