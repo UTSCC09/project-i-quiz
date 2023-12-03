@@ -1,13 +1,11 @@
 import { Router } from "express";
 import {
   createQuiz,
-
   getQuiz,
   getQuizObject,
   getMyQuizzes,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
-
   basicUpdateQuiz,
   updateQuiz,
   addQuizQuestions,
