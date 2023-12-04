@@ -111,7 +111,9 @@ function RadioOption(props) {
             ></motion.div>
             {props.correctOptionId &&
               props.selectedOptionId === props.optionId && (
-                <div className="ml-4 text-red-600 text-sm">(You selected)</div>
+                <div className="ml-4 text-blue-600 text-sm">
+                  (You selected)
+                </div>
               )}
           </label>
         )}

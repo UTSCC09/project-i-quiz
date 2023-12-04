@@ -141,7 +141,7 @@ function CheckOption(props) {
               }}
             ></motion.div>
             {hasCorrectOption && props.optionDict[props.oid] && (
-              <div className="ml-4 text-red-600 text-sm">(You selected)</div>
+              <div className="ml-4 text-blue-600 text-sm">(You selected)</div>
             )}
           </label>
         )}
