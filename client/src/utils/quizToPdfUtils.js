@@ -1,6 +1,8 @@
 import { jsPDF } from "jspdf";
 
 //Generates PDF with student answers and their grade
+//Reference
+//https://github.com/parallax/jsPDF
 function generateStudentPDF(course, quiz, questions, user, quizResponse) {
   if (!course || !quiz || !questions || !user || !quizResponse) {
     return;

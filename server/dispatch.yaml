@@ -1,3 +1,6 @@
+#Reference
+#https://cloud.google.com/appengine/docs/standard/reference/dispatch-yaml?tab=node.js
+
 dispatch:
   - url: "*/api/*"
     service: YOUR_SERVER_SERVICE_NAME
