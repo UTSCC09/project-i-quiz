@@ -1304,6 +1304,12 @@ async function editQuestion(question, res) {
             .status(400)
             .json(formatMessage(false, "Invalid choices in MCQ question"));
         }
+        const validMCQAnswer = question.answers.length === 1;
+        if (!validMCQAnswer) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "Exactly 1 correct option for MCQ"));
+        }
         await MCQ.findByIdAndUpdate(question._id, question);
         break;
       case "MSQ":
@@ -1314,6 +1320,12 @@ async function editQuestion(question, res) {
           return res
             .status(400)
             .json(formatMessage(false, "Invalid choices in MSQ question"));
+        }
+        const validMSQAnswer = question.answers.length > 0;
+        if (!validMSQAnswer) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "At least 1 correct option for MSQ"));
         }
         await MSQ.findByIdAndUpdate(question._id, question);
         break;
@@ -1350,6 +1362,12 @@ async function createQuestion(question, res) {
             .status(400)
             .json(formatMessage(false, "Invalid choices in MCQ question"));
         }
+        const validMCQAnswer = question.answers.length === 1;
+        if (!validMCQAnswer) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "Exactly 1 correct option for MCQ"));
+        }
         createdQuestion = await MCQ.create(question);
         break;
       case "MSQ":
@@ -1360,6 +1378,12 @@ async function createQuestion(question, res) {
           return res
             .status(400)
             .json(formatMessage(false, "Invalid choices in MSQ question"));
+        }
+        const validMSQAnswer = question.answers.length > 0;
+        if (!validMSQAnswer) {
+          return res
+            .status(400)
+            .json(formatMessage(false, "At least 1 correct option for MSQ"));
         }
         createdQuestion = await MSQ.create(question);
         break;
