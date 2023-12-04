@@ -85,9 +85,6 @@ export default function QuizEditorPage() {
     [...document.querySelectorAll("input")]
       .concat([...document.querySelectorAll("textarea")])
       .forEach((input) => {
-        if (input.name === "maxScore") {
-          return;
-        }
         input.addEventListener("input", (e) => {
           e.target.classList.remove("input-invalid-state");
         });

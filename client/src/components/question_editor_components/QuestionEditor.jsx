@@ -57,9 +57,8 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
             }
           }}
         />
-        <div className="w-28 hover:bg-gray-50">
-          <SingleLineInput label="Max score" name="maxScore" />
-        </div>
+        <span className="text-sm py-2">Max Score:</span>
+        <input className="simple-input w-12" name="maxScore" />
       </div>
       {questionType === "OEQ" ? (
         <OEQEditor questionBody={questionObject} onChange={onChange} />
