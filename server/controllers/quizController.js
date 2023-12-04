@@ -1466,16 +1466,27 @@ const releaseQuizGrades = asyncHandler(async (req, res) => {
   //Sending grades in email
   let totalMaxScore = 0;
   for (const question of quiz.questions) {
-    totalMaxScore += question.maxScore;
+    let findQuestion;
+    if (question.type === "MCQ") {
+      findQuestion = await MCQ.findById(question.question);
+    } else if (question.type === "MSQ") {
+      findQuestion = await MSQ.findById(question.question);
+    } else if (question.type === "CLO") {
+      findQuestion = await CLO.findById(question.question);
+    } else {
+      findQuestion = await OEQ.findById(question.question);
+    }
+    totalMaxScore += findQuestion.maxScore;
   }
 
   const students = await getCourseStudents(course._id, instructor.email);
-  console.log(students);
+
   for (const student of students) {
     const quizRes = await QuizResponse.findOne({
       quiz: quizId,
       student: student._id,
     });
+
     let studentScore = 0;
     for (const response of quizRes.questionResponses) {
       studentScore += response.score;
