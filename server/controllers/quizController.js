@@ -118,6 +118,12 @@ const createQuiz = asyncHandler(async (req, res) => {
               .status(400)
               .json(formatMessage(false, "Invalid choices in MCQ question"));
           }
+          const validMCQAnswer = questions[i].answers.length === 1;
+          if (!validMCQAnswer) {
+            return res
+              .status(400)
+              .json(formatMessage(false, "Exactly 1 correct option for MCQ"));
+          }
           createdQuestion = await MCQ.create(questions[i]);
           break;
         case "MSQ":
@@ -128,6 +134,12 @@ const createQuiz = asyncHandler(async (req, res) => {
             return res
               .status(400)
               .json(formatMessage(false, "Invalid choices in MSQ question"));
+          }
+          const validMSQAnswer = questions[i].answers.length > 0;
+          if (!validMSQAnswer) {
+            return res
+              .status(400)
+              .json(formatMessage(false, "At least 1 correct option for MSQ"));
           }
           createdQuestion = await MSQ.create(questions[i]);
           break;
@@ -158,6 +170,7 @@ const createQuiz = asyncHandler(async (req, res) => {
       quizQuestions.push({
         question: createdQuestion._id,
         type: questions[i].type,
+        maxScore: questions[i].maxScore
       });
     }
   }
