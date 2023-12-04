@@ -108,7 +108,7 @@ const getMyQuizRemark = asyncHandler(async (req, res) => {
   }
 
   try {
-    const quizRemark = await QuizRemark.findOne({
+    const quizRemark = await QuizRemark.find({
       quiz: quizId,
       student: student._id,
     });
