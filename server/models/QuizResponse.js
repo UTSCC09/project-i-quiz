@@ -11,7 +11,7 @@ const QuestionResponseSchema = new mongoose.Schema({
   },
   score: {
     type: Number,
-    default: 0
+    default: -1
   },
   comment: {
     type: String,
