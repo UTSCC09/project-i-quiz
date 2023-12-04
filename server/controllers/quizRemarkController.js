@@ -12,16 +12,7 @@ import { getQuizResponse } from "./quizResponseController.js";
 //@desc   Allow student to create a quiz remark request
 //@access Private
 const createQuizRemark = asyncHandler(async (req, res) => {
-  const { quizId, questionRemarks } = req.body;
-  /*
-  questionRemarks: [
-      {
-          question: ObjectId,
-          studentComment: comment,
-      },
-      ...
-  ]
-  */
+  const { quizId, question, studentComment } = req.body;
 
   //Check if student
   let student = await User.findOne({ email: req.session.email });
@@ -32,7 +23,7 @@ const createQuizRemark = asyncHandler(async (req, res) => {
   }
 
   //Verify all fields exist
-  if (!quizId || !questionRemarks) {
+  if (!quizId || !question || !studentComment) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -71,39 +62,17 @@ const createQuizRemark = asyncHandler(async (req, res) => {
         formatMessage(false, "Cannot create remark request for quiz locked")
       );
   }
-
-  //Verify question remarks have same questions as quiz
-  const quizQuestions = quiz.questions;
-  let sameQuestions = true;
-  for (const remarkQuestion of questionRemarks) {
-    let question = quizQuestions.filter(
-      (quizQuestion) =>
-        quizQuestion.question.toString() === remarkQuestion.question
-    );
-    if (question.length == 0) {
-      sameQuestions = false;
-    }
-  }
-  if (!sameQuestions) {
-    return res
-      .status(400)
-      .json(
-        formatMessage(false, "Remark questions do not match quiz questions")
-      );
-  }
-
   try {
     const quizRemark = await QuizRemark.create({
       quiz: quizId,
       student: student._id,
-      questionRemarks: questionRemarks,
+      question: question,
+      studentComment: studentComment,
     });
     if (quizRemark) {
       return res
         .status(201)
-        .json(
-          formatMessage(true, "Quiz remark created successfully", quizRemark)
-        );
+        .json(formatMessage(true, "Quiz remark created successfully"));
     }
   } catch (error) {
     return res
@@ -404,13 +373,13 @@ const deleteQuizRemark = asyncHandler(async (req, res) => {
     .json(formatMessage(true, "Quiz Remark deleted successfully"));
 });
 
-//@route  GET api/quiz-remarks/studentInfo/:quizRemarkId
+//@route  GET api/quiz-remarks/studentInfo/:questionId
 //@desc   Get student remark request info to display on Student UI
 //@access Private
 const getRemarkStudentInfo = asyncHandler(async (req, res) => {
-  const { quizRemarkId } = req.params;
+  const { questionId } = req.params;
 
-  if (!quizRemarkId) {
+  if (!questionId) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -428,7 +397,8 @@ const getRemarkStudentInfo = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Mongoose error finding user"));
   }
 
-  const quizRemark = await QuizRemark.findById(quizRemarkId);
+  const quizRemark = await QuizRemark.find({ question: questionId });
+  console.log(quizRemark);
   if (!quizRemark) {
     return res.status(400).json(formatMessage(false, "Invalid remarkId"));
   } else if (

@@ -27,7 +27,7 @@ router.route("/all/:quizId")
 router.route("/resolve/:quizRemarkId")
   .patch(protect, resolveQuizRemark);
 
-router.route("/studentInfo/:quizRemarkId")
+router.route("/studentInfo/:questionId")
   .get(protect, getRemarkStudentInfo);
 
 router.route("/instructorInfo/:quizRemarkId")

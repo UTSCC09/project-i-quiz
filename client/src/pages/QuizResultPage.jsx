@@ -1,5 +1,5 @@
 import { getQuiz } from "api/QuizApi";
-import { createQuizRemark } from "api/QuizRemarkApi";
+import { createQuizRemark, getRemarkInfoForStudent } from "api/QuizRemarkApi";
 import { getQuizResponse } from "api/QuizResponseApi";
 import AlertBanner from "components/elements/AlertBanner";
 import Modal from "components/elements/Modal";
@@ -51,6 +51,12 @@ export default function QuizResultPage() {
     });
   }, [navigate]);
 
+  useEffect(() => {
+    getRemarkInfoForStudent(questionIdForRegradeRef.current).then((result) => {
+      console.log(result);
+    });
+  }, [questionIdForRegradeRef.current]);
+
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
@@ -77,12 +83,11 @@ export default function QuizResultPage() {
                 onClick={() => {
                   alertRef.current.hide();
                   isLoadingSet(true);
-                  createQuizRemark(quizId, [
-                    {
-                      question: questionIdForRegradeRef.current,
-                      studentComment: studentCommentRef.current.value,
-                    },
-                  ]).then((result) => {
+                  createQuizRemark(
+                    quizId,
+                    questionIdForRegradeRef.current,
+                    studentCommentRef.current.value
+                  ).then((result) => {
                     isLoadingSet(false);
                     if (result.success) {
                       regradeModalShowSet(false);

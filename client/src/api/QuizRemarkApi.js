@@ -1,10 +1,11 @@
-const createQuizRemark = async (quizId, questionRemarks) => {
+const createQuizRemark = async (quizId, questionId, comment) => {
   return fetch("/api/quiz-remarks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       quizId: quizId,
-      questionRemarks: questionRemarks,
+      question: questionId,
+      studentComment: comment,
     }),
     withCredentials: true,
   })
