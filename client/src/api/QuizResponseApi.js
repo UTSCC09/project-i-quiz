@@ -1,4 +1,4 @@
-import generatePDF from "utils/quizToPdfUtils";
+import { generateStudentPDF } from "utils/quizToPdfUtils";
 
 const createQuizReponse = async (quizId, questionResponses) => {
   return fetch("/api/quiz-responses", {
@@ -6,7 +6,7 @@ const createQuizReponse = async (quizId, questionResponses) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       quizId: quizId,
-      questionResponses: questionResponses
+      questionResponses: questionResponses,
     }),
     withCredentials: true,
   })
@@ -57,7 +57,7 @@ const editQuizResponse = async (quizId, questionResponses) => {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      questionResponses: questionResponses
+      questionResponses: questionResponses,
     }),
     withCredentials: true,
   })
@@ -106,7 +106,7 @@ const submitQuizResponse = async (quizId) => {
     });
 };
 
-const generateQuizPDF = async(quizId) => {
+const generateStudentQuizPDF = async (quizId) => {
   return fetch(`/api/quiz-responses/generate/${quizId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -124,8 +124,13 @@ const generateQuizPDF = async(quizId) => {
     .then((result) => {
       if (result.success) {
         const data = result.payload;
-        const pdf = generatePDF(data.course, data.quiz,
-          data.questions, data.user, data.quizResponse);
+        const pdf = generateStudentPDF(
+          data.course,
+          data.quiz,
+          data.questions,
+          data.user,
+          data.quizResponse
+        );
         if (pdf) {
           pdf.save(data.fileName);
         }
@@ -138,11 +143,10 @@ const generateQuizPDF = async(quizId) => {
     });
 };
 
-
 export {
   createQuizReponse,
   getQuizResponse,
   editQuizResponse,
   submitQuizResponse,
-  generateQuizPDF,
+  generateStudentQuizPDF,
 };

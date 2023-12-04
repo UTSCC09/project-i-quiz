@@ -430,6 +430,16 @@ const generateQuizPDF = asyncHandler(async (req, res) => {
 
 }); 
 
+//Helpers
+async function getQuizResponse(quizId, studentId) {
+  const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: studentId });
+  if (quizResponse) {
+    return quizResponse;
+  } else {
+    return null;
+  }
+}
+
 export {
   createQuizResponse,
   getAllMyQuizResponses,
@@ -437,6 +447,7 @@ export {
   editMyResponseForQuiz,
   getAllStudentResponsesForQuiz,
   submitMyResponseForQuiz,
+  getQuizResponse,
   gradeStudentQuizResponse,
   generateQuizPDF
 };

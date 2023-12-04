@@ -1,20 +1,18 @@
 import { Router } from "express";
 import {
   createQuiz,
-
   getQuiz,
   getQuizObject,
   getMyQuizzes,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
-
   basicUpdateQuiz,
   updateQuiz,
   addQuizQuestions,
   updateQuizQuestion,
   releaseQuiz,
   deleteDraftQuiz,
-
+  generateQuizPDF,
   releaseQuizGrades
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
@@ -53,5 +51,8 @@ router.route("/:quizId/release")
 
 router.route("/:quizId/grades-release")
   .patch(protect, releaseQuizGrades);
+
+router.route("/generate/:quizId")
+  .get(protect, generateQuizPDF);
 
 export default router;
