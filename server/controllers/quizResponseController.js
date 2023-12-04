@@ -3,6 +3,8 @@ import formatMessage from "../utils/utils.js";
 import QuizResponse from "../models/QuizResponse.js";
 import User from "../models/User.js";
 import Quiz from "../models/Quiz.js";
+import MCQ from "../models/MCQ.js";
+import MSQ from "../models/MSQ.js";
 import { getQuestions } from "./quizController.js";
 import Course from "../models/Course.js";
 
@@ -79,18 +81,65 @@ const createQuizResponse = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Response questions do not match quiz questions"));
   }
 
+  let quizResponse;
   try {
-    const quizResponse = await QuizResponse.create({
+    quizResponse = await QuizResponse.create({
       quiz: quizId,
       student: student._id,
       questionResponses: questionResponses
     });
-    if (quizResponse) {
-      return res.status(201).json(formatMessage(true, "Quiz response created successfully", quizResponse));
-    }
   } catch (error) {
     return res.status(400).json(formatMessage(false, "Mongoose error creating quiz response", null, error));
   }
+
+  if (quizResponse) {
+    for (let i = 0; i < quizResponse.questionResponses.length; i++) {
+      for (let j = 0; j < quiz.questions.length; j++) {
+        if (quizResponse.questionResponses[i].question.toString() === quiz.questions[j].question.toString()) {
+          let answerCorrectFlag = true;
+          switch (quiz.questions[j].type) {
+            case "MCQ":
+              const mcqQuestion = await MCQ.findById(quiz.questions[j].question);
+              answerCorrectFlag = true;
+              for (const v of new Set([
+                ...quizResponse.questionResponses[i].response, ...mcqQuestion.answers])) {
+                  if (quizResponse.questionResponses[i].response.filter(e => e === v).length !== mcqQuestion.answers.filter(e => e === v).length) {
+                    answerCorrectFlag = false;
+                    break;
+                  }
+                }
+              if (answerCorrectFlag) {
+                quizResponse.questionResponses[i].score = quiz.questions[j].maxScore;
+              } else {
+                quizResponse.questionResponses[i].score = 0;
+              }
+              break;
+            case "MSQ":
+              const msqQuestion = await MSQ.findById(quiz.questions[j].question);
+              answerCorrectFlag = true;
+              for (const v of new Set([
+                ...quizResponse.questionResponses[i].response, ...msqQuestion.answers])) {
+                  if (quizResponse.questionResponses[i].response.filter(e => e === v).length !== msqQuestion.answers.filter(e => e === v).length) {
+                    answerCorrectFlag = false;
+                    break;
+                  }
+                }
+              if (answerCorrectFlag) {
+                quizResponse.questionResponses[i].score = quiz.questions[j].maxScore;
+              } else {
+                quizResponse.questionResponses[i].score = 0;
+              }
+              break;
+            default:
+              return res.status(400).json(formatMessage(false, "Invalid question type"));
+          }
+        }
+      }
+    }
+    await quizResponse.save();
+    return res.status(201).json(formatMessage(true, "Quiz response created successfully", quizResponse));
+  }
+
 });
 
 //@route  GET api/quiz-responses
@@ -227,6 +276,62 @@ const editMyResponseForQuiz = asyncHandler(async (req, res) => {
   //Update quiz response
   quizResponse.questionResponses = questionResponses;
   await quizResponse.save();
+
+  if (quizResponse) {
+    for (let i = 0; i < quizResponse.questionResponses.length; i++) {
+      //console.log("---------------------------------------");
+      //console.log("current quizResp question:", quizResponse.questionResponses[i]);
+      for (let j = 0; j < quiz.questions.length; j++) {
+        if (quizResponse.questionResponses[i].question.toString() === quiz.questions[j].question.toString()) {
+          //console.log("current quiz question:", quiz.questions[j]);
+          let answerCorrectFlag = true;
+          switch (quiz.questions[j].type) {
+            case "MCQ":
+              const mcqQuestion = await MCQ.findById(quiz.questions[j].question);
+              answerCorrectFlag = true;
+              for (const v of new Set([
+                ...quizResponse.questionResponses[i].response, ...mcqQuestion.answers])) {
+                  //console.log("Response:", quizResponse.questionResponses[i].response);
+                  //console.log("Answer:", mcqQuestion.answers);
+                  if (quizResponse.questionResponses[i].response.filter(e => e === v).length !== mcqQuestion.answers.filter(e => e === v).length) {
+                    answerCorrectFlag = false;
+                    //console.log("found wrong answer");
+                    break;
+                  }
+                }
+              if (answerCorrectFlag) {
+                quizResponse.questionResponses[i].score = quiz.questions[j].maxScore;
+              } else {
+                quizResponse.questionResponses[i].score = 0;
+              }
+              break;
+            case "MSQ":
+              const msqQuestion = await MSQ.findById(quiz.questions[j].question);
+              answerCorrectFlag = true;
+              for (const v of new Set([
+                ...quizResponse.questionResponses[i].response, ...msqQuestion.answers])) {
+                  if (quizResponse.questionResponses[i].response.filter(e => e === v).length !== msqQuestion.answers.filter(e => e === v).length) {
+                    answerCorrectFlag = false;
+                    //console.log("found wrong answer");
+                    break;
+                  }
+                }
+              if (answerCorrectFlag) {
+                quizResponse.questionResponses[i].score = quiz.questions[j].maxScore;
+              } else {
+                quizResponse.questionResponses[i].score = 0;
+              }
+              break;
+            default:
+              return res.status(400).json(formatMessage(false, "Invalid question type"));
+          }
+        }
+      }
+    }
+    await quizResponse.save();
+    return res.status(201).json(formatMessage(true, "Quiz response updated successfully", quizResponse));
+  }
+
   return res.status(200).json(formatMessage(true, "Quiz response updated successfully", quizResponse));
 });
 
@@ -308,7 +413,7 @@ const getAllStudentResponsesForQuiz = asyncHandler(async (req, res) => {
       return res.status(403).json(formatMessage(false, "Instructor does not instruct course"));
     }
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     return res.status(400).json(formatMessage(false, "Mongoose error finding quiz", null, error));
   }
 
@@ -387,7 +492,7 @@ const gradeStudentQuizResponse = asyncHandler(async (req, res) => {
     await quizResponse.save();
     return res.status(200).json(formatMessage(true, "Quiz response graded successfully", quizResponse));
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     return res.status(400).json(formatMessage(false, "Error grading quiz response", null, error));
   }
 });
