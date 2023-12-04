@@ -105,7 +105,7 @@ export default function MarkQuizPage() {
               navigate("/quiz-info/" + quizId);
             }}
           >
-            Finish Grading
+            Save Grading
           </button>
         }
       />
@@ -173,7 +173,7 @@ export default function MarkQuizPage() {
             </div>
           </form>
         ) : (
-          <div>All responses are graded</div>
+          <div>Loading ...</div>
         )}
       </div>
     </>

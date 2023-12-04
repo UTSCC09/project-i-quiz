@@ -16,7 +16,8 @@ import sendGradedQuizEmail from "../utils/gradedQuizUtils.js";
 //@desc   Allow instructor to create a quiz
 //@access Private
 const createQuiz = asyncHandler(async (req, res) => {
-  const { quizName, startTime, endTime, isDraft, course, questions } = req.body;
+  const { quizName, startTime, endTime, isDraft, course, questions } =
+    req.body;
 
   //Check if valid user
   let instructor;
@@ -131,7 +132,9 @@ const createQuiz = asyncHandler(async (req, res) => {
           if (!validMCQAnswer) {
             return res
               .status(400)
-              .json(formatMessage(false, "Please provide a correct option for MCQ"));
+              .json(
+                formatMessage(false, "Please provide a correct option for MCQ")
+              );
           }
           createdQuestion = await MCQ.create(questions[i]);
           break;
@@ -148,7 +151,12 @@ const createQuiz = asyncHandler(async (req, res) => {
           if (!validMSQAnswer) {
             return res
               .status(400)
-              .json(formatMessage(false, "Please provide correct option(s) for MSQ"));
+              .json(
+                formatMessage(
+                  false,
+                  "Please provide correct option(s) for MSQ"
+                )
+              );
           }
           createdQuestion = await MSQ.create(questions[i]);
           break;
@@ -832,7 +840,9 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   quiz.endTime = endTimeConverted;
   await quiz.save();
 
-  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  POST api/quizzes/update
@@ -918,7 +928,9 @@ const updateQuiz = asyncHandler(async (req, res) => {
   existingQuiz.questions = quizQuestions;
 
   await existingQuiz.save();
-  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  POST api/quizzes/question
@@ -1077,7 +1089,9 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
     !action ||
     (action !== "edit" && action !== "remove")
   ) {
-    return res.status(400).json(formatMessage(false, "Missing/invalid fields"));
+    return res
+      .status(400)
+      .json(formatMessage(false, "Missing/invalid fields"));
   }
 
   //Verify valid question
@@ -1359,7 +1373,9 @@ const deleteDraftQuiz = asyncHandler(async (req, res) => {
   await Quiz.deleteOne({ _id: quizId });
   await Course.updateOne({ _id: course }, { $pull: { quizzes: quizId } });
 
-  return res.status(200).json(formatMessage(true, "Quiz deleted successfully"));
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz deleted successfully"));
 });
 
 //@route  PATCH api/quizzes/:quizId/grades-release
@@ -1546,7 +1562,9 @@ async function editQuestion(question, res) {
         if (!validMCQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "Please provide a correct option for MCQ"));
+            .json(
+              formatMessage(false, "Please provide a correct option for MCQ")
+            );
         }
         await MCQ.findByIdAndUpdate(question._id, question);
         break;
@@ -1563,7 +1581,9 @@ async function editQuestion(question, res) {
         if (!validMSQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "Please provide correct option(s) for MSQ"));
+            .json(
+              formatMessage(false, "Please provide correct option(s) for MSQ")
+            );
         }
         await MSQ.findByIdAndUpdate(question._id, question);
         break;
@@ -1604,7 +1624,9 @@ async function createQuestion(question, res) {
         if (!validMCQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "Please provide a correct option for MCQ"));
+            .json(
+              formatMessage(false, "Please provide a correct option for MCQ")
+            );
         }
         createdQuestion = await MCQ.create(question);
         break;
@@ -1621,7 +1643,9 @@ async function createQuestion(question, res) {
         if (!validMSQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "Please provide correct option(s) for MSQ"));
+            .json(
+              formatMessage(false, "Please provide correct option(s) for MSQ")
+            );
         }
         createdQuestion = await MSQ.create(question);
         break;
@@ -1736,4 +1760,5 @@ export {
   deleteDraftQuiz,
   releaseQuizGrades,
   getQuestions,
+  getQuizStats,
 };
