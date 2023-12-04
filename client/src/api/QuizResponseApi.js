@@ -143,10 +143,64 @@ const generateStudentQuizPDF = async (quizId) => {
     });
 };
 
+const getAllStudentResponsesForQuiz = async (quizId) => {
+  return fetch(`/api/quiz-responses/all/${quizId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      console.log(response);
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}; 
+
+const gradeQuizResponse = async (quizId, studentId, questionGrades, isFullyGraded) => {
+  return fetch(`/api/quiz-responses/grade`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      quizId: quizId,
+      studentId: studentId,
+      questionGrades: questionGrades,
+      isFullyGraded: isFullyGraded
+    }),
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      console.log(response);
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 export {
   createQuizReponse,
   getQuizResponse,
   editQuizResponse,
   submitQuizResponse,
   generateStudentQuizPDF,
+  getAllStudentResponsesForQuiz,
+  gradeQuizResponse
 };

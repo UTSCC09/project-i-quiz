@@ -49,6 +49,28 @@ const getQuiz = async (quizId) => {
     });
 };
 
+const getQuizStats = async (quizId) => {
+  return fetch(`/api/quizzes/stats/${quizId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 const getQuizzesForDashboard = async (quizStatus) => {
   return fetch(`/api/quizzes/${quizStatus}`, {
     method: "GET",
@@ -300,6 +322,30 @@ const generateInstructorQuizPDF = async (quizId) => {
     });
 };
 
+const releaseQuizGrades = async (quizId) => {
+  return fetch(`/api/quizzes/${quizId}/grades-release`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      console.log(response);
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+          return response.json();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 export {
   createQuiz,
   getQuiz,
@@ -311,6 +357,8 @@ export {
   addQuizQuestions,
   updateQuizQuestion,
   releaseQuiz,
-  generateInstructorQuizPDF,
   deleteDraftQuiz,
+  getQuizStats,
+  releaseQuizGrades,
+  generateInstructorQuizPDF,
 };

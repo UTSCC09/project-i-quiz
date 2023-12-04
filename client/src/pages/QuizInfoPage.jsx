@@ -6,23 +6,26 @@ import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
 import { fetchCourseObject } from "api/CourseApi";
-import { getQuiz } from "api/QuizApi";
+import {
+  generateInstructorQuizPDF,
+  getQuiz,
+  releaseQuizGrades,
+  getQuizStats,
+} from "api/QuizApi";
+import { createQuizReponse, getQuizResponse } from "api/QuizResponseApi";
 import {
   AdjustmentsIcon,
   DocumentCheckIcon,
   DocumentIcon,
   EnvelopeIcon,
+  FileEditIcon,
   PenIcon,
-  Spinner
+  Spinner,
 } from "components/elements/SVGIcons";
 import colors from "tailwindcss/colors";
-import {
-  createQuizReponse,
-  // generateQuizPDF,
-  getQuizResponse,
-} from "api/QuizResponseApi";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
+import { generateStudentQuizPDF } from "api/QuizResponseApi";
 
 export default function QuizInfoPage() {
   const navigate = useNavigate();
@@ -30,7 +33,7 @@ export default function QuizInfoPage() {
   const { quizId } = useParams();
   const alertRef = useRef();
   const isStudent = isStudentUserType();
-  
+
   const { passInCourseObject } = useState() ?? {};
   const [courseObject, courseObjectSet] = useState(passInCourseObject ?? null);
   const [quizObject, quizObjectSet] = useState();
@@ -38,15 +41,25 @@ export default function QuizInfoPage() {
   const [toastMessage, toastMessageSet] = useState();
   const [isLoading, isLoadingSet] = useState(true);
   const [studentQuizCase, studentQuizCaseSet] = useState();
+  const [quizStats, quizStatsSet] = useState({});
+  const [quizResponse, quizResponseSet] = useState({});
 
-  let quizOptions = [
-    {
+  let quizOptions = [];
+  if (!isStudent) {
+    quizOptions.push({
       label: "Download as PDF",
       onClick: () => {
-        // generateQuizPDF(quizId);
+        generateInstructorQuizPDF(quizId);
       },
-    },
-  ];
+    });
+  } else {
+    quizOptions.push({
+      label: "Download as PDF",
+      onClick: () => {
+        generateStudentQuizPDF(quizId);
+      },
+    });
+  }
 
   const onStartQuiz = () => {
     const questionResponses = quizObject.questions.map((question) => {
@@ -89,30 +102,45 @@ export default function QuizInfoPage() {
           } else {
             getQuizResponse(quizId).then((result) => {
               //case 1: no response found
-              if (!result.success && result.message === "No response found for this quiz") {
+              if (
+                !result.success &&
+                result.message === "No response found for this quiz"
+              ) {
                 //subcase 1: quiz is closed
                 if (quizState === "closed") {
                   studentQuizCaseSet("missed");
-                } else { //subcase 2: quiz is available
+                } else {
+                  //subcase 2: quiz is available
                   studentQuizCaseSet("canStart");
                 }
               }
               //case 2: response found, but not submitted
-              else if (result.success && result.payload.status !== "submitted") {
+              else if (
+                result.success &&
+                result.payload.status !== "submitted"
+              ) {
                 //subcase 1: quiz is closed
                 if (quizState === "closed") {
                   studentQuizCaseSet("missed");
-                } else { //subcase 2: quiz is available
+                } else {
+                  //subcase 2: quiz is available
                   studentQuizCaseSet("canContinue");
                 }
               }
               //case 3: response found, and submitted
               //subcase 1: quiz grade not released
-              else if (!result.success && result.message === "Quiz grades not released yet") {
+              else if (
+                !result.success &&
+                result.message === "Quiz grades not released yet"
+              ) {
                 studentQuizCaseSet("notGraded");
               }
               //subcase 2: quiz grade released
-              else if (result.success && result.payload.status === "submitted") { //Assume grade released due to backned logic
+              else if (
+                result.success &&
+                result.payload.status === "submitted"
+              ) {
+                //Assume grade released due to backned logic
                 studentQuizCaseSet("graded");
               }
               //case 4: error
@@ -128,6 +156,18 @@ export default function QuizInfoPage() {
       });
     });
   }, [isStudent, location.state, navigate, quizId, toastMessageSet]);
+
+  useEffect(() => {
+    getQuizStats(quizId).then((result) => {
+      quizStatsSet(result.payload);
+    });
+  }, [quizStatsSet, quizId]);
+
+  useEffect(() => {
+    getQuizResponse(quizId).then((result) => {
+      quizResponseSet(result.payload);
+    });
+  }, [quizResponseSet, quizId]);
 
   return (
     <>
@@ -158,12 +198,20 @@ export default function QuizInfoPage() {
               <div className="flex gap-4 mt-2">
                 <button
                   className="btn-primary"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     alertRef.current.hide();
                     /* TODO: add API call*/
-                    (async () => {}).then((result) => {
+                    releaseQuizGrades(quizId).then((result) => {
+                      console.log(quizObject);
                       if (result.success) {
                         gradeReleaseModalShowSet(false);
+                        quizObjectSet((prev) => {
+                          return {
+                            ...prev,
+                            isGradeReleased: true,
+                          };
+                        });
                         toastMessageSet(
                           "The grades have been released to your students"
                         );
@@ -202,11 +250,11 @@ export default function QuizInfoPage() {
                   <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1 max-w-full line-clamp-2 text-ellipsis break-words">
                     {quizObject.quizName}
                   </span>
-                  {isStudent && (
-                    studentQuizCase === "canStart" || studentQuizCase === "canContinue"
-                    ) && (
-                    <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
-                  )}
+                  {isStudent &&
+                    (studentQuizCase === "canStart" ||
+                      studentQuizCase === "canContinue") && (
+                      <div className="w-2 h-2 shrink-0 rounded-full bg-red-500"></div>
+                    )}
                   {courseObject && (
                     <Badge
                       label={
@@ -217,56 +265,54 @@ export default function QuizInfoPage() {
                       accentColor={courseObject.accentColor}
                     />
                   )}
-                  {isStudent ? (
-                    studentQuizCase === "invalid" && (
-                      <h1 className="text-red-500 text-sm ml-0.5">
-                        YOU SHOULD NOT BE HERE!!
-                      </h1>
-                    ) ||
-                    studentQuizCase === "missed" && (
-                      <Badge
-                        iconId={"missed"}
-                        label={"Missed"}
-                        accentColor={colors.red[500]}
-                      />
-                    ) ||
-                    studentQuizCase === "canContinue" && (
-                      <Badge
-                        iconId={"writing"}
-                        label={"Writing"}
-                        accentColor={colors.gray[500]}
-                      />
-                    ) ||
-                    studentQuizCase === "notGraded" && (
-                      <>
+                  {isStudent
+                    ? (studentQuizCase === "invalid" && (
+                        <h1 className="text-red-500 text-sm ml-0.5">
+                          YOU SHOULD NOT BE HERE!!
+                        </h1>
+                      )) ||
+                      (studentQuizCase === "missed" && (
                         <Badge
-                          iconId={"submitted"}
-                          label={"Submitted"}
-                          accentColor={colors.green[500]}
+                          iconId={"missed"}
+                          label={"Missed"}
+                          accentColor={colors.red[500]}
                         />
+                      )) ||
+                      (studentQuizCase === "canContinue" && (
                         <Badge
-                          iconId={"gradingInPrg"}
-                          label={"Not Graded"}
+                          iconId={"writing"}
+                          label={"Writing"}
                           accentColor={colors.gray[500]}
                         />
-                      </>
-                    ) ||
-                    studentQuizCase === "graded" && (
-                      <Badge
-                        iconId={"graded"}
-                        label={"Graded"}
-                        accentColor={colors.blue[600]}
-                      />
-                    )
-                  ) : (
-                    quizObject.isDraft && (
-                      <Badge
-                        iconId={"writing"}
-                        label={"Draft"}
-                        accentColor={colors.gray[500]}
-                      />
-                    )
-                  )}
+                      )) ||
+                      (studentQuizCase === "notGraded" && (
+                        <>
+                          <Badge
+                            iconId={"submitted"}
+                            label={"Submitted"}
+                            accentColor={colors.green[500]}
+                          />
+                          <Badge
+                            iconId={"gradingInPrg"}
+                            label={"Not Graded"}
+                            accentColor={colors.gray[500]}
+                          />
+                        </>
+                      )) ||
+                      (studentQuizCase === "graded" && (
+                        <Badge
+                          iconId={"graded"}
+                          label={"Graded"}
+                          accentColor={colors.blue[600]}
+                        />
+                      ))
+                    : quizObject.isDraft && (
+                        <Badge
+                          iconId={"writing"}
+                          label={"Draft"}
+                          accentColor={colors.gray[500]}
+                        />
+                      )}
                   {/* {!isStudent && quizObject.isDraft && (
                     <Badge
                       iconId={"writing"}
@@ -296,43 +342,47 @@ export default function QuizInfoPage() {
                 </span>
               )}
             </div>
-            <div className="flex gap-2 sm:gap-4 text-gray-700">
-              <div className="flex gap-2 sm:gap-4">
-                <DropdownMenu
-                  buttonElement={
-                    <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
-                      <AdjustmentsIcon className="h-[18px] sm:h-5" />
-                    </button>
-                  }
-                  options={quizOptions}
-                  menuAlignLeft
-                />
+            {isStudent && (
+              <div className="flex gap-2 sm:gap-4 text-gray-700">
+                <div className="flex gap-2 sm:gap-4">
+                  <DropdownMenu
+                    buttonElement={
+                      <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
+                        <AdjustmentsIcon className="h-[18px] sm:h-5" />
+                      </button>
+                    }
+                    options={quizOptions}
+                    menuAlignLeft
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
           {/* Body */}
           {courseObject && quizObject && (
             <div className="flex flex-col gap-4">
               {isStudent ? (
-                studentQuizCase === "invalid" && (
+                (studentQuizCase === "invalid" && (
                   <h1 className="text-red-500 text-sm ml-0.5">
                     YOU SHOULD NOT BE HERE!!
                   </h1>
-                ) ||
-                studentQuizCase === "missed" && (
+                )) ||
+                (studentQuizCase === "missed" && (
                   <p className="text-lg">
-                    Seems like you missed the deadline for this quiz.
-                    Please contact your instructor for more information.
+                    Seems like you missed the deadline for this quiz. Please
+                    contact your instructor for more information.
                   </p>
-                ) ||
-                studentQuizCase === "canStart" && (
+                )) ||
+                (studentQuizCase === "canStart" && (
                   <div className="flex gap-4 flex-col lg:flex-row">
                     <button
                       className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
                       style={{ "--accentColor": courseObject.accentColor }}
                       onClick={onStartQuiz}
                     >
-                      {isLoading ? <Spinner className="-mt-1" /> : (
+                      {isLoading ? (
+                        <Spinner className="-mt-1" />
+                      ) : (
                         <>
                           <PenIcon className="h-3" />
                           <span>Start Quiz</span>
@@ -340,8 +390,8 @@ export default function QuizInfoPage() {
                       )}
                     </button>
                   </div>
-                ) ||
-                studentQuizCase === "canContinue" && (
+                )) ||
+                (studentQuizCase === "canContinue" && (
                   <div className="flex gap-4 flex-col lg:flex-row">
                     <Link
                       to={"/quiz/" + quizId}
@@ -352,81 +402,107 @@ export default function QuizInfoPage() {
                       <span>Continue Writing</span>
                     </Link>
                   </div>
-                ) ||
-                studentQuizCase === "notGraded" && (
+                )) ||
+                (studentQuizCase === "notGraded" && (
                   <p className="text-lg">
-                    Your instructor is working on the grades.
-                    Please check back later.
+                    Your instructor is working on the grades. Please check back
+                    later.
                   </p>
-                ) ||
-                studentQuizCase === "graded" && (
-                  <p className="text-lg">
-                    Your quiz grade.
-                  </p>
-                )
-              ) : (
-                quizObject.isDraft ? (
+                )) ||
+                (studentQuizCase === "graded" && (
                   <Link
                     to={"/quiz/" + quizId}
-                    className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
                     style={{ "--accentColor": courseObject.accentColor }}
                   >
-                    <PenIcon className="h-3" />
-                    <span>Edit Draft</span>
-                  </Link>
-                ) : (
-                  <>
-                    <div className="flex gap-4 flex-col lg:flex-row">
-                      <Link
-                        to={"/quiz/" + quizId}
-                        className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
-                        style={{ "--accentColor": courseObject.accentColor }}
-                      >
-                        <DocumentIcon className="h-5" />
-                        <span>View Quiz</span>
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => gradeReleaseModalShowSet(true)}
-                        className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
-                        style={{ "--accentColor": courseObject.accentColor }}
-                      >
-                        {isLoading ? <Spinner className="-mt-1" /> : (
-                          <>
-                            <EnvelopeIcon className="h-5" />
-                            <span>Release Grades</span>
-                          </>
-                        )}
-                      </button>
+                    <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
+                      <div
+                        className="w-1.5 h-3.5"
+                        style={{ backgroundColor: courseObject.accentColor }}
+                      ></div>
+                      Your Grade
                     </div>
+                    <div className="text-3xl">
+                      <b style={{ color: courseObject.accentColor }}>
+                        {quizResponse.studentTotalScore}
+                      </b>
+                      <span className="mx-2 font-thin">/</span>
+                      <b>{quizObject.totalScore}</b>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <>
+                  <div className="flex gap-4 flex-col lg:flex-row">
                     <Link
-                      to={"/mark-quiz/" + quizId}
+                      to={"/quiz/" + quizId}
+                      className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                      style={{ "--accentColor": courseObject.accentColor }}
+                    >
+                      <DocumentIcon className="h-5" />
+                      <span>View Quiz</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => gradeReleaseModalShowSet(true)}
                       className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
                       style={{ "--accentColor": courseObject.accentColor }}
                     >
-                      <DocumentCheckIcon className="h-5" />
-                      <span>Mark Student Responses</span>
-                    </Link>
-                    <div className="flex gap-4 flex-col lg:flex-row">
-                      <SubmissionCountCard
-                        accentColor={courseObject.accentColor}
-                        numReceived={10}
-                        numTotal={78}
-                      />
-                      <MarkingProgressCard
-                        accentColor={courseObject.accentColor}
-                        quizId={quizId}
-                        numMarked={1}
-                        numTotal={10}
-                      />
-                      <GradeStatsCard
+                      {isLoading ? (
+                        <Spinner className="-mt-1" />
+                      ) : (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            pointerEvents: quizObject.isGradeReleased
+                              ? "none"
+                              : "auto",
+                            opacity: quizObject.isGradeReleased ? 0.5 : 1,
+                          }}
+                        >
+                          <EnvelopeIcon className="h-5" />
+                          <span>Release Grades</span>
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                  <Link
+                    to={"/mark-quiz/" + quizId}
+                    className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <DocumentCheckIcon className="h-5" />
+                    <span>Mark Student Responses</span>
+                  </Link>
+                  <Link
+                    to={"/regrade/" + quizId}
+                    className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <FileEditIcon className="h-4" />
+                    <span>Resolve Regrade Requests</span>
+                  </Link>
+                  <div className="flex gap-4 flex-col lg:flex-row">
+                    <SubmissionCountCard
+                      accentColor={courseObject.accentColor}
+                      numReceived={quizStats.responseCount}
+                      numTotal={courseObject.sessions[0].enrollment}
+                    />
+                    <MarkingProgressCard
+                      accentColor={courseObject.accentColor}
+                      quizId={quizId}
+                      numMarked={quizStats.markedCount}
+                      numTotal={quizStats.responseCount}
+                    />
+                    {/* <GradeStatsCard
                         accentColor={courseObject.accentColor}
                         averagePercentage={63}
                         medianPercentage={72}
-                      />
-                    </div>
-                  </>
-                )
+                      /> */}
+                  </div>
+                </>
               )}
 
               {/* {isStudent && studentQuizCase === "canStart" && (

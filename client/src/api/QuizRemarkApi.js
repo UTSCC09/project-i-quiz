@@ -1,10 +1,11 @@
-const createQuizRemark = async (quizId, questionRemarks) => {
+const createQuizRemark = async (quizId, questionId, comment) => {
   return fetch("/api/quiz-remarks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       quizId: quizId,
-      questionRemarks: questionRemarks,
+      question: questionId,
+      studentComment: comment,
     }),
     withCredentials: true,
   })
@@ -17,11 +18,7 @@ const createQuizRemark = async (quizId, questionRemarks) => {
       return response.json();
     })
     .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-        return null;
-      }
-      return result.payload;
+      return result;
     })
     .catch((err) => {
       console.error(err);
@@ -72,13 +69,14 @@ const getAllQuizRemarks = async (quizId) => {
     });
 };
 
-const resolveQuizRemark = async (quizRemarkId, questionRemarks) => {
+const resolveQuizRemark = async (quizRemarkId, score, instructorComment) => {
   return fetch(`/api/quiz-remarks/resolve/${quizRemarkId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      quizId: quizId,
-      questionRemarks: questionRemarks,
+      quizRemarkId: quizRemarkId,
+      score: score,
+      instructorComment: instructorComment,
     }),
     withCredentials: true,
   })
@@ -91,18 +89,15 @@ const resolveQuizRemark = async (quizRemarkId, questionRemarks) => {
       return response.json();
     })
     .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-      }
-      return result.success;
+      return result;
     })
     .catch((err) => {
       console.error(err);
     });
 };
 
-const getRemarkInfoForStudent = async (quizRemarkId) => {
-  return fetch(`/api/quiz-remarks/studentInfo/${quizRemarkId}`, {
+const getRemarkInfoForStudent = async (questionId) => {
+  return fetch(`/api/quiz-remarks/studentInfo/${questionId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
