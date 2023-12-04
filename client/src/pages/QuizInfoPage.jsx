@@ -10,9 +10,9 @@ import {
   generateInstructorQuizPDF,
   getQuiz,
   releaseQuizGrades,
+  getQuizStats,
 } from "api/QuizApi";
 import { createQuizReponse, getQuizResponse } from "api/QuizResponseApi";
-import { getQuiz, getQuizStats } from "api/QuizApi";
 import {
   AdjustmentsIcon,
   DocumentCheckIcon,
@@ -44,15 +44,15 @@ export default function QuizInfoPage() {
   const [quizStats, quizStatsSet] = useState({});
 
   let quizOptions = [];
-  if (!isStudent){
-    quizOptions.push( {
+  if (!isStudent) {
+    quizOptions.push({
       label: "Download as PDF",
       onClick: () => {
         generateInstructorQuizPDF(quizId);
       },
     });
   } else {
-    quizOptions.push( {
+    quizOptions.push({
       label: "Download as PDF",
       onClick: () => {
         generateStudentQuizPDF(quizId);
@@ -156,10 +156,9 @@ export default function QuizInfoPage() {
     });
   }, [isStudent, location.state, navigate, quizId, toastMessageSet]);
 
-
   useEffect(() => {
     getQuizStats(quizId).then((result) => {
-      quizStatsSet(result.payload)
+      quizStatsSet(result.payload);
     });
   }, [quizStatsSet, quizId]);
 
