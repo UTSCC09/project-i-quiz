@@ -9,7 +9,7 @@ import {
 } from "../api/QuizResponseApi";
 import { isStudentUserType } from "utils/CookieUtils";
 
-/* const questionResponses = [
+const questionResponses = [
   {
     question: "656c3b1a893cf182a7efa4cf",
     prompt: "OEQ#1",
@@ -26,26 +26,19 @@ import { isStudentUserType } from "utils/CookieUtils";
     maxScore: 8,
     _id: "656c3d9842cf9d204d51890f",
   },
-]; */
+];
 
 export default function MarkQuizPage() {
+  const isStudent = isStudentUserType();
   const navigate = useNavigate();
   const { quizId } = useParams();
+  const [quiz, quizSet] = useState({});
+  const [quizResponses, quizResponsesSet] = useState([]);
   const [currResponseIdx, currResponseIdxSet] = useState(0);
+  /* const [currQuestionIdx, currQuestionIdxSet] = useState(0); */
   const [selectedScore, selectedScoreSet] = useState(-1);
-  const isStudent = isStudentUserType();
-  const [currStudentQuestionResponses, currStudentQuestionResponsesSet] = useState();
-  const [quizResponses, quizResponsesSet] = useState();
-  const [quiz, quizSet] = useState();
 
   const gradeRequestsRef = useRef();
-    /* currStudentQuestionResponses.map((item) => {
-      return {
-        question: item.question,
-        score: item.score,
-        comment: "",
-      };
-    }) */
 
   useEffect(() => {
     if (isStudent) {
@@ -56,23 +49,18 @@ export default function MarkQuizPage() {
       getAllStudentResponsesForQuiz(quizId).then((result) => {
         if (result.success && result.payload) {
           const filteredResponses = result.payload.filter((quizResponse) => quizResponse.status === "submitted");
-          const refObj = [];
-          filteredResponses.forEach((response) => {
-            response.questionResponses.forEach((questionResponse) => {
-              quizObj.questions.forEach((question) => {
-                if (questionResponse.question.toString() === question._id.toString()) {
-                  refObj.push({
-                    question: questionResponse.question,
-                    score: questionResponse.score,
-                    comment: "",
-                    maxScore: question.maxScore
-                  });
-                }
-              });
-            });
-          });
-          console.log("refObj:", refObj);
-          gradeRequestsRef.current = refObj;
+          quizResponsesSet();
+          const obj = {};
+          for (let i = 0; i < quizObj.questions.length; i++) {
+            for (let j = 0; j < filteredResponses.length; j++) {
+              if (filteredResponses[j].question === quizObj.questions[i]._id) {
+                filteredResponses[j].prompt = quizObj.questions[i].prompt;
+                filteredResponses[j].maxScore = quizObj.questions[i].maxScore;
+                filteredResponses[j].score = -1;
+                break;
+              }
+            }
+          }
         }
       });
     });
@@ -85,23 +73,21 @@ export default function MarkQuizPage() {
           <button
             type="button"
             className="btn-outline px-4 text-sm py-2"
-            onClick={() => {
-              /* TODO: Submit grade request*/
-              gradeQuizResponse(quizId, ).then((result) => {
-                console.log("grade result:", result);
-              });
+            onClick={(e) => {
+              e.preventDefault();
+              gradeQuizResponse(quizId, );
               navigate("/quiz-info/" + quizId);
             }}
           >
-            Finish Grading
+            Finish Grading Quiz
           </button>
         }
       />
       <div className="fixed bottom-0 left-0 w-full">
         <MarkerComponent
-          maxScore={currStudentQuestionResponses[currResponseIdx].maxScore}
+          maxScore={quizResponses[currResponseIdx].maxScore}
           currIndex={currResponseIdx}
-          responseCount={currStudentQuestionResponses.length}
+          responseCount={quizResponses.length}
           currResponseIdxSet={currResponseIdxSet}
           gradeRequestsRef={gradeRequestsRef}
           selectedScore={selectedScore}
@@ -109,12 +95,12 @@ export default function MarkQuizPage() {
         />
       </div>
       <div className="min-h-screen w-full flex justify-center pt-28 sm:pt-36 pb-[60vh] bg-gray-100">
-        {currStudentQuestionResponses[currResponseIdx] && (
+        {quizResponses[currResponseIdx] && (
           <form className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
             <div className="h-fit w-full flex flex-col shadow-sm bg-white rounded-md py-8 md:py-12 px-8 sm:px-12 lg:px-16 border">
               <div className="flex justify-between items-baseline">
                 <span className="font-semibold text-sm uppercase text-blue-600 mb-4">
-                  Response {currResponseIdx + 1} / {currStudentQuestionResponses.length}
+                  Response {currResponseIdx + 1} / {quizResponses.length}
                 </span>
                 <span className="font-semibold text-sm uppercase text-gray-600 mb-4">
                   Grade:{" "}
@@ -130,11 +116,11 @@ export default function MarkQuizPage() {
                 <div className="text-sm font-bold text-gray-600">
                   Question Description
                 </div>
-                <div>{currStudentQuestionResponses[currResponseIdx].prompt}</div>
+                <div>{quizResponses[currResponseIdx].prompt}</div>
                 <div className="text-sm font-bold text-gray-600">
                   Student Response
                 </div>
-                <div>{currStudentQuestionResponses[currResponseIdx].response}</div>
+                <div>{quizResponses[currResponseIdx].response}</div>
               </div>
             </div>
           </form>
