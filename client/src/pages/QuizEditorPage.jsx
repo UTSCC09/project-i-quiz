@@ -49,7 +49,6 @@ export default function QuizEditorPage() {
         type: "MCQ",
         prompt: "",
         choices: [{ id: "0", content: "" }],
-        maxScore: Number(0),
       },
     ]);
   }

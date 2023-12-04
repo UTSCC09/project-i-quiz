@@ -281,15 +281,31 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
         .status(403)
         .json(formatMessage(false, "Quiz grades not released yet"));
     } else {
-      return res
-        .status(200)
-        .json(
-          formatMessage(
-            true,
-            "Quiz response fetched successfully",
-            quizResponse
-          )
-        );
+      //Sending grades in response
+      let totalScore = 0;
+      for (const question of quiz.questions) {
+        let findQuestion;
+        if (question.type === "MCQ") {
+          findQuestion = await MCQ.findById(question.question);
+        } else if (question.type === "MSQ") {
+          findQuestion = await MSQ.findById(question.question);
+        } else if (question.type === "CLO") {
+          findQuestion = await CLO.findById(question.question);
+        } else {
+          findQuestion = await OEQ.findById(question.question);
+        }
+        totalScore += findQuestion.maxScore;
+      }
+      let studentTotalScore = 0;
+      for (const response of quizRes.questionResponses) {
+        studentTotalScore += response.score;
+      }
+      
+      return res.status(200).json(formatMessage(true, "Quiz response fetched successfully", 
+      {...quizResponse,
+        totalScore: totalScore,
+        studentTotalScore: studentTotalScore,
+      }));
     }
   } catch (error) {
     return res
