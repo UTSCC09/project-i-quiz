@@ -220,10 +220,6 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
     return res
       .status(400)
       .json(formatMessage(false, "Invalid quiz remark id"));
-  } else if (quizRemark.status === "resolved") {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Remark request is already resolved"));
   }
 
   //Verify question remarks have same questions as quiz
@@ -235,7 +231,7 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
   //Update score
   quizResponse.questionResponses = quizResponse.questionResponses.map(
     (quizQuestion) => {
-      if (quizQuestion.question.toString() === quizRemark.question) {
+      if (quizQuestion.question.equals(quizRemark.question)) {
         quizQuestion.score = score ? score : quizQuestion.score;
       }
       return quizQuestion;
