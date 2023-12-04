@@ -55,11 +55,11 @@ const createQuizRemark = asyncHandler(async (req, res) => {
           "Cannot create remark request for quiz not yet released"
         )
       );
-  } else if (endTime < currentTime) {
+  } else if (currentTime < endTime) {
     return res
       .status(403)
       .json(
-        formatMessage(false, "Cannot create remark request for quiz locked")
+        formatMessage(false, "Cannot create remark request for ongoing quiz")
       );
   }
   try {
