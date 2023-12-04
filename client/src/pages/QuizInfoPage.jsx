@@ -7,6 +7,7 @@ import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
 import { fetchCourseObject } from "api/CourseApi";
 import {
+  generateInstructorQuizPDF,
   getQuiz,
   releaseQuizGrades,
 } from "api/QuizApi";
@@ -23,7 +24,6 @@ import colors from "tailwindcss/colors";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
 import { generateStudentQuizPDF } from "api/QuizResponseApi";
-import { generateInstructorQuizPDF } from "api/QuizApi";
 
 export default function QuizInfoPage() {
   const navigate = useNavigate();
