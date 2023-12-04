@@ -23,6 +23,7 @@ import {
 import colors from "tailwindcss/colors";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
+import { generateStudentQuizPDF } from "api/QuizResponseApi";
 
 export default function QuizInfoPage() {
   const navigate = useNavigate();
@@ -39,14 +40,22 @@ export default function QuizInfoPage() {
   const [isLoading, isLoadingSet] = useState(true);
   const [studentQuizCase, studentQuizCaseSet] = useState();
 
-  let quizOptions = [
-    {
+  let quizOptions = [];
+  if (!isStudent){
+    quizOptions.push( {
       label: "Download as PDF",
       onClick: () => {
         generateInstructorQuizPDF(quizId);
       },
-    },
-  ];
+    });
+  } else {
+    quizOptions.push( {
+      label: "Download as PDF",
+      onClick: () => {
+        generateStudentQuizPDF(quizId);
+      },
+    });
+  }
 
   const onStartQuiz = () => {
     const questionResponses = quizObject.questions.map((question) => {
