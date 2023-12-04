@@ -16,9 +16,10 @@ export default function QuestionEditor({
         ...newQuestionBody,
         type: questionType,
         _id: questionObject._id,
+        maxScore: questionObject.maxScore,
       });
     },
-    [questionObject._id, questionType, updateQuestion]
+    [questionObject.maxScore, questionObject._id, questionType, updateQuestion]
   );
 
   const questionTypeNames = [

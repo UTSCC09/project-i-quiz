@@ -49,6 +49,7 @@ export default function QuizEditorPage() {
         type: "MCQ",
         prompt: "",
         choices: [{ id: "0", content: "" }],
+        maxScore: Number(0),
       },
     ]);
   }
@@ -82,7 +83,6 @@ export default function QuizEditorPage() {
 
   const updateMaxScore = useCallback(
     (_id, maxScore) => {
-      console.log(maxScore);
       questionListSet((questionList) =>
         questionList.map((questionObject) => {
           if (questionObject._id === _id) {
@@ -191,7 +191,6 @@ export default function QuizEditorPage() {
                 className="btn-primary"
                 onClick={() => {
                   alertRef.current.hide();
-                  console.log(quizCreationData);
                   updateQuiz({
                     ...quizCreationData,
                     quizId: quizId,
