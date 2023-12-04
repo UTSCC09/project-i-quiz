@@ -12,6 +12,10 @@ const OEQSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please provide max length"],
   },
+  maxScore: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const OEQ = mongoose.model("OEQ", OEQSchema);

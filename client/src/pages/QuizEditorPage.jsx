@@ -80,6 +80,21 @@ export default function QuizEditorPage() {
     [questionListSet]
   );
 
+  const updateMaxScore = useCallback(
+    (_id, maxScore) => {
+      console.log(maxScore);
+      questionListSet((questionList) =>
+        questionList.map((questionObject) => {
+          if (questionObject._id === _id) {
+            return { ...questionObject, maxScore: Number(maxScore) };
+          }
+          return questionObject;
+        })
+      );
+    },
+    [questionListSet]
+  );
+
   function validateInputs() {
     let validationFlag = true;
     [...document.querySelectorAll("input")]
@@ -176,6 +191,7 @@ export default function QuizEditorPage() {
                 className="btn-primary"
                 onClick={() => {
                   alertRef.current.hide();
+                  console.log(quizCreationData);
                   updateQuiz({
                     ...quizCreationData,
                     quizId: quizId,
@@ -334,6 +350,7 @@ export default function QuizEditorPage() {
                 <QuestionEditor
                   questionObject={question}
                   updateQuestion={updateQuestion}
+                  updateMaxScore={updateMaxScore}
                 />
                 <div className="absolute flex gap-8 right-6 top-6">
                   {/* Move up & down buttons */}

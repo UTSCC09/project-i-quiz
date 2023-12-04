@@ -184,7 +184,6 @@ const createQuiz = asyncHandler(async (req, res) => {
       quizQuestions.push({
         question: createdQuestion._id,
         type: questions[i].type,
-        maxScore: questions[i].maxScore
       });
     }
   }
@@ -898,7 +897,10 @@ const updateQuiz = asyncHandler(async (req, res) => {
         ]);
         if (existingQuestion.filter((q) => q).length === 1) {
           await editQuestion(question, res);
-          return { question: question._id, type: question.type };
+          return {
+            question: question._id,
+            type: question.type,
+          };
         }
       }
       const createdQuestion = await createQuestion(question, res);

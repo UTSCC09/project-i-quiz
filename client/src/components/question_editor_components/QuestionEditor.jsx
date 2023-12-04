@@ -2,9 +2,12 @@ import DropdownSelection from "components/elements/DropdownSelection";
 import { useState, useCallback } from "react";
 import MCQEditor from "./MCQEditor";
 import OEQEditor from "./OEQEditor";
-import SingleLineInput from "components/elements/SingleLineInput";
 
-export default function QuestionEditor({ questionObject, updateQuestion }) {
+export default function QuestionEditor({
+  questionObject,
+  updateQuestion,
+  updateMaxScore,
+}) {
   const [questionType, questionTypeSet] = useState(questionObject.type);
 
   const onChange = useCallback(
@@ -58,7 +61,14 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
           }}
         />
         <span className="text-sm py-2">Max Score:</span>
-        <input className="simple-input w-12" name="maxScore" />
+        <input
+          className="simple-input w-12"
+          name="maxScore"
+          defaultValue={questionObject.maxScore}
+          onChange={(e) => {
+            updateMaxScore(questionObject._id, e.target.value);
+          }}
+        />
       </div>
       {questionType === "OEQ" ? (
         <OEQEditor questionBody={questionObject} onChange={onChange} />

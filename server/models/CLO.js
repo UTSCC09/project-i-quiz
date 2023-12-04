@@ -15,6 +15,10 @@ const CLOSchema = new mongoose.Schema({
   answers: {
     type: [String],
   },
+  maxScore: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const CLO = mongoose.model("CLO", CLOSchema);
