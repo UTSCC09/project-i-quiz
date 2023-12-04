@@ -12,16 +12,7 @@ import { getQuizResponse } from "./quizResponseController.js";
 //@desc   Allow student to create a quiz remark request
 //@access Private
 const createQuizRemark = asyncHandler(async (req, res) => {
-  const { quizId, questionRemarks } = req.body;
-  /*
-  questionRemarks: [
-      {
-          question: ObjectId,
-          studentComment: comment,
-      },
-      ...
-  ]
-  */
+  const { quizId, question, studentComment } = req.body;
 
   //Check if student
   let student = await User.findOne({ email: req.session.email });
@@ -32,27 +23,8 @@ const createQuizRemark = asyncHandler(async (req, res) => {
   }
 
   //Verify all fields exist
-  if (!quizId || !questionRemarks) {
+  if (!quizId || !question || !studentComment) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
-  }
-
-  //Check if quiz remark already exists for this quiz
-  const quizRemarks = await QuizRemark.find({
-    quiz: quizId,
-    student: student._id,
-  });
-  const pendingRemarks = quizRemarks.filter(
-    (remark) => remark.status === "pending"
-  );
-  if (pendingRemarks.length > 0) {
-    return res
-      .status(400)
-      .json(
-        formatMessage(
-          false,
-          "Please wait for your other remark request to be resolved"
-        )
-      );
   }
 
   //Find Quiz
@@ -83,46 +55,24 @@ const createQuizRemark = asyncHandler(async (req, res) => {
           "Cannot create remark request for quiz not yet released"
         )
       );
-  } else if (endTime < currentTime) {
+  } else if (currentTime < endTime) {
     return res
       .status(403)
       .json(
-        formatMessage(false, "Cannot create remark request for quiz locked")
+        formatMessage(false, "Cannot create remark request for ongoing quiz")
       );
   }
-
-  //Verify question remarks have same questions as quiz
-  const quizQuestions = quiz.questions;
-  let sameQuestions = true;
-  for (const remarkQuestion of questionRemarks) {
-    let question = quizQuestions.filter(
-      (quizQuestion) =>
-        quizQuestion.question.toString() === remarkQuestion.question
-    );
-    if (question.length == 0) {
-      sameQuestions = false;
-    }
-  }
-  if (!sameQuestions) {
-    return res
-      .status(400)
-      .json(
-        formatMessage(false, "Remark questions do not match quiz questions")
-      );
-  }
-
   try {
     const quizRemark = await QuizRemark.create({
       quiz: quizId,
       student: student._id,
-      questionRemarks: questionRemarks,
+      question: question,
+      studentComment: studentComment,
     });
     if (quizRemark) {
       return res
         .status(201)
-        .json(
-          formatMessage(true, "Quiz remark created successfully", quizRemark)
-        );
+        .json(formatMessage(true, "Quiz remark created successfully"));
     }
   } catch (error) {
     return res
@@ -158,7 +108,7 @@ const getMyQuizRemark = asyncHandler(async (req, res) => {
   }
 
   try {
-    const quizRemark = await QuizRemark.findOne({
+    const quizRemark = await QuizRemark.find({
       quiz: quizId,
       student: student._id,
     });
@@ -251,19 +201,9 @@ const getAllQuizRemarks = asyncHandler(async (req, res) => {
 //@access Private
 const resolveQuizRemark = asyncHandler(async (req, res) => {
   const { quizRemarkId } = req.params;
-  const { questionRemarks } = req.body;
-  /*
-    questionRemarks: [
-        {
-            question: ObjectId,
-            instructorComment: comment,
-            score: newScore ? newScore : undefined,
-        },
-        ...
-    ]
-  */
+  const { instructorComment, score } = req.body;
 
-  if (!quizRemarkId || !questionRemarks) {
+  if (!quizRemarkId || !instructorComment) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -277,62 +217,29 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
   //Check quizRemark not already resolved
   let quizRemark = await QuizRemark.findById(quizRemarkId);
   if (!quizRemark) {
-    return res.status(400).json(formatMessage(false, "Invalid quiz remark id"));
-  } else if (quizRemark.status === "resolved") {
     return res
       .status(400)
-      .json(formatMessage(false, "Remark request is already resolved"));
+      .json(formatMessage(false, "Invalid quiz remark id"));
   }
 
   //Verify question remarks have same questions as quiz
-  const quiz = await Quiz.findById(quizRemark.quiz);
-  const quizQuestions = quiz.questions;
-  let sameQuestions = true;
-  for (const remarkQuestion of questionRemarks) {
-    let question = quizQuestions.filter(
-      (quizQuestion) =>
-        quizQuestion.question.toString() === remarkQuestion.question
-    );
-    if (question.length == 0) {
-      sameQuestions = false;
-    }
-  }
-  if (!sameQuestions) {
-    return res
-      .status(400)
-      .json(
-        formatMessage(false, "Remark questions do not match quiz questions")
-      );
-  }
-
   //Updating student's score if necessary and remark request instructor comment
   let quizResponse = await QuizResponse.findOne({
     quiz: quizRemark.quiz,
     student: quizRemark.student,
   });
-  for (const remarkQuestion of questionRemarks) {
-    //Update score
-    quizResponse.questionResponses = quizResponse.questionResponses.map(
-      (quizQuestion) => {
-        if (quizQuestion.question.toString() === remarkQuestion.question) {
-          quizQuestion.score = remarkQuestion.score
-            ? remarkQuestion.score
-            : quizQuestion.score;
-        }
-        return quizQuestion;
+  //Update score
+  quizResponse.questionResponses = quizResponse.questionResponses.map(
+    (quizQuestion) => {
+      if (quizQuestion.question.equals(quizRemark.question)) {
+        quizQuestion.score = score ? score : quizQuestion.score;
       }
-    );
+      return quizQuestion;
+    }
+  );
 
-    //Update instructor comment on remark request for student to see
-    quizRemark.questionRemarks = quizRemark.questionRemarks.map(
-      (questionRemark) => {
-        if (questionRemark.question.toString() === remarkQuestion.question) {
-          questionRemark.instructorComment = remarkQuestion.instructorComment;
-        }
-        return questionRemark;
-      }
-    );
-  }
+  //Update instructor comment on remark request for student to see
+  quizRemark.instructorComment = instructorComment;
 
   //Save
   await quizResponse.save();
@@ -373,7 +280,9 @@ const deleteQuizRemark = asyncHandler(async (req, res) => {
   // verify quizRemark id
   const existingQuizRemark = await QuizRemark.findById(quizRemarkId);
   if (!existingQuizRemark) {
-    return res.status(400).json(formatMessage(false, "Invalid quiz remark id"));
+    return res
+      .status(400)
+      .json(formatMessage(false, "Invalid quiz remark id"));
   } else if (existingQuizRemark.status !== "resolved") {
     return res
       .status(400)
@@ -419,13 +328,13 @@ const deleteQuizRemark = asyncHandler(async (req, res) => {
     .json(formatMessage(true, "Quiz Remark deleted successfully"));
 });
 
-//@route  GET api/quiz-remarks/studentInfo/:quizRemarkId
+//@route  GET api/quiz-remarks/studentInfo/:questionId
 //@desc   Get student remark request info to display on Student UI
 //@access Private
 const getRemarkStudentInfo = asyncHandler(async (req, res) => {
-  const { quizRemarkId } = req.params;
+  const { questionId } = req.params;
 
-  if (!quizRemarkId) {
+  if (!questionId) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -443,48 +352,20 @@ const getRemarkStudentInfo = asyncHandler(async (req, res) => {
       .json(formatMessage(false, "Mongoose error finding user"));
   }
 
-  const quizRemark = await QuizRemark.findById(quizRemarkId);
+  const quizRemark = await QuizRemark.find({
+    question: questionId,
+    student: student._id,
+  });
+
   if (!quizRemark) {
-    return res.status(400).json(formatMessage(false, "Invalid remarkId"));
-  } else if (
-    quizRemark &&
-    quizRemark.student.toString() !== student._id.toString()
-  ) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Not the student's remark request"));
+    return res.status(400).json(formatMessage(false, "Invalid info"));
   }
 
-  if (quizRemark) {
-    const quiz = await Quiz.findById(quizRemark.quiz);
-    if (!quiz) {
-      return res.status(400).json(formatMessage(false, "Fail to get quiz"));
-    }
-    let questions = await getQuestions(quizRemark.quiz);
-
-    //Removing the question's ACTUAL answer
-    questions = questions.map((question) => {
-      if (question.answers) {
-        question.answers = [];
-      }
-      return question;
-    });
-
-    const quizResponse = await getQuizResponse(quizRemark.quiz, student._id);
-
-    return res.json(
-      formatMessage(true, "Success", {
-        quiz: quiz,
-        questions: questions,
-        quizResponse: quizResponse,
-        quizRemark: quizRemark,
-      })
-    );
-  } else {
-    return res
-      .status(400)
-      .json(formatMessage(false, "No response found for this quiz"));
-  }
+  return res.json(
+    formatMessage(true, "Success", {
+      quizRemarks: quizRemark,
+    })
+  );
 });
 
 //@route  GET api/quiz-remarks/instructorInfo/:quizRemarkId

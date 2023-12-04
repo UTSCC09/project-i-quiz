@@ -1,20 +1,5 @@
 import mongoose from "mongoose";
 
-const QuestionRemarkSchema = new mongoose.Schema({
-  question: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: [true, "Please provide a question for remark"],
-  },
-  studentComment: {
-    type: String,
-    required: [true, "Please provide a remark comment"],
-  },
-  instructorComment: {
-    type: String,
-    default: "",
-  },
-});
-
 const QuizRemarkSchema = new mongoose.Schema({
   quiz: {
     type: mongoose.Schema.Types.ObjectId,
@@ -31,7 +16,18 @@ const QuizRemarkSchema = new mongoose.Schema({
     enum: ["pending", "resolved"],
     default: "pending",
   },
-  questionRemarks: [QuestionRemarkSchema],
+  question: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "Please provide a question for remark"],
+  },
+  studentComment: {
+    type: String,
+    required: [true, "Please provide a remark comment"],
+  },
+  instructorComment: {
+    type: String,
+    default: "",
+  },
 });
 
 const QuizRemark = mongoose.model("Quiz Remarks", QuizRemarkSchema);

@@ -10,13 +10,13 @@ import Course from "../models/Course.js";
 import QuizResponse from "../models/QuizResponse.js";
 import { isValidObjectId } from "mongoose";
 import sendQuizInvitation from "../utils/quizInvitationUtils.js";
+import sendGradedQuizEmail from "../utils/gradedQuizUtils.js";
 
 //@route  POST api/quizzes
 //@desc   Allow instructor to create a quiz
 //@access Private
 const createQuiz = asyncHandler(async (req, res) => {
-  const { quizName, startTime, endTime, isDraft, course, questions } =
-    req.body;
+  const { quizName, startTime, endTime, isDraft, course, questions } = req.body;
 
   //Check if valid user
   let instructor;
@@ -273,6 +273,70 @@ const getQuiz = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json(formatMessage(true, "Quiz found", quiz));
+});
+
+//@route  GET api/quizzes/stats/:quizId
+//@desc   Allow instructor get a specific quiz
+//@access Private
+const getQuizStats = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
+  }
+
+  let quiz;
+  try {
+    quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
+  }
+
+  let course;
+  try {
+    course = await Course.findById(quiz.course);
+    if (!course) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Invalid course id in quiz"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(
+        formatMessage(false, "Mongoose error finding quiz course", null, error)
+      );
+  }
+
+  //Check if instructor teaches course
+  if (course.instructor.toString() !== instructor._id.toString()) {
+    return res
+      .status(403)
+      .json(formatMessage(false, "Instructor does not teach course"));
+  }
+
+  const allResponses = await QuizResponse.find({ quiz: req.params.quizId });
+  const markedResponses = allResponses.filter((i) => i.graded === "fully");
+  return res.status(200).json(
+    formatMessage(true, "Quiz found", {
+      responseCount: allResponses.length,
+      markedCount: markedResponses.length,
+    })
+  );
 });
 
 //@route  GET api/quizzes/:quizId/questions
@@ -768,9 +832,7 @@ const basicUpdateQuiz = asyncHandler(async (req, res) => {
   quiz.endTime = endTimeConverted;
   await quiz.save();
 
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz updated successfully"));
+  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  POST api/quizzes/update
@@ -834,7 +896,10 @@ const updateQuiz = asyncHandler(async (req, res) => {
         ]);
         if (existingQuestion.filter((q) => q).length === 1) {
           await editQuestion(question, res);
-          return { question: question._id, type: question.type };
+          return {
+            question: question._id,
+            type: question.type,
+          };
         }
       }
       const createdQuestion = await createQuestion(question, res);
@@ -853,9 +918,7 @@ const updateQuiz = asyncHandler(async (req, res) => {
   existingQuiz.questions = quizQuestions;
 
   await existingQuiz.save();
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz updated successfully"));
+  return res.status(200).json(formatMessage(true, "Quiz updated successfully"));
 });
 
 //@route  POST api/quizzes/question
@@ -1014,9 +1077,7 @@ const updateQuizQuestion = asyncHandler(async (req, res) => {
     !action ||
     (action !== "edit" && action !== "remove")
   ) {
-    return res
-      .status(400)
-      .json(formatMessage(false, "Missing/invalid fields"));
+    return res.status(400).json(formatMessage(false, "Missing/invalid fields"));
   }
 
   //Verify valid question
@@ -1298,9 +1359,7 @@ const deleteDraftQuiz = asyncHandler(async (req, res) => {
   await Quiz.deleteOne({ _id: quizId });
   await Course.updateOne({ _id: course }, { $pull: { quizzes: quizId } });
 
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz deleted successfully"));
+  return res.status(200).json(formatMessage(true, "Quiz deleted successfully"));
 });
 
 //@route  PATCH api/quizzes/:quizId/grades-release
@@ -1384,6 +1443,46 @@ const releaseQuizGrades = asyncHandler(async (req, res) => {
         formatMessage(false, "Mongoose error releasing grades", null, error)
       );
   }
+
+  //Sending grades in email
+  let totalMaxScore = 0;
+  for (const question of quiz.questions) {
+    totalMaxScore += question.maxScore;
+  }
+
+  const students = await getCourseStudents(course._id, instructor.email);
+  console.log(students);
+  for (const student of students) {
+    const quizRes = await QuizResponse.findOne({
+      quiz: quizId,
+      student: student._id,
+    });
+    let studentScore = 0;
+    for (const response of quizRes.questionResponses) {
+      studentScore += response.score;
+    }
+
+    //Sending graded quiz results
+    try {
+      await sendGradedQuizEmail(
+        course,
+        student,
+        quiz,
+        studentScore,
+        totalMaxScore
+      );
+    } catch (err) {
+      console.log("Fail to send graded quiz email to: ", student.email);
+      return res
+        .status(400)
+        .json(formatMessage(false, "Fail to send graded quiz email"));
+    }
+  }
+  quiz.isGradeReleased = true;
+  await quiz.save();
+  return res
+    .status(200)
+    .json(formatMessage(true, "Quiz grades released successfully"));
 });
 
 //@route  GET api/quizzes/generate/:quizId
@@ -1565,6 +1664,28 @@ async function getCourseStudentEmails(courseId, instructorEmail) {
   });
 
   return emails;
+}
+
+async function getCourseStudents(courseId, instructorEmail) {
+  if (!courseId) {
+    return [];
+  }
+
+  let students = [];
+  const users = await User.find({});
+
+  users.forEach(function (user) {
+    for (const course of user.courses) {
+      if (
+        course.courseId.toString() === courseId.toString() &&
+        user.email !== instructorEmail
+      ) {
+        students.push(user);
+      }
+    }
+  });
+
+  return students;
 }
 
 // Returns the list of questions from Quiz including answers

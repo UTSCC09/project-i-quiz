@@ -49,6 +49,7 @@ export default function QuizEditorPage() {
         type: "MCQ",
         prompt: "",
         choices: [{ id: "0", content: "" }],
+        maxScore: Number(0),
       },
     ]);
   }
@@ -80,14 +81,25 @@ export default function QuizEditorPage() {
     [questionListSet]
   );
 
+  const updateMaxScore = useCallback(
+    (_id, maxScore) => {
+      questionListSet((questionList) =>
+        questionList.map((questionObject) => {
+          if (questionObject._id === _id) {
+            return { ...questionObject, maxScore: Number(maxScore) };
+          }
+          return questionObject;
+        })
+      );
+    },
+    [questionListSet]
+  );
+
   function validateInputs() {
     let validationFlag = true;
     [...document.querySelectorAll("input")]
       .concat([...document.querySelectorAll("textarea")])
       .forEach((input) => {
-        if (input.name === "maxScore") {
-          return;
-        }
         input.addEventListener("input", (e) => {
           e.target.classList.remove("input-invalid-state");
         });
@@ -337,6 +349,7 @@ export default function QuizEditorPage() {
                 <QuestionEditor
                   questionObject={question}
                   updateQuestion={updateQuestion}
+                  updateMaxScore={updateMaxScore}
                 />
                 <div className="absolute flex gap-8 right-6 top-6">
                   {/* Move up & down buttons */}

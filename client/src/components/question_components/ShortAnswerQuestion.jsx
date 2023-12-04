@@ -6,7 +6,8 @@ const ShortAnswerQuestion = (props) => {
   const updateText = (e) => {
     e.preventDefault();
     setText(e.target.value);
-    props.updateQuestionResponse(props.question._id, e.target.value);
+    if (props.updateQuestionResponse)
+      props.updateQuestionResponse(props.question._id, e.target.value);
   };
 
   return (
@@ -16,11 +17,12 @@ const ShortAnswerQuestion = (props) => {
         dangerouslySetInnerHTML={{ __html: props.question.prompt }}
       ></div>
       <textarea
-        className="h-24 px-4 py-2 w-full rounded-md border border-gray-200"
+        className="h-24 px-4 py-2 w-full simple-input read-only:ring-0"
         name={props.question._id}
         maxLength={
           props.question.maxLength === 0 ? null : props.question.maxLength
         }
+        readOnly={props.readOnly}
         defaultValue={text}
         onBlur={updateText}
       ></textarea>

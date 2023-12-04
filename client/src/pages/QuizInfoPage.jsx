@@ -10,6 +10,7 @@ import {
   generateInstructorQuizPDF,
   getQuiz,
   releaseQuizGrades,
+  getQuizStats,
 } from "api/QuizApi";
 import { createQuizReponse, getQuizResponse } from "api/QuizResponseApi";
 import {
@@ -17,6 +18,7 @@ import {
   DocumentCheckIcon,
   DocumentIcon,
   EnvelopeIcon,
+  FileEditIcon,
   PenIcon,
   Spinner,
 } from "components/elements/SVGIcons";
@@ -39,17 +41,19 @@ export default function QuizInfoPage() {
   const [toastMessage, toastMessageSet] = useState();
   const [isLoading, isLoadingSet] = useState(true);
   const [studentQuizCase, studentQuizCaseSet] = useState();
+  const [quizStats, quizStatsSet] = useState({});
+  const [quizResponse, quizResponseSet] = useState({});
 
   let quizOptions = [];
-  if (!isStudent){
-    quizOptions.push( {
+  if (!isStudent) {
+    quizOptions.push({
       label: "Download as PDF",
       onClick: () => {
         generateInstructorQuizPDF(quizId);
       },
     });
   } else {
-    quizOptions.push( {
+    quizOptions.push({
       label: "Download as PDF",
       onClick: () => {
         generateStudentQuizPDF(quizId);
@@ -152,6 +156,18 @@ export default function QuizInfoPage() {
       });
     });
   }, [isStudent, location.state, navigate, quizId, toastMessageSet]);
+
+  useEffect(() => {
+    getQuizStats(quizId).then((result) => {
+      quizStatsSet(result.payload);
+    });
+  }, [quizStatsSet, quizId]);
+
+  useEffect(() => {
+    getQuizResponse(quizId).then((result) => {
+      quizResponseSet(result.payload);
+    });
+  }, [quizResponseSet, quizId]);
 
   return (
     <>
@@ -394,17 +410,27 @@ export default function QuizInfoPage() {
                   </p>
                 )) ||
                 (studentQuizCase === "graded" && (
-                  <p className="text-lg">Your quiz grade.</p>
+                  <Link
+                    to={"/quiz/" + quizId}
+                    className="h-36 lg:h-44 gap-2 flex flex-col shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <div className="w-full text-sm text-gray-700 font-medium inline-flex gap-2 items-center -pl-5">
+                      <div
+                        className="w-1.5 h-3.5"
+                        style={{ backgroundColor: courseObject.accentColor }}
+                      ></div>
+                      Your Grade
+                    </div>
+                    <div className="text-3xl">
+                      <b style={{ color: courseObject.accentColor }}>
+                        {quizResponse.studentTotalScore}
+                      </b>
+                      <span className="mx-2 font-thin">/</span>
+                      <b>{quizObject.totalScore}</b>
+                    </div>
+                  </Link>
                 ))
-              ) : quizObject.isDraft ? (
-                <Link
-                  to={"/quiz/" + quizId}
-                  className="h-16 lg:h-24 gap-2 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
-                  style={{ "--accentColor": courseObject.accentColor }}
-                >
-                  <PenIcon className="h-3" />
-                  <span>Edit Draft</span>
-                </Link>
               ) : (
                 <>
                   <div className="flex gap-4 flex-col lg:flex-row">
@@ -450,23 +476,31 @@ export default function QuizInfoPage() {
                     <DocumentCheckIcon className="h-5" />
                     <span>Mark Student Responses</span>
                   </Link>
+                  <Link
+                    to={"/regrade/" + quizId}
+                    className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <FileEditIcon className="h-4" />
+                    <span>Resolve Regrade Requests</span>
+                  </Link>
                   <div className="flex gap-4 flex-col lg:flex-row">
                     <SubmissionCountCard
                       accentColor={courseObject.accentColor}
-                      numReceived={10}
-                      numTotal={78}
+                      numReceived={quizStats.responseCount}
+                      numTotal={courseObject.sessions[0].enrollment}
                     />
                     <MarkingProgressCard
                       accentColor={courseObject.accentColor}
                       quizId={quizId}
-                      numMarked={1}
-                      numTotal={10}
+                      numMarked={quizStats.markedCount}
+                      numTotal={quizStats.responseCount}
                     />
-                    <GradeStatsCard
-                      accentColor={courseObject.accentColor}
-                      averagePercentage={63}
-                      medianPercentage={72}
-                    />
+                    {/* <GradeStatsCard
+                        accentColor={courseObject.accentColor}
+                        averagePercentage={63}
+                        medianPercentage={72}
+                      /> */}
                   </div>
                 </>
               )}
