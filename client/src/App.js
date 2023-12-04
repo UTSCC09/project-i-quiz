@@ -12,6 +12,7 @@ import ProtectedRoute from "components/ProtectedRoute";
 import QuizEditorPage from "pages/QuizEditorPage";
 import PasswordResetPage from "pages/PasswordResetPage";
 import QuizRedirect from "pages/QuizRedirect";
+import MarkQuizPage from "pages/MarkQuizPage";
 
 const App = () => {
   return (
@@ -58,7 +59,14 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/mark-quiz/:quizId"
+        element={
+          <ProtectedRoute>
+            <MarkQuizPage />
+          </ProtectedRoute>
+        }
+      />
       {/* -- Public Routes -- */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />

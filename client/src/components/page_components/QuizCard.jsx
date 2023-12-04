@@ -51,24 +51,32 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
   const endTimeStr = getFormattedDateStr(endTime);
 
   let quizAvailabilityPrompt;
+  let isDraft = false;
   let isUpcoming = false;
   let isAvailable = false;
   let isClosed = false;
+  let isQuizStudentAccessible = false;
   const isStudent = isStudentUserType();
   let quizEditOptions = [];
 
   switch (quizState) {
-    case "available":
-      quizAvailabilityPrompt = "Available until " + endTimeStr;
-      isAvailable = true;
+    case "pending":
+      quizAvailabilityPrompt = "Unreleased";
+      isDraft = true;
       break;
     case "upcoming":
       quizAvailabilityPrompt = "Unlocks on " + startTimeStr;
       isUpcoming = true;
       break;
+    case "available":
+      quizAvailabilityPrompt = "Available until " + endTimeStr;
+      isAvailable = true;
+      isQuizStudentAccessible = true;
+      break;
     case "closed":
       quizAvailabilityPrompt = "Closed on " + endTimeStr;
       isClosed = true;
+      isQuizStudentAccessible = true;
       break;
     default:
       break;
@@ -99,8 +107,8 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
         className="h-fit w-full rounded border-l-[12px] shadow shadow-gray-200 group cursor-pointer"
         style={{
           borderLeftColor: accentColor,
-          //pointerEvents: isUpcoming ? "none" : "auto",
-          opacity: isUpcoming ? 0.5 : 1,
+          pointerEvents: (isStudent && !isQuizStudentAccessible) ? "none" : "auto",
+          opacity: (isStudent && !isQuizStudentAccessible) ? 0.5 : 1,
         }}
       >
         <div
@@ -124,7 +132,7 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
 
               <Badge label={courseCode} accentColor={accentColor} />
 
-              {isStudent && (
+              {isStudent ? (
                 (isAvailable &&
                   (
                     responseStatus === "submitted" && (
@@ -140,10 +148,16 @@ export default function QuizCard({ accentColor = "#0366FF", quizObject }) {
                     responseStatus !== "submitted" && (
                       <Badge iconId="missed" accentColor={colors.red[500]} />
                     ) ||
-                    isGradeReleased && (
-                      <Badge iconId="graded" accentColor={colors.green[500]} />
-                    )
+                    (isGradeReleased ? (
+                      <Badge iconId="graded" accentColor={colors.blue[600]} />
+                    ) : (
+                      <Badge iconId="gradingInPrg" accentColor={colors.gray[600]} />
+                    ))
                   )
+                )
+              ) : (
+                isDraft && (
+                  <Badge iconId="writing" label="Draft" accentColor={colors.gray[500]} />
                 )
               )}
             </div>

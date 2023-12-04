@@ -186,6 +186,7 @@ const QuizPage = () => {
               Save
             </button>
             <button
+              type="button"
               className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
               style={{
                 pointerEvents: canSubmit ? "auto" : "none",

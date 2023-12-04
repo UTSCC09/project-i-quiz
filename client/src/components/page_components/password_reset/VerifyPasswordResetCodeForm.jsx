@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import OtpInput from "components/elements/OtpInput";
 import AlertBanner from "components/elements/AlertBanner";
-import { QuestionMarkCircleIcon } from "components/elements/SVGIcons";
+import { QuestionMarkCircleIcon, Spinner } from "components/elements/SVGIcons";
 
 export default function VerifyPasswordResetCodePage({ stepSet }) {
   const [helpMessageShow, helpMessageShowSet] = useState(false);
+  const [isLoading, isLoadingSet] = useState(false);
 
   const alertRef = useRef();
   const otpInputRef = useRef();
@@ -24,6 +25,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
     }
 
     buttonRef.current.classList.add("button-loading");
+    isLoadingSet(true);
     alertRef.current.hide();
 
     fetch("/api/users/verifypasswordresetcode", {
@@ -42,6 +44,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
           alertRef.current.setMessage(result.message);
           alertRef.current.show();
           buttonRef.current.classList.remove("button-loading");
+          isLoadingSet(false);
         }
       })
       .catch((err) => {
@@ -116,7 +119,7 @@ export default function VerifyPasswordResetCodePage({ stepSet }) {
         <AlertBanner ref={alertRef} />
         <OtpInput ref={otpInputRef} />
         <button ref={buttonRef} className="btn-primary">
-          Verify code
+          {isLoading ? <Spinner className="-mt-1" /> : "Verify code"}
         </button>
       </form>
 

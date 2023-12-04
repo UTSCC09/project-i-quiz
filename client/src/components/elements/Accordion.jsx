@@ -43,7 +43,7 @@ export default function Accordion({
             checked={!show}
             readOnly
           />
-          <div className="font-medium text-slate-600 peer-checked:opacity-50 text-sm md:text-bas1e">
+          <div className="font-medium text-slate-600 peer-checked:opacity-50 text-sm">
             {sectionName}
           </div>
           <ChevronIcon className="text-slate-600 peer-checked:opacity-50 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-90" />
