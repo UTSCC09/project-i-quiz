@@ -77,9 +77,9 @@ function RadioOption(props) {
         ) : (
           <label
             htmlFor={`radioGroupId-${props.radioGroupId}-optionId${props.optionId}`}
-            className="flex cursor-pointer items-center rounded-lg border border-gray-100 bg-white p-4 shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-[--color] peer-checked:ring-1 peer-checked:ring-[--color] peer-checked:font-medium peer-checked:bg-blue-10"
+            className="flex cursor-pointer items-center rounded-lg border bg-white p-4 shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-[--color] peer-checked:ring-1 peer-checked:ring-[--color] peer-checked:font-medium peer-checked:bg-blue-10"
             style={{
-              cursor: props.correctOptionId && "auto",
+              pointerEvents: props.correctOptionId && "none",
               "--color": props.correctOptionId
                 ? colors.red[500]
                 : colors.blue[500],

@@ -104,9 +104,9 @@ function CheckOption(props) {
         ) : (
           <label
             htmlFor={props.oid}
-            className="flex cursor-pointer items-center rounded-lg border border-gray-100 bg-white p-4 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-[--color] peer-checked:ring-1 peer-checked:ring-[--color] peer-checked:bg-blue-10 peer-checked:font-medium"
+            className="flex cursor-pointer items-center rounded-lg border bg-white p-4 drop-shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-[--color] peer-checked:ring-1 peer-checked:ring-[--color] peer-checked:bg-blue-10 peer-checked:font-medium"
             style={{
-              cursor: hasCorrectOption && "auto",
+              pointerEvents: props.correctOptionId && "none",
               "--color": hasCorrectOption ? colors.red[500] : colors.blue[500],
               backgroundColor: hasCorrectOption && colors.white,
             }}
