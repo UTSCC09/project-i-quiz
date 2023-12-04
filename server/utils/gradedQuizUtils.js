@@ -13,6 +13,8 @@ const sendGradedQuizEmail = async (course, user, quiz, totalScore, maxScore) => 
             <p>Hi ${user.firstName} ${user.lastName}, </p>
             <p><b>${quiz.quizName}</b> has been marked!</p>
             <p><b>Your grade:</b> ${totalScore} out of ${maxScore}</p>
+            <p>Best,</p>
+            <p>iQuiz Team</p>
             <p>© iQuiz 2023. All rights reserved.</p>
         `
     }
