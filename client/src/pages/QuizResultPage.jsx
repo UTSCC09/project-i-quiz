@@ -8,11 +8,11 @@ import { Spinner } from "components/elements/SVGIcons";
 import Toast from "components/elements/Toast";
 import QuestionWrapper from "components/question_components/QuestionWrapper";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import colors from "tailwindcss/colors";
 
 export default function QuizResultPage() {
-  const quizId = "656a3611e965cc1aa8f42abf";
+  const { quizId } = useParams();
   const navigate = useNavigate();
   const [quizObject, quizObjectSet] = useState();
   const [questionResponses, questionResponsesSet] = useState();
@@ -52,7 +52,7 @@ export default function QuizResultPage() {
         }
       });
     });
-  }, [navigate]);
+  }, [navigate, quizId]);
 
   useEffect(() => {
     if (questionNumForRegrade !== -1) {
@@ -196,7 +196,6 @@ export default function QuizResultPage() {
                         questionIdForRegradeRef.current = questionObject._id;
                         questionNumForRegradeSet(idx + 1);
                         regradeModalShowSet(true);
-                        questionNumForRegradeSet(idx + 1);
                       }}
                     >
                       Request for regrade

@@ -12,6 +12,7 @@ import {
   DocumentCheckIcon,
   DocumentIcon,
   EnvelopeIcon,
+  FileEditIcon,
   PenIcon,
   Spinner
 } from "components/elements/SVGIcons";
@@ -407,6 +408,14 @@ export default function QuizInfoPage() {
                       <DocumentCheckIcon className="h-5" />
                       <span>Mark Student Responses</span>
                     </Link>
+                    <Link
+                    to={"/regrade/" + quizId}
+                    className="h-16 lg:h-24 gap-3 flex shadow-sm bg-white rounded-md px-12 border items-center justify-center w-full hover:bg-gray-100 hover:border hover:border-[--accentColor] transition font-medium text-gray-700 hover:text-[--accentColor]"
+                    style={{ "--accentColor": courseObject.accentColor }}
+                  >
+                    <FileEditIcon className="h-4" />
+                    <span>Resolve Regrade Requests</span>
+                  </Link>
                     <div className="flex gap-4 flex-col lg:flex-row">
                       <SubmissionCountCard
                         accentColor={courseObject.accentColor}

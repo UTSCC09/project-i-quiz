@@ -203,7 +203,7 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
   const { quizRemarkId } = req.params;
   const { instructorComment, score } = req.body;
 
-  if (!quizRemarkId || !instructorComment || !score) {
+  if (!quizRemarkId || !instructorComment) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 

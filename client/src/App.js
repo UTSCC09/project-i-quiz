@@ -13,6 +13,7 @@ import QuizEditorPage from "pages/QuizEditorPage";
 import PasswordResetPage from "pages/PasswordResetPage";
 import QuizRedirect from "pages/QuizRedirect";
 import MarkQuizPage from "pages/MarkQuizPage";
+import RemarkPage from "pages/RemarkPage";
 
 const App = () => {
   return (
@@ -64,6 +65,14 @@ const App = () => {
         element={
           <ProtectedRoute>
             <MarkQuizPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/regrade/:quizId"
+        element={
+          <ProtectedRoute>
+            <RemarkPage />
           </ProtectedRoute>
         }
       />
