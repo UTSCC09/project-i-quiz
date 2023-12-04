@@ -1,20 +1,8 @@
-import { getQuiz } from "api/QuizApi";
-import {
-  createQuizRemark,
-  getAllQuizRemarks,
-  getRemarkInfoForInstructor,
-  getRemarkInfoForStudent,
-  resolveQuizRemark,
-} from "api/QuizRemarkApi";
-import { getQuizResponse } from "api/QuizResponseApi";
-import AlertBanner from "components/elements/AlertBanner";
+import { getAllQuizRemarks, resolveQuizRemark } from "api/QuizRemarkApi";
 import Badge from "components/elements/Badge";
-import Modal from "components/elements/Modal";
-import { Spinner } from "components/elements/SVGIcons";
 import SingleLineInput from "components/elements/SingleLineInput";
 import Toast from "components/elements/Toast";
 import NavBar from "components/page_components/NavBar";
-import QuestionWrapper from "components/question_components/QuestionWrapper";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import colors from "tailwindcss/colors";

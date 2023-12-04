@@ -11,6 +11,7 @@ import {
 import { useParams } from "react-router";
 import { isStudentUserType } from "utils/CookieUtils";
 import QuizResultPage from "./QuizResultPage";
+import { Spinner } from "components/elements/SVGIcons";
 
 const QuizPage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const QuizPage = () => {
   const [quizObject, quizObjectSet] = useState();
   const [canEdit, setCanEdit] = useState(true);
   const [canSubmit, setCanSubmit] = useState(true);
+  const [isLoading, isLoadingSet] = useState(false);
 
   const locallyStoreQuizResponse = useCallback(
     (questionResponses) => {
@@ -75,6 +77,7 @@ const QuizPage = () => {
   };
 
   const submitQuizResponseInDb = () => {
+    isLoadingSet(true);
     setCanEdit(false);
     setCanSubmit(false);
 
@@ -93,6 +96,7 @@ const QuizPage = () => {
 
           submitQuizResponse(quizId)
             .then((result) => {
+              isLoadingSet(false);
               console.log("result in submit:", result);
               if (
                 (!result.success &&
@@ -185,19 +189,6 @@ const QuizPage = () => {
                 );
               })}
               <button
-                className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
-                type="button"
-                style={{
-                  pointerEvents: canEdit ? "auto" : "none",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  editQuizResponseInDb();
-                }}
-              >
-                Save
-              </button>
-              <button
                 type="button"
                 className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
                 style={{
@@ -208,7 +199,7 @@ const QuizPage = () => {
                   submitQuizResponseInDb();
                 }}
               >
-                Submit
+                {isLoading ? <Spinner className="-mt-1" /> : "Submit"}
               </button>
             </form>
           ))}
