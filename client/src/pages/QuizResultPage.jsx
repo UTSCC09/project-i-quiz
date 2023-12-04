@@ -2,12 +2,14 @@ import { getQuiz } from "api/QuizApi";
 import { createQuizRemark, getRemarkInfoForStudent } from "api/QuizRemarkApi";
 import { getQuizResponse } from "api/QuizResponseApi";
 import AlertBanner from "components/elements/AlertBanner";
+import Badge from "components/elements/Badge";
 import Modal from "components/elements/Modal";
 import { Spinner } from "components/elements/SVGIcons";
 import Toast from "components/elements/Toast";
 import QuestionWrapper from "components/question_components/QuestionWrapper";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import colors from "tailwindcss/colors";
 
 export default function QuizResultPage() {
   const quizId = "656a3611e965cc1aa8f42abf";
@@ -17,7 +19,8 @@ export default function QuizResultPage() {
   const [regradeModalShow, regradeModalShowSet] = useState(false);
   const [isLoading, isLoadingSet] = useState(false);
   const [toastMessage, toastMessageSet] = useState();
-  const [questionNumForRegrade, questionNumForRegradeSet] = useState(0);
+  const [questionNumForRegrade, questionNumForRegradeSet] = useState(-1);
+  const [remarks, remarksSet] = useState([]);
   const alertRef = useRef();
   const questionIdForRegradeRef = useRef();
   const studentCommentRef = useRef();
@@ -52,10 +55,14 @@ export default function QuizResultPage() {
   }, [navigate]);
 
   useEffect(() => {
-    getRemarkInfoForStudent(questionIdForRegradeRef.current).then((result) => {
-      console.log(result);
-    });
-  }, [questionIdForRegradeRef.current]);
+    if (questionNumForRegrade !== -1) {
+      getRemarkInfoForStudent(questionIdForRegradeRef.current).then(
+        (result) => {
+          if (result) remarksSet(result.quizRemarks);
+        }
+      );
+    }
+  }, [questionNumForRegrade]);
 
   return (
     <>
@@ -68,6 +75,37 @@ export default function QuizResultPage() {
             <h1 className="text-2xl font-bold">Requesting a regrade</h1>
             <AlertBanner ref={alertRef} />
             <div className="flex flex-col gap-4 text-gray-600">
+              {remarks.length !== 0 && (
+                <div className="font-medium text-sm">Submitted Requests:</div>
+              )}
+              {remarks.map((remark) => {
+                return (
+                  <div
+                    key={remark._id}
+                    className="flex flex-col rounded-md border border-blue-600 px-8 py-4 text-sm gap-2"
+                  >
+                    <Badge
+                      label={remark.status}
+                      className={"capitalize"}
+                      accentColor={
+                        remark.status === "resolved"
+                          ? colors.green[600]
+                          : colors.yellow[500]
+                      }
+                    />
+                    <div className="font-medium">Your comment:</div>
+                    <div className="text-base">{remark.studentComment}</div>
+                    {remark.status !== "pending" && (
+                      <>
+                        <div className="font-medium">Instructor comment:</div>
+                        <div className="text-base">
+                          {remark.instructorComment}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
               <span>
                 Please reason your regrade request for question #
                 {questionNumForRegrade}:
@@ -106,13 +144,13 @@ export default function QuizResultPage() {
                   });
                 }}
               >
-                {isLoading ? <Spinner className="-mt-1" /> : "Confirm"}
+                {isLoading ? <Spinner className="-mt-1" /> : "Submit"}
               </button>
               <button
                 className="btn-secondary"
                 onClick={() => regradeModalShowSet(false)}
               >
-                {isLoading ? <Spinner className="-mt-1" /> : "Cancel"}
+                Cancel
               </button>
             </div>
           </div>

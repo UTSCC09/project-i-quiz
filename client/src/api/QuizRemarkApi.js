@@ -98,8 +98,8 @@ const resolveQuizRemark = async (quizRemarkId, questionRemarks) => {
     });
 };
 
-const getRemarkInfoForStudent = async (quizRemarkId) => {
-  return fetch(`/api/quiz-remarks/studentInfo/${quizRemarkId}`, {
+const getRemarkInfoForStudent = async (questionId) => {
+  return fetch(`/api/quiz-remarks/studentInfo/${questionId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     withCredentials: true,
