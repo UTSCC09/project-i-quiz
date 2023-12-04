@@ -192,7 +192,10 @@ const createQuiz = asyncHandler(async (req, res) => {
       quizQuestions.push({
         question: createdQuestion._id,
         type: questions[i].type,
-        maxScore: (questions[i].maxScore && questions[i].maxScore > 0) ? questions[i].maxScore : 1
+        maxScore:
+          questions[i].maxScore && questions[i].maxScore > 0
+            ? questions[i].maxScore
+            : 1,
       });
     }
   }
@@ -1737,7 +1740,10 @@ async function getQuestions(quizId) {
     formattedQuestions.push({
       ...question.toObject(),
       type: quiz.questions[i].type,
-      maxScore: (quiz.questions[i].maxScore && quiz.questions[i].maxScore > 0) ? quiz.questions[i].maxScore : 1,
+      maxScore:
+        quiz.questions[i].maxScore && quiz.questions[i].maxScore > 0
+          ? quiz.questions[i].maxScore
+          : 1,
     });
   }
 
