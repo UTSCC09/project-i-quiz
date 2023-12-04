@@ -1,95 +1,148 @@
-# Project Proposal
-
 ![iquiz_logo.svg](client/src/media/iquiz_logo.svg)
 
-## Project Title
+# iQuiz
 
-iQuiz!
+## Project Video URL
 
-## Team Members
+Provide the link to your youtube video. Please make sure the link works.
 
-| Name | Student # | Email | GitHub |
-| --- | --- | --- | --- |
-| Amey Damle | 1007039198 | amey.damle@mail.utoronto.ca | 4meyDam1e |
-| Eric Zhou | 1006170064 | ericck.zhou@mail.utoronto.ca | ericckzhou |
-| Houde Liu | 1005722158 | archie.liu@mail.utoronto.ca | archie-lhd |
+## Project Description
 
-## Description of Web application
+iQuiz! is an online quiz platform for instructors and students. The platform allows instructors to create, host, grade, and regrade quizzes. Students can enroll in courses, write quizzes for their selected courses, view their quiz results and quiz history, and request regrades. Quizzes can be imported from formatted JSON files or they can be created on the platform using our GUI editor.
 
-iQuiz! is an online quiz platform for instructors and students. The platform allows instructors to create, host, grade and regrade quizzes. Students can enroll in courses, write quizzes for their selected courses, view their quiz results and quiz history, and request regrades. Quizzes can be imported from formatted JSON files or they can be created on the platform using our GUI editor.
+## Development
 
-## Key Features to be completed by the Beta version
+Leaving deployment aside, explain how the app is built. Please describe the overall code design and be specific about the programming languages, framework, libraries and third-party api that you have used.
 
-1. Secured sign-up and log-in
-    1. Account Email Verification
-2. Student Dashboard
-    1. Show all enrolled courses
-    2. Send requests to enroll in new courses
-    3. On the course page
-        1. Show a list of past quizzes (submissions and results)
-3. Instructor Dashboard
-    1. Manage courses and students
-        1. Add/remove courses
-        2. Add/remove students from courses
-        3. Accept/decline enrollment requests from students
-    2. On the course page: 
-        1. Show a list of students and quizzes
-        2. Ability to upload formatted JSON to create a quiz
-4. Quiz page
-    1. Supported question types:
-        1. Multiple choice questions
-        2. Multiple select questions
-        3. Open-ended questions
-        4. Cloze questions (Fill in the blanks)
-5. GUI editor for quiz creation
+### **Overall Code Design:**
 
-## Additional Features to be completed by the Final version
+- **Frontend-Backend Separation:** The codebase follows a clear separation between the frontend and backend, with distinct file structures for each.
+- **Component-Based Frontend:** Organized components based on their types help maintain a scalable and modular codebase.
+- **Express for Backend:** Leveraging Express simplifies the process of handling HTTP requests and structuring the backend logic.
+- **Database Interaction:** MongoDB is used for database interactions, given its compatibility with Node.js and Express.
 
-1. Auto-marker for closed-end questions
-2. Instructors:
-    1. Emails - quiz reminders, quiz grade release
-    2. Grade quiz submissions
-    3. Manage and resolve regrade requests
-3. Students:
-    1. Emails - accept quiz invitations and receive grades through email
-    2. Quiz result page - See marks for each question, instructor comments, regrade button
-    3. Grade distribution graph of the entire class
-4. Synchronous quiz-taking session 
-    1. During the session, the instructor can:
-        1. See students’ progress
-        2. Allow for a time extension
-        3. Send real-time notification
-    2. Students can report any quiz typos or errors to the instructor
-5. Export Quizzes to PDF files
+Our overall design follows common best practices used for developing scalable and maintainable web applications.
 
-## Technology Stack
+### Programming Languages & Frameworks
 
-### UI Design
+NodeJS, React, Express, MongoDB
 
-- Figma
+TailwindCSS for CSS styling components
 
-### Frontend
+Our codebase design is organized into a client (frontend) and server (backend) file structure
 
-- ReactJS
-- Tailwind CSS
+For the client, we organized our files by:
 
-### Backend
+- APIs: any API interactions
+- media: static images
+- components: small React components used to build the larger user interface
+    - We classified components into many types:
+        - elements, page_components, question_components, question_editor_components
+- pages: large React components composed of smaller ones used to generate pages
+- styles: CSS styling
+- utils: any general purpose function used across client
 
-- Express
-- NodeMailer
+For the server, we organized the files by:
 
-### Database
+- models: for any data structure and business logic of the application.
+    - Users, Course, Quizzes, Quiz response, Quiz remark, Types of Questions
+- controllers: handles incoming requests from the client, processing model data, send the response back.
+- middleware: intermediary functions to perform security functions like authentication, request validations, and content cleansing.
+- routes: used for mapping incoming HTTP requests and sending them to the corresponding controller handler
+- utils: any general-purpose functions used across the server
 
-- MongoDB
+### Libraries/Third-party APIs used
 
-### Deployment
+**Frontend**
 
-- Firebase
+- jspdf - handle client-side quiz pdf generation for students.
+- http-proxy-middleware - proxying requests to the server
+- uuid: generate unique identifiers
+- dotenv: load and management environment configuration variables, API keys, and other sensitive info
+- bson-objectid: handle MongoDB objects
+- dayjs: parsing and manipulating dates
+- framer-motion: creating animations in React
+- web-vitals: measures the performance of a webpage
 
-## Top 5 technical challenges
+**Backend**
 
-1. GUI editor for quiz creation
-2. Synchronous quiz-taking session
-3. Email verification and notifications
-4. Responsive Design to support different devices
-5. Support exporting quizzes to PDF and JSON files
+- NodeMailer - handle sending emails for quiz grades, invitation, and email verification.
+- jsonwebtoken - used for password reset authentication
+- bcrypt - encrypting and decrypting password
+- cors - allow only client to make requests to the server, prevent CSRF attack
+- cookie-parser - parsing cookies middleware
+
+## Deployment
+
+Explain how you have deployed your application.
+
+Using App Engine, we deployed our frontend and backend applications separately on Google Cloud. We did this by creating a frontend.yaml and backend.yaml file to define the settings, runtime environments, and other configurations like environmental variables and entrypoint so that each application would know how to deploy separately. Also, we used dispatch.yaml file to impose general routing rules on our application so that incoming requests would know whether to connect to our frontend or backend applications.
+
+Our database is already deployed on MongoDB Atlas’ cloud where the deployed applications connect to it via specific connection string with credentials, and having a white-listed IP address.
+
+URL: [https://iquiz-405903.ue.r.appspot.com/](https://iquiz-405903.ue.r.appspot.com/)
+
+## Challenges
+
+What is the top 3 most challenging things that you have learned/developed for your app? Please restrict your answer to only three items.
+
+### Challenge #1 - Custom-styling UI using TailwindCSS?
+
+### Challenge #2 -
+
+### Challenge #3 - Deployment
+
+One challenge we faced was deploying our application on App Engine. There were a lot of initial configuration issues as the whole application did not work. A bunch of issues were presented and we had no clue where to start debugging. We spent a lot of time resolving these issues by listing them out and sorting them in an order on of which issue to debug first. Fine-tuning deployment configuration settings to our applications was the hardest challenging factor, despite thorough exploration of the official documentation, trial and error troubleshooting, and insights from our web security and deployment lectures. Some of the issues we encountered when deploying were:
+
+1. Tuning deployment configurations
+2. Communication between deployed applications
+3. App Security configurations - session, cookies, and cors issues 
+
+Through these deployment challenges, we have learned the nuances of setting deployment configurations, how to communicate between deployed applications, and how to correctly set security configurations on deployed applications. Through this, we have improved our skills on troubleshooting deployed system issues and as the end goal, learned how to deploy applications on Google Cloud.
+
+## Contributions
+
+Describe the contribution of each team member to the project. Please provide the full name of each team member (but no student number).
+
+Added from JIRA tasks & Skimmed PRs
+
+### Archie Liu
+
+- iQuiz Logo Design
+- Signup, Login Page, Logout UI & Integration
+- Question component UI
+- Quiz Draft feature
+- Quiz GUI editor
+- Quiz Editing feature
+- Quiz Grading frontend
+- Quiz Remark frontend
+- Course UI & Integration
+- Course accent color
+- Course access code
+- UI responsiveness
+
+### Amey Damle
+
+- Basic App Setup
+- Password Reset Email
+- Questions backend
+- Quiz Backend
+- Quiz Response UI & Backend
+- Quiz Grading backend
+- Course backend
+
+### Eric Zhou
+
+- User backend
+- Register, Login, Logout API
+- Account email verification
+- Security - Sessions, Cookies
+- Course Archive feature
+- Deployment
+- Quiz invitation & Graded quiz email
+- Quiz Remark Backend
+- Export Quiz to PDF
+
+## One more thing?
+
+Any additional comments you want to share with the course staff?
