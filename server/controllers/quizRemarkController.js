@@ -36,25 +36,6 @@ const createQuizRemark = asyncHandler(async (req, res) => {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
-  //Check if quiz remark already exists for this quiz
-  const quizRemarks = await QuizRemark.find({
-    quiz: quizId,
-    student: student._id,
-  });
-  const pendingRemarks = quizRemarks.filter(
-    (remark) => remark.status === "pending"
-  );
-  if (pendingRemarks.length > 0) {
-    return res
-      .status(400)
-      .json(
-        formatMessage(
-          false,
-          "Please wait for your other remark request to be resolved"
-        )
-      );
-  }
-
   //Find Quiz
   let quiz = await Quiz.findById(quizId);
   if (!quiz) {
@@ -277,7 +258,9 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
   //Check quizRemark not already resolved
   let quizRemark = await QuizRemark.findById(quizRemarkId);
   if (!quizRemark) {
-    return res.status(400).json(formatMessage(false, "Invalid quiz remark id"));
+    return res
+      .status(400)
+      .json(formatMessage(false, "Invalid quiz remark id"));
   } else if (quizRemark.status === "resolved") {
     return res
       .status(400)
@@ -373,7 +356,9 @@ const deleteQuizRemark = asyncHandler(async (req, res) => {
   // verify quizRemark id
   const existingQuizRemark = await QuizRemark.findById(quizRemarkId);
   if (!existingQuizRemark) {
-    return res.status(400).json(formatMessage(false, "Invalid quiz remark id"));
+    return res
+      .status(400)
+      .json(formatMessage(false, "Invalid quiz remark id"));
   } else if (existingQuizRemark.status !== "resolved") {
     return res
       .status(400)
