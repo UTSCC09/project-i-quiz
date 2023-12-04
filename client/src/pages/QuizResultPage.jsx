@@ -1,7 +1,12 @@
 import { getQuiz } from "api/QuizApi";
+import { createQuizRemark } from "api/QuizRemarkApi";
 import { getQuizResponse } from "api/QuizResponseApi";
+import AlertBanner from "components/elements/AlertBanner";
+import Modal from "components/elements/Modal";
+import { Spinner } from "components/elements/SVGIcons";
+import Toast from "components/elements/Toast";
 import QuestionWrapper from "components/question_components/QuestionWrapper";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function QuizResultPage() {
@@ -9,6 +14,13 @@ export default function QuizResultPage() {
   const navigate = useNavigate();
   const [quizObject, quizObjectSet] = useState();
   const [questionResponses, questionResponsesSet] = useState();
+  const [regradeModalShow, regradeModalShowSet] = useState(false);
+  const [isLoading, isLoadingSet] = useState(false);
+  const [toastMessage, toastMessageSet] = useState();
+  const [questionNumForRegrade, questionNumForRegradeSet] = useState(0);
+  const alertRef = useRef();
+  const questionIdForRegradeRef = useRef();
+  const studentCommentRef = useRef();
 
   useEffect(() => {
     getQuiz(quizId).then((quizPayload) => {
@@ -41,6 +53,66 @@ export default function QuizResultPage() {
 
   return (
     <>
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
+      <Modal
+        modalShow={regradeModalShow}
+        modalShowSet={regradeModalShowSet}
+        content={
+          <div className="flex flex-col w-full sm:w-96 gap-6">
+            <h1 className="text-2xl font-bold">Requesting a regrade</h1>
+            <AlertBanner ref={alertRef} />
+            <div className="flex flex-col gap-4 text-gray-600">
+              <span>
+                Please reason your regrade request for question #
+                {questionNumForRegrade}:
+              </span>
+              <textarea
+                ref={studentCommentRef}
+                className="simple-input h-36"
+              />
+            </div>
+            <div className="flex gap-4 mt-2">
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  alertRef.current.hide();
+                  isLoadingSet(true);
+                  createQuizRemark(quizId, [
+                    {
+                      question: questionIdForRegradeRef.current,
+                      studentComment: studentCommentRef.current.value,
+                    },
+                  ]).then((result) => {
+                    isLoadingSet(false);
+                    if (result.success) {
+                      regradeModalShowSet(false);
+                      toastMessageSet(
+                        "The request has been sent to your instructor."
+                      );
+                      setTimeout(() => {
+                        toastMessageSet();
+                      }, 3000);
+                    } else {
+                      alertRef.current.setMessage(
+                        "Cannot send request: " + result.message
+                      );
+                      alertRef.current.show();
+                    }
+                  });
+                }}
+              >
+                {isLoading ? <Spinner className="-mt-1" /> : "Confirm"}
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => regradeModalShowSet(false)}
+              >
+                {isLoading ? <Spinner className="-mt-1" /> : "Cancel"}
+              </button>
+            </div>
+          </div>
+        }
+      />
       <div className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
         {quizObject &&
           quizObject.questions &&
@@ -75,7 +147,15 @@ export default function QuizResultPage() {
                     readOnly={true}
                   />
                   <div className="w-full justify-end flex items-center mt-8">
-                    <button className="btn-outline w-fit px-4 text-sm py-2">
+                    <button
+                      className="btn-outline w-fit px-4 text-sm py-2"
+                      onClick={() => {
+                        questionIdForRegradeRef.current = questionObject._id;
+                        questionNumForRegradeSet(idx + 1);
+                        regradeModalShowSet(true);
+                        questionNumForRegradeSet(idx + 1);
+                      }}
+                    >
                       Request for regrade
                     </button>
                   </div>

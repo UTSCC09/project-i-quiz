@@ -17,11 +17,7 @@ const createQuizRemark = async (quizId, questionRemarks) => {
       return response.json();
     })
     .then((result) => {
-      if (!result.success) {
-        console.error(result.message);
-        return null;
-      }
-      return result.payload;
+      return result;
     })
     .catch((err) => {
       console.error(err);
@@ -77,8 +73,8 @@ const resolveQuizRemark = async (quizRemarkId, questionRemarks) => {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      quizId: quizId,
-      questionRemarks: questionRemarks,
+      // quizId: quizId,
+      // questionRemarks: questionRemarks,
     }),
     withCredentials: true,
   })
