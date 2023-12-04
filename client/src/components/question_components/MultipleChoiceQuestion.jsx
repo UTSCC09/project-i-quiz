@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RadioGroup from "components/elements/RadioGroup";
 
 const MultipleChoiceQuestion = (props) => {
@@ -11,9 +11,11 @@ const MultipleChoiceQuestion = (props) => {
       <RadioGroup
         radioGroupId={props.question._id}
         radioOptions={props.question.choices}
-        defaultOptionId={props.savedQuestionResponse[0]}
+        defaultOptionId={
+          props.savedQuestionResponse && props.savedQuestionResponse[0]
+        }
         updateQuestionResponse={props.updateQuestionResponse}
-        correctOptionId={props.correctOptionIds[0]}
+        correctOptionId={props.correctOptionIds && props.correctOptionIds[0]}
       />
     </div>
   );

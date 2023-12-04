@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircleIcon, CheckIcon } from "./SVGIcons";
 import colors from "tailwindcss/colors";
@@ -10,8 +10,13 @@ const RadioGroup = (props) => {
 
   function onOptionChange(oid) {
     setSelectedOptionId(oid);
-    props.updateQuestionResponse(props.radioGroupId, oid);
+    if (props.updateQuestionResponse)
+      props.updateQuestionResponse(props.radioGroupId, oid);
   }
+
+  useEffect(() => {
+    setSelectedOptionId(props.defaultOptionId);
+  }, [props.defaultOptionId]);
 
   return (
     <div className="flex flex-col gap-3">

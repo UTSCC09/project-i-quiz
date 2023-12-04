@@ -1,22 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckIcon } from "./SVGIcons";
 import colors from "tailwindcss/colors";
 
 export default function CheckBoxGroup(props) {
-  const optionDictInit = {};
-  props.options.forEach((option) => {
-    optionDictInit[option.id] = props.checkedOptions.includes(option.id);
-  });
-
-  const correctOptionDict = {};
-  if (props.correctOptionIds) {
-    props.correctOptionIds.forEach((option) => {
-      correctOptionDict[option] = true;
-    });
-  }
-
-  const [optionDict, setOptionDict] = useState(optionDictInit);
+  const [correctOptionDict, correctOptionDictSet] = useState({});
+  const [optionDict, setOptionDict] = useState({});
 
   function onOptionChange(oid) {
     setOptionDict((prevDict) => {
@@ -24,10 +13,32 @@ export default function CheckBoxGroup(props) {
       const selectedOptions = Object.keys(updatedDict).filter(
         (key) => updatedDict[key]
       );
-      props.updateQuestionResponse(props.checkBoxGroupName, selectedOptions);
+      if (props.updateQuestionResponse)
+        props.updateQuestionResponse(props.checkBoxGroupName, selectedOptions);
       return updatedDict;
     });
   }
+
+  useEffect(() => {
+    if (props.correctOptionIds) {
+      props.correctOptionIds.forEach((option) => {
+        correctOptionDictSet((prev) => {
+          return { ...prev, [option]: true };
+        });
+      });
+    }
+  }, [props.correctOptionIds]);
+
+  useEffect(() => {
+    if (props.checkedOptions) {
+      props.checkedOptions.forEach((oid) => {
+        setOptionDict((prevDict) => {
+          const updatedDict = { ...prevDict, [oid]: true };
+          return updatedDict;
+        });
+      });
+    }
+  }, [props.checkedOptions]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -40,7 +51,6 @@ export default function CheckBoxGroup(props) {
             key={option.id}
             optionDict={optionDict}
             onOptionChange={onOptionChange}
-            // correctOptionDict={props.correctOptionId}
             correctOptionDict={correctOptionDict}
           ></CheckOption>
         );
@@ -50,7 +60,8 @@ export default function CheckBoxGroup(props) {
 }
 
 function CheckOption(props) {
-  const hasCorrectOption = Object.keys(props.correctOptionDict).length !== 0;
+  const hasCorrectOption =
+    Object.keys(props.correctOptionDict ?? {}).length !== 0;
   const checkIconVariants = {
     unchecked: { pathLength: 0, opacity: 0, transition: { duration: 0.1 } },
     checked: { pathLength: 1, opacity: 1, transition: { duration: 0.2 } },
@@ -67,14 +78,14 @@ function CheckOption(props) {
         id={props.oid}
         name={props.checkBoxGroupName}
         value={props.oid}
-        checked={props.optionDict[props.oid]}
+        checked={props.optionDict[props.oid] ?? false}
         onChange={() => {
           if (!hasCorrectOption) props.onOptionChange(props.oid);
         }}
         className="peer hidden [&:checked_+_label_span]:font-medium"
       />
       <AnimatePresence initial={false}>
-        {props.correctOptionDict[props.oid] ? (
+        {props.correctOptionDict && props.correctOptionDict[props.oid] ? (
           <label className="flex items-center rounded-lg border bg-white p-4 shadow-sm  border-green-600 ring-1 ring-green-600 font-medium">
             <CheckIcon className="check-icon h-4 text-green-600 stroke-[4]" />
             <div
