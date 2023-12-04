@@ -324,6 +324,7 @@ const getQuizObject = asyncHandler(async (req, res) => {
       startTime: quiz.startTime,
       endTime: quiz.endTime,
       questions: formattedQuesions,
+      isGradeReleased: quiz.isGradeReleased
     })
   );
 });

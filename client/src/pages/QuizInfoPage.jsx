@@ -6,7 +6,15 @@ import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
 import { fetchCourseObject } from "api/CourseApi";
-import { getQuiz } from "api/QuizApi";
+import {
+  getQuiz,
+  releaseQuizGrades
+} from "api/QuizApi";
+import {
+  createQuizReponse,
+  generateQuizPDF,
+  getQuizResponse,
+} from "api/QuizResponseApi";
 import {
   AdjustmentsIcon,
   DocumentCheckIcon,
@@ -16,11 +24,6 @@ import {
   Spinner
 } from "components/elements/SVGIcons";
 import colors from "tailwindcss/colors";
-import {
-  createQuizReponse,
-  // generateQuizPDF,
-  getQuizResponse,
-} from "api/QuizResponseApi";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
 
@@ -43,7 +46,7 @@ export default function QuizInfoPage() {
     {
       label: "Download as PDF",
       onClick: () => {
-        // generateQuizPDF(quizId);
+        generateQuizPDF(quizId);
       },
     },
   ];
@@ -158,12 +161,20 @@ export default function QuizInfoPage() {
               <div className="flex gap-4 mt-2">
                 <button
                   className="btn-primary"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     alertRef.current.hide();
                     /* TODO: add API call*/
-                    (async () => {}).then((result) => {
+                    releaseQuizGrades(quizId).then((result) => {
+                      console.log(quizObject);
                       if (result.success) {
                         gradeReleaseModalShowSet(false);
+                        quizObjectSet((prev) => {
+                          return {
+                            ...prev,
+                            isGradeReleased: true,
+                          };
+                        });
                         toastMessageSet(
                           "The grades have been released to your students"
                         );
@@ -296,7 +307,7 @@ export default function QuizInfoPage() {
                 </span>
               )}
             </div>
-            <div className="flex gap-2 sm:gap-4 text-gray-700">
+            {isStudent && (<div className="flex gap-2 sm:gap-4 text-gray-700">
               <div className="flex gap-2 sm:gap-4">
                 <DropdownMenu
                   buttonElement={
@@ -308,7 +319,7 @@ export default function QuizInfoPage() {
                   menuAlignLeft
                 />
               </div>
-            </div>
+            </div>)}
           </div>
           {/* Body */}
           {courseObject && quizObject && (
@@ -392,10 +403,18 @@ export default function QuizInfoPage() {
                         style={{ "--accentColor": courseObject.accentColor }}
                       >
                         {isLoading ? <Spinner className="-mt-1" /> : (
-                          <>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                              pointerEvents: (quizObject.isGradeReleased) ? "none" : "auto",
+                              opacity: (quizObject.isGradeReleased) ? 0.5 : 1,
+                            }}
+                          >
                             <EnvelopeIcon className="h-5" />
                             <span>Release Grades</span>
-                          </>
+                          </div>
                         )}
                       </button>
                     </div>
