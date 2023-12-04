@@ -297,7 +297,7 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
         totalScore += findQuestion.maxScore;
       }
       let studentTotalScore = 0;
-      for (const response of quizRes.questionResponses) {
+      for (const response of quizResponse.questionResponses) {
         studentTotalScore += response.score;
       }
       
