@@ -122,7 +122,7 @@ const createQuiz = asyncHandler(async (req, res) => {
           if (!validMCQAnswer) {
             return res
               .status(400)
-              .json(formatMessage(false, "Exactly 1 correct option for MCQ"));
+              .json(formatMessage(false, "Please provide a correct option for MCQ"));
           }
           createdQuestion = await MCQ.create(questions[i]);
           break;
@@ -139,7 +139,7 @@ const createQuiz = asyncHandler(async (req, res) => {
           if (!validMSQAnswer) {
             return res
               .status(400)
-              .json(formatMessage(false, "At least 1 correct option for MSQ"));
+              .json(formatMessage(false, "Please provide correct option(s) for MSQ"));
           }
           createdQuestion = await MSQ.create(questions[i]);
           break;
@@ -1364,7 +1364,7 @@ async function editQuestion(question, res) {
         if (!validMCQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "Exactly 1 correct option for MCQ"));
+            .json(formatMessage(false, "Please provide a correct option for MCQ"));
         }
         await MCQ.findByIdAndUpdate(question._id, question);
         break;
@@ -1381,7 +1381,7 @@ async function editQuestion(question, res) {
         if (!validMSQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "At least 1 correct option for MSQ"));
+            .json(formatMessage(false, "Please provide correct option(s) for MSQ"));
         }
         await MSQ.findByIdAndUpdate(question._id, question);
         break;
@@ -1422,7 +1422,7 @@ async function createQuestion(question, res) {
         if (!validMCQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "Exactly 1 correct option for MCQ"));
+            .json(formatMessage(false, "Please provide a correct option for MCQ"));
         }
         createdQuestion = await MCQ.create(question);
         break;
@@ -1439,7 +1439,7 @@ async function createQuestion(question, res) {
         if (!validMSQAnswer) {
           return res
             .status(400)
-            .json(formatMessage(false, "At least 1 correct option for MSQ"));
+            .json(formatMessage(false, "Please provide correct option(s) for MSQ"));
         }
         createdQuestion = await MSQ.create(question);
         break;
