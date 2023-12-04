@@ -13,6 +13,7 @@ export default function MultipleSelectQuestion(props) {
         options={props.question.choices}
         checkedOptions={props.savedQuestionResponse}
         updateQuestionResponse={props.updateQuestionResponse}
+        correctOptionIds={props.correctOptionIds}
       />
     </div>
   );

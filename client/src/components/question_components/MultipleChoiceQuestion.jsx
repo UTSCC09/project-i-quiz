@@ -13,7 +13,7 @@ const MultipleChoiceQuestion = (props) => {
         radioOptions={props.question.choices}
         defaultOptionId={props.savedQuestionResponse[0]}
         updateQuestionResponse={props.updateQuestionResponse}
-        correctOptionId={props.correctOptionId}
+        correctOptionId={props.correctOptionIds[0]}
       />
     </div>
   );
