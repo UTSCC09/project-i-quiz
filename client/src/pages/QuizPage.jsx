@@ -10,6 +10,7 @@ import {
 } from "api/QuizResponseApi";
 import { useParams } from "react-router";
 import { isStudentUserType } from "utils/CookieUtils";
+import QuizResultPage from "./QuizResultPage";
 
 const QuizPage = () => {
   const navigate = useNavigate();
@@ -93,8 +94,11 @@ const QuizPage = () => {
           submitQuizResponse(quizId)
             .then((result) => {
               console.log("result in submit:", result);
-              if ((!result.success && result.message === "Quiz grades not released yet")
-              || (result.success)) {
+              if (
+                (!result.success &&
+                  result.message === "Quiz grades not released yet") ||
+                result.success
+              ) {
                 console.log("Submitted quiz response");
                 navigate("/quiz-info/" + quizId);
               }
@@ -114,8 +118,13 @@ const QuizPage = () => {
       if (isStudent) {
         getQuizResponse(quizId).then((result) => {
           console.log("result in get:", result);
-          if ((!result.success && result.message === "Quiz grades not released yet")
-            || (result.success && result.payload.status === "submitted")) {
+          if (
+            (!result.success &&
+              result.message === "Quiz grades not released yet") ||
+            (result.success &&
+              result.payload.status === "submitted" &&
+              result.payload.isGradeReleased === false)
+          ) {
             navigate("/quiz-info/" + quizId);
             return;
           } else if (result.success) {
@@ -132,74 +141,77 @@ const QuizPage = () => {
     return () => {
       localStorage.removeItem("savedQuizResponse");
     };
-  }, [isStudent, locallyStoreQuizResponse, quizId, quizObjectSet]);
+  }, [isStudent, locallyStoreQuizResponse, navigate, quizId, quizObjectSet]);
 
   return (
     <>
       <NavBar />
       <div className="min-h-screen w-full flex justify-center py-28 sm:py-36 bg-gray-100">
-        {quizObject && (
-          <form className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
-            {quizObject.questions.map((questionObject, idx) => {
-              return (
-                <div
-                  className="h-fit w-full flex flex-col shadow-sm bg-white rounded-md py-8 md:py-12 px-8 sm:px-12 lg:px-16 border"
-                  key={idx}
-                >
-                  <span className="font-semibold text-xs uppercase ml-2 text-gray-500 mb-4">
-                    Question {idx + 1} / {quizObject.questions.length}
-                  </span>
-                  <div className="border-b h-0 mb-6"></div>
-                  <div className="">
-                    <QuestionWrapper
-                      questionType={questionObject.type}
-                      question={questionObject}
-                      savedQuestionResponse={
-                        savedQuizResponse[questionObject._id]
-                      }
-                      updateQuestionResponse={(
-                        questionId,
-                        updatedQuestionResponse
-                      ) => {
-                        updateLocallyStoredQuestionResponse(
+        {quizObject &&
+          (quizObject.isGradeReleased ? (
+            <QuizResultPage />
+          ) : (
+            <form className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
+              {quizObject.questions.map((questionObject, idx) => {
+                return (
+                  <div
+                    className="h-fit w-full flex flex-col shadow-sm bg-white rounded-md py-8 md:py-12 px-8 sm:px-12 lg:px-16 border"
+                    key={idx}
+                  >
+                    <span className="font-semibold text-xs uppercase ml-2 text-gray-500 mb-4">
+                      Question {idx + 1} / {quizObject.questions.length}
+                    </span>
+                    <div className="border-b h-0 mb-6"></div>
+                    <div className="">
+                      <QuestionWrapper
+                        questionType={questionObject.type}
+                        question={questionObject}
+                        savedQuestionResponse={
+                          savedQuizResponse[questionObject._id]
+                        }
+                        updateQuestionResponse={(
                           questionId,
                           updatedQuestionResponse
-                        );
-                        editQuizResponseInDb();
-                      }}
-                    />
+                        ) => {
+                          updateLocallyStoredQuestionResponse(
+                            questionId,
+                            updatedQuestionResponse
+                          );
+                          editQuizResponseInDb();
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-            <button
-              className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
-              type="button"
-              style={{
-                pointerEvents: canEdit ? "auto" : "none",
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                editQuizResponseInDb();
-              }}
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
-              style={{
-                pointerEvents: canSubmit ? "auto" : "none",
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                submitQuizResponseInDb();
-              }}
-            >
-              Submit
-            </button>
-          </form>
-        )}
+                );
+              })}
+              <button
+                className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
+                type="button"
+                style={{
+                  pointerEvents: canEdit ? "auto" : "none",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  editQuizResponseInDb();
+                }}
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                className="btn-primary w-fit text-sm px-8 py-2 mt-2 place-self-end"
+                style={{
+                  pointerEvents: canSubmit ? "auto" : "none",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  submitQuizResponseInDb();
+                }}
+              >
+                Submit
+              </button>
+            </form>
+          ))}
       </div>
     </>
   );
