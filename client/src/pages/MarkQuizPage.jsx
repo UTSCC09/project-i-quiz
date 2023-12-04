@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router";
 import { getQuiz } from "api/QuizApi";
 import {
   getAllStudentResponsesForQuiz,
-  gradeQuizResponse
+  gradeQuizResponse,
 } from "../api/QuizResponseApi";
 import { isStudentUserType } from "utils/CookieUtils";
 
@@ -34,12 +34,13 @@ export default function MarkQuizPage() {
   const [currResponseIdx, currResponseIdxSet] = useState(0);
   const [selectedScore, selectedScoreSet] = useState(-1);
   const isStudent = isStudentUserType();
-  const [currStudentQuestionResponses, currStudentQuestionResponsesSet] = useState();
+  const [currStudentQuestionResponses, currStudentQuestionResponsesSet] =
+    useState();
   const [quizResponses, quizResponsesSet] = useState();
   const [quiz, quizSet] = useState();
 
   const gradeRequestsRef = useRef();
-    /* currStudentQuestionResponses.map((item) => {
+  /* currStudentQuestionResponses.map((item) => {
       return {
         question: item.question,
         score: item.score,
@@ -55,17 +56,24 @@ export default function MarkQuizPage() {
       quizSet(quizObj);
       getAllStudentResponsesForQuiz(quizId).then((result) => {
         if (result.success && result.payload) {
-          const filteredResponses = result.payload.filter((quizResponse) => quizResponse.status === "submitted");
+          const filteredResponses = result.payload.filter(
+            (quizResponse) => quizResponse.status === "submitted"
+          );
           const refObj = [];
           filteredResponses.forEach((response) => {
             response.questionResponses.forEach((questionResponse) => {
               quizObj.questions.forEach((question) => {
-                if (questionResponse.question.toString() === question._id.toString()) {
+                if (
+                  questionResponse.question.toString() ===
+                  question._id.toString()
+                ) {
                   refObj.push({
                     question: questionResponse.question,
+                    prompt: question.prompt,
+                    studentAnswer: questionResponse.response,
                     score: questionResponse.score,
                     comment: "",
-                    maxScore: question.maxScore
+                    maxScore: question.maxScore,
                   });
                 }
               });
@@ -73,6 +81,8 @@ export default function MarkQuizPage() {
           });
           console.log("refObj:", refObj);
           gradeRequestsRef.current = refObj;
+          currStudentQuestionResponsesSet(gradeRequestsRef.current);
+          console.log(gradeRequestsRef.current);
         }
       });
     });
@@ -87,7 +97,7 @@ export default function MarkQuizPage() {
             className="btn-outline px-4 text-sm py-2"
             onClick={() => {
               /* TODO: Submit grade request*/
-              gradeQuizResponse(quizId, ).then((result) => {
+              gradeQuizResponse(quizId).then((result) => {
                 console.log("grade result:", result);
               });
               navigate("/quiz-info/" + quizId);
@@ -98,47 +108,61 @@ export default function MarkQuizPage() {
         }
       />
       <div className="fixed bottom-0 left-0 w-full">
-        <MarkerComponent
-          maxScore={currStudentQuestionResponses[currResponseIdx].maxScore}
-          currIndex={currResponseIdx}
-          responseCount={currStudentQuestionResponses.length}
-          currResponseIdxSet={currResponseIdxSet}
-          gradeRequestsRef={gradeRequestsRef}
-          selectedScore={selectedScore}
-          selectedScoreSet={selectedScoreSet}
-        />
+        {currStudentQuestionResponses && (
+          <MarkerComponent
+            maxScore={currStudentQuestionResponses[currResponseIdx].maxScore}
+            currIndex={currResponseIdx}
+            responseCount={currStudentQuestionResponses.length}
+            currResponseIdxSet={currResponseIdxSet}
+            gradeRequestsRef={gradeRequestsRef}
+            selectedScore={selectedScore}
+            selectedScoreSet={selectedScoreSet}
+          />
+        )}
       </div>
       <div className="min-h-screen w-full flex justify-center pt-28 sm:pt-36 pb-[60vh] bg-gray-100">
-        {currStudentQuestionResponses[currResponseIdx] && (
-          <form className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
-            <div className="h-fit w-full flex flex-col shadow-sm bg-white rounded-md py-8 md:py-12 px-8 sm:px-12 lg:px-16 border">
-              <div className="flex justify-between items-baseline">
-                <span className="font-semibold text-sm uppercase text-blue-600 mb-4">
-                  Response {currResponseIdx + 1} / {currStudentQuestionResponses.length}
-                </span>
-                <span className="font-semibold text-sm uppercase text-gray-600 mb-4">
-                  Grade:{" "}
-                  <span className="text-lg">
-                    {gradeRequestsRef.current[currResponseIdx].score === -1
-                      ? "?"
-                      : gradeRequestsRef.current[currResponseIdx].score}{" "}
-                    / {gradeRequestsRef.current[currResponseIdx].maxScore}
+        {currStudentQuestionResponses &&
+          currStudentQuestionResponses[currResponseIdx] && (
+            <form className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
+              <div className="h-fit w-full flex flex-col shadow-sm bg-white rounded-md py-8 md:py-12 px-8 sm:px-12 lg:px-16 border">
+                <div className="flex justify-between items-baseline">
+                  <span className="font-semibold text-sm uppercase text-blue-600 mb-4">
+                    Response {currResponseIdx + 1} /{" "}
+                    {currStudentQuestionResponses.length}
                   </span>
-                </span>
-              </div>
-              <div className="flex flex-col gap-4">
-                <div className="text-sm font-bold text-gray-600">
-                  Question Description
+                  <span className="font-semibold text-sm uppercase text-gray-600 mb-4">
+                    Grade:{" "}
+                    <span className="text-lg">
+                      {currStudentQuestionResponses[currResponseIdx].score ===
+                      -1
+                        ? "?"
+                        : currStudentQuestionResponses[currResponseIdx]
+                            .score}{" "}
+                      /{" "}
+                      {currStudentQuestionResponses[currResponseIdx].maxScore}
+                    </span>
+                  </span>
                 </div>
-                <div>{currStudentQuestionResponses[currResponseIdx].prompt}</div>
-                <div className="text-sm font-bold text-gray-600">
-                  Student Response
+                <div className="flex flex-col gap-4">
+                  <div className="text-sm font-bold text-gray-600">
+                    Question Description
+                  </div>
+                  <div>
+                    {currStudentQuestionResponses[currResponseIdx].prompt}
+                  </div>
+                  <div className="text-sm font-bold text-gray-600">
+                    Student Response
+                  </div>
+                  <div>
+                    {
+                      currStudentQuestionResponses[currResponseIdx]
+                        .studentAnswer
+                    }
+                  </div>
                 </div>
-                <div>{currStudentQuestionResponses[currResponseIdx].response}</div>
               </div>
-            </div>
-          </form>
-        )}
+            </form>
+          )}
       </div>
     </>
   );
