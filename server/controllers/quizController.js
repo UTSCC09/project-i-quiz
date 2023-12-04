@@ -262,6 +262,70 @@ const getQuiz = asyncHandler(async (req, res) => {
   return res.status(200).json(formatMessage(true, "Quiz found", quiz));
 });
 
+//@route  GET api/quizzes/stats/:quizId
+//@desc   Allow instructor get a specific quiz
+//@access Private
+const getQuizStats = asyncHandler(async (req, res) => {
+  //Check if valid user
+  let instructor;
+  try {
+    instructor = await User.findOne({ email: req.session.email });
+    if (!instructor) {
+      return res.status(400).json(formatMessage(false, "Invalid user"));
+    } else if (instructor.type !== "instructor") {
+      return res.status(400).json(formatMessage(false, "Invalid user type"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding user", null, error));
+  }
+
+  let quiz;
+  try {
+    quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) {
+      return res.status(400).json(formatMessage(false, "Invalid quiz id"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(formatMessage(false, "Mongoose error finding quiz", null, error));
+  }
+
+  let course;
+  try {
+    course = await Course.findById(quiz.course);
+    if (!course) {
+      return res
+        .status(400)
+        .json(formatMessage(false, "Invalid course id in quiz"));
+    }
+  } catch (error) {
+    return res
+      .status(400)
+      .json(
+        formatMessage(false, "Mongoose error finding quiz course", null, error)
+      );
+  }
+
+  //Check if instructor teaches course
+  if (course.instructor.toString() !== instructor._id.toString()) {
+    return res
+      .status(403)
+      .json(formatMessage(false, "Instructor does not teach course"));
+  }
+
+  const allResponses = await QuizResponse.find({ quiz: req.params.quizId });
+  const markedResponses = allResponses.filter((i) => i.graded === "fully");
+  return res.status(200).json(
+    formatMessage(true, "Quiz found", {
+      responseCount: allResponses.length,
+      markedCount: markedResponses.length,
+    })
+  );
+});
+
 //@route  GET api/quizzes/:quizId/questions
 //@desc   Allow any authenticated user to get any full quiz with questions
 //@access Private
@@ -1578,4 +1642,5 @@ export {
   deleteDraftQuiz,
   releaseQuizGrades,
   getQuestions,
+  getQuizStats,
 };

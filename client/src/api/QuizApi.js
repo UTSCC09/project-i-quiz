@@ -49,6 +49,28 @@ const getQuiz = async (quizId) => {
     });
 };
 
+const getQuizStats = async (quizId) => {
+  return fetch(`/api/quizzes/stats/${quizId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 const getQuizzesForDashboard = async (quizStatus) => {
   return fetch(`/api/quizzes/${quizStatus}`, {
     method: "GET",
@@ -313,4 +335,5 @@ export {
   releaseQuiz,
   generateInstructorQuizPDF,
   deleteDraftQuiz,
+  getQuizStats,
 };

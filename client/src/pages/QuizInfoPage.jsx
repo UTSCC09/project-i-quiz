@@ -6,7 +6,7 @@ import DropdownMenu from "components/elements/DropdownMenu";
 import { isStudentUserType } from "utils/CookieUtils";
 import Toast from "components/elements/Toast";
 import { fetchCourseObject } from "api/CourseApi";
-import { getQuiz } from "api/QuizApi";
+import { getQuiz, getQuizStats } from "api/QuizApi";
 import {
   AdjustmentsIcon,
   DocumentCheckIcon,
@@ -39,6 +39,7 @@ export default function QuizInfoPage() {
   const [toastMessage, toastMessageSet] = useState();
   const [isLoading, isLoadingSet] = useState(true);
   const [studentQuizCase, studentQuizCaseSet] = useState();
+  const [quizStats, quizStatsSet] = useState({});
 
   let quizOptions = [
     {
@@ -130,6 +131,13 @@ export default function QuizInfoPage() {
     });
   }, [isStudent, location.state, navigate, quizId, toastMessageSet]);
 
+
+  useEffect(() => {
+    getQuizStats(quizId).then((result) => {
+      quizStatsSet(result.payload)
+    });
+  }, [quizStatsSet, quizId]);
+
   return (
     <>
       <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
@@ -161,7 +169,6 @@ export default function QuizInfoPage() {
                   className="btn-primary"
                   onClick={() => {
                     alertRef.current.hide();
-                    /* TODO: add API call*/
                     (async () => {}).then((result) => {
                       if (result.success) {
                         gradeReleaseModalShowSet(false);
@@ -419,20 +426,20 @@ export default function QuizInfoPage() {
                     <div className="flex gap-4 flex-col lg:flex-row">
                       <SubmissionCountCard
                         accentColor={courseObject.accentColor}
-                        numReceived={10}
-                        numTotal={78}
+                        numReceived={quizStats.responseCount}
+                        numTotal={courseObject.sessions[0].enrollment}
                       />
                       <MarkingProgressCard
                         accentColor={courseObject.accentColor}
                         quizId={quizId}
-                        numMarked={1}
-                        numTotal={10}
+                        numMarked={quizStats.markedCount}
+                        numTotal={quizStats.responseCount}
                       />
-                      <GradeStatsCard
+                      {/* <GradeStatsCard
                         accentColor={courseObject.accentColor}
                         averagePercentage={63}
                         medianPercentage={72}
-                      />
+                      /> */}
                     </div>
                   </>
                 )
