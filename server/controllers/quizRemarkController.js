@@ -201,19 +201,9 @@ const getAllQuizRemarks = asyncHandler(async (req, res) => {
 //@access Private
 const resolveQuizRemark = asyncHandler(async (req, res) => {
   const { quizRemarkId } = req.params;
-  const { questionRemarks } = req.body;
-  /*
-    questionRemarks: [
-        {
-            question: ObjectId,
-            instructorComment: comment,
-            score: newScore ? newScore : undefined,
-        },
-        ...
-    ]
-  */
+  const { instructorComment, score } = req.body;
 
-  if (!quizRemarkId || !questionRemarks) {
+  if (!quizRemarkId || !instructorComment || !score) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -237,54 +227,23 @@ const resolveQuizRemark = asyncHandler(async (req, res) => {
   }
 
   //Verify question remarks have same questions as quiz
-  const quiz = await Quiz.findById(quizRemark.quiz);
-  const quizQuestions = quiz.questions;
-  let sameQuestions = true;
-  for (const remarkQuestion of questionRemarks) {
-    let question = quizQuestions.filter(
-      (quizQuestion) =>
-        quizQuestion.question.toString() === remarkQuestion.question
-    );
-    if (question.length == 0) {
-      sameQuestions = false;
-    }
-  }
-  if (!sameQuestions) {
-    return res
-      .status(400)
-      .json(
-        formatMessage(false, "Remark questions do not match quiz questions")
-      );
-  }
-
   //Updating student's score if necessary and remark request instructor comment
   let quizResponse = await QuizResponse.findOne({
     quiz: quizRemark.quiz,
     student: quizRemark.student,
   });
-  for (const remarkQuestion of questionRemarks) {
-    //Update score
-    quizResponse.questionResponses = quizResponse.questionResponses.map(
-      (quizQuestion) => {
-        if (quizQuestion.question.toString() === remarkQuestion.question) {
-          quizQuestion.score = remarkQuestion.score
-            ? remarkQuestion.score
-            : quizQuestion.score;
-        }
-        return quizQuestion;
+  //Update score
+  quizResponse.questionResponses = quizResponse.questionResponses.map(
+    (quizQuestion) => {
+      if (quizQuestion.question.toString() === quizRemark.question) {
+        quizQuestion.score = score ? score : quizQuestion.score;
       }
-    );
+      return quizQuestion;
+    }
+  );
 
-    //Update instructor comment on remark request for student to see
-    quizRemark.questionRemarks = quizRemark.questionRemarks.map(
-      (questionRemark) => {
-        if (questionRemark.question.toString() === remarkQuestion.question) {
-          questionRemark.instructorComment = remarkQuestion.instructorComment;
-        }
-        return questionRemark;
-      }
-    );
-  }
+  //Update instructor comment on remark request for student to see
+  quizRemark.instructorComment = instructorComment;
 
   //Save
   await quizResponse.save();
