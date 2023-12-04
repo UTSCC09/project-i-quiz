@@ -1,6 +1,9 @@
 import { jsPDF } from "jspdf";
 
-function generatePDF(course, quiz, questions, user, quizResponse) {
+//Generates PDF with student answers and their grade
+//Reference
+//https://github.com/parallax/jsPDF
+function generateStudentPDF(course, quiz, questions, user, quizResponse) {
   if (!course || !quiz || !questions || !user || !quizResponse) {
     return;
   }
@@ -52,9 +55,7 @@ function generatePDF(course, quiz, questions, user, quizResponse) {
       pdf
         .setFont(undefined, "bold")
         .text(
-          `Question ${index + 1}: ${
-            question.prompt ? question.prompt : "N/A"
-          }`,
+          `Question ${index + 1}: ${question.prompt ? question.prompt : "N/A"}`,
           20,
           yPos
         )
@@ -95,4 +96,63 @@ function generatePDF(course, quiz, questions, user, quizResponse) {
   return pdf;
 }
 
-export default generatePDF;
+//Generates PDF for instructors usage inperson
+function generateInstructorPDF(course, quiz, questions) {
+  if (!course || !quiz || !questions) {
+    return;
+  }
+  const pdf = new jsPDF();
+
+  // Title
+  pdf.setFontSize(18);
+  pdf
+    .setFont(undefined, "bold")
+    .text(`${course.courseName} - ${quiz.quizName}`, 20, 15)
+    .setFont(undefined, "normal");
+
+  // Student Name
+  pdf.setFontSize(14);
+  pdf.setFont(undefined, "bold").text(`Name: _________________`, 20, 25);
+
+  // Date
+  pdf.text(`Date:   _________________`, 20, 32).setFont(undefined, "normal");
+
+  // Setting Y-Position
+  let yPos = 45;
+
+  // Question index
+  let index = 0;
+
+  // Questions
+  for (const question of questions) {
+    pdf.setFontSize(14);
+    pdf
+      .setFont(undefined, "bold")
+      .text(`Question ${index + 1}`, 20, yPos)
+      .setFont(undefined, "normal");
+    yPos += 7;
+
+    for (const s of question.prompt.split("\n")) {
+      pdf.text(`${s}`, 20, yPos);
+      yPos += 6;
+    }
+
+    pdf.setFontSize(12);
+    if (question.type === "MSQ" || question.type === "MCQ") {
+      let optionNum = 1;
+      for (const c of question.choices) {
+        pdf.text(`${optionNum}:  ${c.content}`, 25, yPos);
+        yPos += 5;
+        optionNum += 1;
+      }
+      yPos += 10;
+    } else {
+      yPos += 50;
+    }
+
+    index += 1;
+  }
+  return pdf;
+}
+
+export { generateStudentPDF, generateInstructorPDF };

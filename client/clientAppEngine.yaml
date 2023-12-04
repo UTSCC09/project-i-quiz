@@ -1,3 +1,11 @@
+#References:
+#https://cloud.google.com/appengine/docs/standard/nodejs/runtime
+#https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js
+#https://stackoverflow.com/questions/55276919/google-app-engine-cant-set-https-browser-cookie-between-services
+#https://www.googlecloudcommunity.com/gc/Serverless/ReactJs-Project-on-App-Engine-Standard-deployment-fails-with/m-p/607270
+#https://stackoverflow.com/questions/64270095/my-react-frontend-is-not-changing-when-i-deploy-to-google-app-engine
+#https://stackoverflow.com/questions/58344956/react-package-json-proxy-not-working-in-google-app-engine
+
 runtime: nodejsYOUR_NODEJS_VERSION
 service: ENTER_YOUR_CLIENT_SERVICE_NAME
 env_variables:

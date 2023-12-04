@@ -118,6 +118,8 @@ const loginUser = asyncHandler(async (req, res) => {
     req.session.cookie.sameSite = true;
 
     //Setting cookie
+    //Reference:
+    //https://www.npmjs.com/package/express-session
     res.cookie("user", email, {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds

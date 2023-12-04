@@ -1,3 +1,7 @@
+#Reference
+#https://cloud.google.com/appengine/docs/standard/nodejs/runtime
+#https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js
+
 runtime: nodejsYOUR_NODEJS_VERSION
 service: ENTER_YOUR_SERVER_SERVICE_NAME
 entrypoint: nodemon server.js

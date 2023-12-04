@@ -1,3 +1,5 @@
+import { generateInstructorPDF } from "utils/quizToPdfUtils";
+
 const createQuiz = async (quizData) => {
   return fetch("/api/quizzes", {
     method: "POST",
@@ -263,6 +265,41 @@ const deleteDraftQuiz = async (quizId) => {
     });
 };
 
+const generateInstructorQuizPDF = async (quizId) => {
+  return fetch(`/api/quizzes/generate/${quizId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  })
+    .then(async (response) => {
+      console.log(response);
+      if (response.status === 401) {
+        await fetch("/api/users/logout", { method: "GET" }).then(() => {
+          window.location.reload();
+        });
+      }
+      return response.json();
+    })
+    .then((result) => {
+      if (result.success) {
+        const data = result.payload;
+        const pdf = generateInstructorPDF(
+          data.course,
+          data.quiz,
+          data.questions
+        );
+        if (pdf) {
+          pdf.save(data.fileName);
+        }
+      } else {
+        return console.log("Fail to generate PDF");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 const releaseQuizGrades = async (quizId) => {
   return fetch(`/api/quizzes/${quizId}/grades-release`, {
     method: "PATCH",
@@ -300,4 +337,5 @@ export {
   releaseQuiz,
   deleteDraftQuiz,
   releaseQuizGrades,
+  generateInstructorQuizPDF,
 };
