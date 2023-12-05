@@ -10,6 +10,8 @@ import {
 import { isStudentUserType } from "utils/CookieUtils";
 import colors from "tailwindcss/colors";
 import Badge from "components/elements/Badge";
+import Toast from "components/elements/Toast";
+import { Spinner } from "components/elements/SVGIcons";
 
 /* const questionResponses = [
   {
@@ -40,14 +42,16 @@ export default function MarkQuizPage() {
     useState();
   const [quiz, quizSet] = useState();
   const gradeRequestsRef = useRef();
+  const [toastMessage, toastMessageSet] = useState();
+  const [isLoading, isLoadingSet] = useState(false);
 
   useEffect(() => {
     if (isStudent) {
       navigate("/quiz-info/" + quizId);
+      return;
     }
     getQuiz(quizId).then((quizObj) => {
       quizSet(quizObj);
-      console.log(quizObj);
       getAllStudentResponsesForQuiz(quizId).then((result) => {
         if (result.success && result.payload) {
           const filteredResponses = result.payload.filter(
@@ -57,7 +61,6 @@ export default function MarkQuizPage() {
           filteredResponses.forEach((response) => {
             response.questionResponses.forEach((questionResponse) => {
               quizObj.questions.forEach((question) => {
-                console.log(question);
                 if (
                   questionResponse.question.toString() ===
                   question._id.toString()
@@ -80,7 +83,6 @@ export default function MarkQuizPage() {
             .filter((q) => q.score === -1)
             .concat(refObj.filter((q) => q.score !== -1));
           currStudentQuestionResponsesSet(gradeRequestsRef.current);
-          console.log(gradeRequestsRef.current);
         }
       });
     });
@@ -88,24 +90,33 @@ export default function MarkQuizPage() {
 
   return (
     <>
+      <Toast toastMessage={toastMessage} toastMessageSet={toastMessageSet} />
       <NavBar
         additionalButtons={
           <button
             type="button"
-            className="btn-outline px-4 text-sm py-2"
+            className="btn-outline px-4 text-sm py-2 w-32"
             onClick={() => {
+              isLoadingSet(true);
               gradeQuizResponse(
                 quizId,
                 currStudentQuestionResponses[currResponseIdx].student,
                 currStudentQuestionResponses,
                 true
               ).then((result) => {
-                console.log("grade result:", result);
+                isLoadingSet(false);
+                if (result && result.success) {
+                  toastMessageSet("Your gradings has been saved");
+                } else {
+                  toastMessageSet("Cannot save gradings: " + result.message);
+                }
+                setTimeout(() => {
+                  toastMessageSet();
+                }, 3000);
               });
-              navigate("/quiz-info/" + quizId);
             }}
           >
-            Save Grading
+            {isLoading ? <Spinner className="-mt-1" /> : "Save gradings"}
           </button>
         }
       />
