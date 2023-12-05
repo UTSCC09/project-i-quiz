@@ -67,8 +67,6 @@ function FreeFormInput(
 
   const handleChange = (e) => {
     e.preventDefault();
-    console.log("FreeFormInput detected change");
-    console.log(ref.current.getValue());
     const newValue = e.target.value;
     if (ref.current) {
       ref.current.setValue(newValue);

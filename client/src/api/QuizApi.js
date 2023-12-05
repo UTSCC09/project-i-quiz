@@ -254,7 +254,7 @@ const releaseQuiz = async (quizId, startTime, endTime) => {
           window.location.reload();
         });
       }
-      console.log(response);
+
       return response.json();
     })
     .then((result) => {
@@ -294,7 +294,6 @@ const generateInstructorQuizPDF = async (quizId) => {
     withCredentials: true,
   })
     .then(async (response) => {
-      console.log(response);
       if (response.status === 401) {
         await fetch("/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
@@ -313,8 +312,6 @@ const generateInstructorQuizPDF = async (quizId) => {
         if (pdf) {
           pdf.save(data.fileName);
         }
-      } else {
-        return console.log("Fail to generate PDF");
       }
     })
     .catch((err) => {
@@ -329,7 +326,6 @@ const releaseQuizGrades = async (quizId) => {
     withCredentials: true,
   })
     .then(async (response) => {
-      console.log(response);
       if (response.status === 401) {
         await fetch("/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
