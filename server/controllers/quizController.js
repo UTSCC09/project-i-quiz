@@ -1450,19 +1450,6 @@ const releaseQuizGrades = asyncHandler(async (req, res) => {
         }
       }
     }
-    quiz.isGradeReleased = true;
-    await quiz.save();
-    return res
-      .status(200)
-      .json(formatMessage(true, "Quiz grades released successfully"));
-  } catch (error) {
-    return res
-      .status(400)
-      .json(
-        formatMessage(false, "Mongoose error releasing grades", null, error)
-      );
-  }
-
   //Sending grades in email
   let totalMaxScore = 0;
   for (const question of quiz.questions) {
@@ -1479,40 +1466,47 @@ const releaseQuizGrades = asyncHandler(async (req, res) => {
     totalMaxScore += findQuestion.maxScore;
   }
 
-  const students = await getCourseStudents(course._id, instructor.email);
+    const students = await getCourseStudents(course._id, instructor.email);
 
-  for (const student of students) {
-    const quizRes = await QuizResponse.findOne({
-      quiz: quizId,
-      student: student._id,
-    });
+    for (const student of students) {
+      const quizRes = await QuizResponse.findOne({
+        quiz: quizId,
+        student: student._id,
+      });
 
-    let studentScore = 0;
-    for (const response of quizRes.questionResponses) {
-      studentScore += response.score;
+      let studentScore = 0;
+      for (const response of quizRes.questionResponses) {
+        studentScore += response.score;
+      }
+
+      //Sending graded quiz results
+      try {
+        await sendGradedQuizEmail(
+          course,
+          student,
+          quiz,
+          studentScore,
+          totalMaxScore
+        );
+      } catch (err) {
+        console.log("Fail to send graded quiz email to: ", student.email);
+        return res
+          .status(400)
+          .json(formatMessage(false, "Fail to send graded quiz email"));
+      }
     }
-
-    //Sending graded quiz results
-    try {
-      await sendGradedQuizEmail(
-        course,
-        student,
-        quiz,
-        studentScore,
-        totalMaxScore
+    quiz.isGradeReleased = true;
+    await quiz.save();
+    return res
+      .status(200)
+      .json(formatMessage(true, "Quiz grades released successfully"));
+  } catch (error) {
+    return res
+      .status(400)
+      .json(
+        formatMessage(false, "Mongoose error releasing grades", null, error)
       );
-    } catch (err) {
-      console.log("Fail to send graded quiz email to: ", student.email);
-      return res
-        .status(400)
-        .json(formatMessage(false, "Fail to send graded quiz email"));
-    }
   }
-  quiz.isGradeReleased = true;
-  await quiz.save();
-  return res
-    .status(200)
-    .json(formatMessage(true, "Quiz grades released successfully"));
 });
 
 //@route  GET api/quizzes/generate/:quizId
@@ -1750,11 +1744,7 @@ async function getQuestions(quizId) {
 
     formattedQuestions.push({
       ...question.toObject(),
-      type: quiz.questions[i].type,
-      maxScore:
-        quiz.questions[i].maxScore && quiz.questions[i].maxScore > 0
-          ? quiz.questions[i].maxScore
-          : 1,
+      type: quiz.questions[i].type
     });
   }
 
