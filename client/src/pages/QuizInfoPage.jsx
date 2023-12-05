@@ -142,9 +142,8 @@ export default function QuizInfoPage() {
               ) {
                 //Assume grade released due to backned logic
                 studentQuizCaseSet("graded");
-              }
-              //case 4: error
-              else {
+              } else {
+                //case 4: error
                 console.error(result.message);
                 alert("Failed to fetch quiz response");
               }
@@ -158,10 +157,12 @@ export default function QuizInfoPage() {
   }, [isStudent, location.state, navigate, quizId, toastMessageSet]);
 
   useEffect(() => {
-    getQuizStats(quizId).then((result) => {
-      quizStatsSet(result.payload);
-    });
-  }, [quizStatsSet, quizId]);
+    if (!isStudent) {
+      getQuizStats(quizId).then((result) => {
+        quizStatsSet(result.payload);
+      });
+    }
+  }, [quizStatsSet, isStudent, quizId]);
 
   useEffect(() => {
     getQuizResponse(quizId).then((result) => {
@@ -427,7 +428,7 @@ export default function QuizInfoPage() {
                         {quizResponse.studentTotalScore}
                       </b>
                       <span className="mx-2 font-thin">/</span>
-                      <b>{quizObject.totalScore}</b>
+                      <b>{quizResponse.totalScore}</b>
                     </div>
                   </Link>
                 ))

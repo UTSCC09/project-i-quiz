@@ -5,6 +5,8 @@ import User from "../models/User.js";
 import Quiz from "../models/Quiz.js";
 import MCQ from "../models/MCQ.js";
 import MSQ from "../models/MSQ.js";
+import CLO from "../models/CLO.js";
+import OEQ from "../models/OEQ.js";
 import { getQuestions } from "./quizController.js";
 import Course from "../models/Course.js";
 
@@ -281,14 +283,34 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
         .status(403)
         .json(formatMessage(false, "Quiz grades not released yet"));
     } else {
+      //Sending grades in response
+      let totalScore = 0;
+      for (const question of quiz.questions) {
+        let findQuestion;
+        if (question.type === "MCQ") {
+          findQuestion = await MCQ.findById(question.question);
+        } else if (question.type === "MSQ") {
+          findQuestion = await MSQ.findById(question.question);
+        } else if (question.type === "CLO") {
+          findQuestion = await CLO.findById(question.question);
+        } else {
+          findQuestion = await OEQ.findById(question.question);
+        }
+        totalScore += findQuestion.maxScore;
+      }
+      let studentTotalScore = 0;
+      for (const response of quizResponse.questionResponses) {
+        studentTotalScore += response.score;
+      }
+
       return res
         .status(200)
         .json(
-          formatMessage(
-            true,
-            "Quiz response fetched successfully",
-            quizResponse
-          )
+          formatMessage(true, "Quiz response fetched successfully", {
+            ...quizResponse.toObject(),
+            totalScore: totalScore,
+            studentTotalScore: studentTotalScore,
+          })
         );
     }
   } catch (error) {

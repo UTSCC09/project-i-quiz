@@ -28,7 +28,6 @@ export default function CoursePage() {
 
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
-  const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState();
   const [filteredQuizList, filteredQuizListSet] = useState([]);
   const [draftQuizList, draftQuizListSet] = useState([]);
@@ -41,6 +40,9 @@ export default function CoursePage() {
   const [toastMessage, toastMessageSet] = useState();
 
   const isStudent = isStudentUserType();
+  const [selection, setSelection] = useState(
+    isStudent ? "New Quizzes" : "All Quizzes"
+  );
 
   const getFilteredQuizzes = (filter, list) => {
     if (!list) {
@@ -177,7 +179,7 @@ export default function CoursePage() {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
           filteredQuizListSet(
-            getFilteredQuizzes("New Quizzes", resultPayload)
+            getFilteredQuizzes("All Quizzes", resultPayload)
           );
           draftQuizListSet(resultPayload.filter((quiz) => quiz.isDraft));
         });
@@ -351,7 +353,7 @@ function QuizList({ quizArr, accentColor, courseCode }) {
     <div className={"flex flex-col w-full gap-4"}>
       {quizArr
         .sort((a, b) => {
-          return new Date(a.startTime) - new Date(b.startTime);
+          return new Date(b.endTime) - new Date(a.endTime);
         })
         .map((currQuizObject, idx) => {
           return (

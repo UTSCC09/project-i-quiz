@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Modal from "components/elements/Modal";
 import AlertBanner from "components/elements/AlertBanner";
 import { createQuiz, releaseQuiz } from "api/QuizApi";
+import { Spinner } from "components/elements/SVGIcons";
 
 export default function QuizReleaseModal({
   modalShow,
@@ -14,6 +15,7 @@ export default function QuizReleaseModal({
   const quizStartTimeInputRef = useRef();
   const quizEndTimeInputRef = useRef();
   const [quizCreationData, quizCreationDataSet] = useState();
+  const [isLoading, isLoadingSet] = useState(false);
 
   useEffect(() => {
     quizCreationDataSet(quizData);
@@ -26,6 +28,7 @@ export default function QuizReleaseModal({
   };
 
   const submitCreateQuizForm = async (e) => {
+    isLoadingSet(true);
     e.preventDefault();
 
     let startTime = Date.parse(quizStartTimeInputRef.current.value);
@@ -45,6 +48,7 @@ export default function QuizReleaseModal({
 
     if (quizId) {
       releaseQuiz(quizId, startTime, endTime).then((result) => {
+        isLoadingSet(false);
         if (result.success) {
           onSuccess(result.payload.quizName);
           modalShowSet(false);
@@ -57,6 +61,7 @@ export default function QuizReleaseModal({
       });
     } else {
       createQuiz({ ...quizCreationData, isDraft: false }).then((result) => {
+        isLoadingSet(false);
         if (result.success) {
           onSuccess(result.payload.quizName);
           modalShowSet(false);
@@ -111,7 +116,7 @@ export default function QuizReleaseModal({
                 </div>
               </div>
               <button type="submit" className="btn-primary">
-                Next
+                {isLoading ? <Spinner className="-mt-1" /> : "Confirm"}
               </button>
             </form>
           </div>
