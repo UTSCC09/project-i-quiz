@@ -144,7 +144,11 @@ export default function QuizResultPage() {
                   });
                 }}
               >
-                {isLoading ? <Spinner className="-mt-1" /> : "Submit"}
+                {isLoading ? (
+                  <Spinner classname="inline text-gray-200 animate-spin dark:text-gray-600  -mt-1" />
+                ) : (
+                  "Submit"
+                )}
               </button>
               <button
                 className="btn-secondary"
@@ -156,7 +160,8 @@ export default function QuizResultPage() {
           </div>
         }
       />
-      <div className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800">
+      <div className="px-4 md:px-24 w-full lg:w-[64rem] flex flex-col gap-4 sm:gap-8 text-gray-800 items-center">
+        {!quizObject && <Spinner />}
         {quizObject &&
           quizObject.questions &&
           questionResponses &&
