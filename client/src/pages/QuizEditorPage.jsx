@@ -495,14 +495,6 @@ export default function QuizEditorPage() {
                 </button>
               )}
             </div>
-
-            {/* <button
-              type="button"
-              className="btn-outline w-fit text-start text-sm px-4 py-2 mt-2"
-              onClick={() => console.log(JSON.stringify(quizCreationData))}
-            >
-              Print (DEBUG)
-            </button> */}
           </div>
         </div>
       </div>

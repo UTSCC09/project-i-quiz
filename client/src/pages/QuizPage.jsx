@@ -66,7 +66,6 @@ const QuizPage = () => {
     editQuizResponse(quizId, editedQuestionResponses)
       .then((payload) => {
         if (payload?.questionResponses) {
-          console.log("Edited quiz response");
           setCanEdit(true);
           setCanSubmit(true);
         }
@@ -92,18 +91,14 @@ const QuizPage = () => {
     editQuizResponse(quizId, editedQuestionResponses)
       .then((payload) => {
         if (payload?.questionResponses) {
-          console.log("Edited quiz response before submitting");
-
           submitQuizResponse(quizId)
             .then((result) => {
               isLoadingSet(false);
-              console.log("result in submit:", result);
               if (
                 (!result.success &&
                   result.message === "Quiz grades not released yet") ||
                 result.success
               ) {
-                console.log("Submitted quiz response");
                 navigate("/quiz-info/" + quizId);
               }
             })
@@ -121,7 +116,6 @@ const QuizPage = () => {
     getQuiz(quizId).then((quizPayload) => {
       if (isStudent) {
         getQuizResponse(quizId).then((result) => {
-          console.log("result in get:", result);
           if (
             (!result.success &&
               result.message === "Quiz grades not released yet") ||

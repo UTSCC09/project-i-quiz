@@ -204,7 +204,6 @@ export default function QuizInfoPage() {
                     alertRef.current.hide();
                     /* TODO: add API call*/
                     releaseQuizGrades(quizId).then((result) => {
-                      console.log(quizObject);
                       if (result.success) {
                         gradeReleaseModalShowSet(false);
                         quizObjectSet((prev) => {

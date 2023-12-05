@@ -113,7 +113,6 @@ const generateStudentQuizPDF = async (quizId) => {
     withCredentials: true,
   })
     .then(async (response) => {
-      console.log(response);
       if (response.status === 401) {
         await fetch("/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
@@ -134,8 +133,6 @@ const generateStudentQuizPDF = async (quizId) => {
         if (pdf) {
           pdf.save(data.fileName);
         }
-      } else {
-        return console.log("Fail to generate PDF");
       }
     })
     .catch((err) => {
@@ -150,7 +147,6 @@ const getAllStudentResponsesForQuiz = async (quizId) => {
     withCredentials: true,
   })
     .then(async (response) => {
-      console.log(response);
       if (response.status === 401) {
         await fetch("/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
@@ -179,7 +175,6 @@ const gradeQuizResponse = async (quizId, studentId, questionGrades, isFullyGrade
     withCredentials: true,
   })
     .then(async (response) => {
-      console.log(response);
       if (response.status === 401) {
         await fetch("/api/users/logout", { method: "GET" }).then(() => {
           window.location.reload();
