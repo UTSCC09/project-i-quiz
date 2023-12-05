@@ -1,5 +1,3 @@
-# Project Proposal
-
 ![iquiz_logo.svg](client/src/media/iquiz_logo.svg)
 
 # iQuiz
