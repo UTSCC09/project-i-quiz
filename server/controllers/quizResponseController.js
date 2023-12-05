@@ -5,6 +5,8 @@ import User from "../models/User.js";
 import Quiz from "../models/Quiz.js";
 import MCQ from "../models/MCQ.js";
 import MSQ from "../models/MSQ.js";
+import CLO from "../models/CLO.js";
+import OEQ from "../models/OEQ.js";
 import { getQuestions } from "./quizController.js";
 import Course from "../models/Course.js";
 
