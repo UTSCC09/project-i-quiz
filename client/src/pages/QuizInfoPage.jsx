@@ -157,8 +157,9 @@ export default function QuizInfoPage() {
   }, [isStudent, location.state, navigate, quizId, toastMessageSet]);
 
   useEffect(() => {
-    });
-  }, [quizStatsSet, quizId]);
+    if (!isStudent) {
+      getQuizStats(quizId).then((result) => {
+        quizStatsSet(result.payload);
       });
     }
   }, [quizStatsSet, isStudent, quizId]);
