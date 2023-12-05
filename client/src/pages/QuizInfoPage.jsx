@@ -142,8 +142,8 @@ export default function QuizInfoPage() {
               ) {
                 //Assume grade released due to backned logic
                 studentQuizCaseSet("graded");
-              }
-              //case 4: error
+              } else {
+                //case 4: error
                 console.error(result.message);
                 alert("Failed to fetch quiz response");
               }
