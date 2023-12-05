@@ -300,12 +300,16 @@ const getMyResponseForQuiz = asyncHandler(async (req, res) => {
       for (const response of quizResponse.questionResponses) {
         studentTotalScore += response.score;
       }
-      
-      return res.status(200).json(formatMessage(true, "Quiz response fetched successfully", 
-      {...quizResponse,
-        totalScore: totalScore,
-        studentTotalScore: studentTotalScore,
-      }));
+
+      return res
+        .status(200)
+        .json(
+          formatMessage(true, "Quiz response fetched successfully", {
+            ...quizResponse.toObject(),
+            totalScore: totalScore,
+            studentTotalScore: studentTotalScore,
+          })
+        );
     }
   } catch (error) {
     return res
