@@ -12,6 +12,7 @@ import {
   getCourse,
   setAccessCode,
   checkNewCourseAvailability,
+  sendStudentsGrades,
 } from "../controllers/courseController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -51,4 +52,7 @@ router.route("/enroll_info/:accessCode")
 router.route("/access_code")
   .post(protect, setAccessCode);
 
+router.route("/sendGrades")
+  .post(protect, sendStudentsGrades);
+  
 export default router;

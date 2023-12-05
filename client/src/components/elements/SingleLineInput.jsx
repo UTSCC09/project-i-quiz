@@ -43,7 +43,7 @@ function SingleLineInput(
         e.preventDefault();
       }
     });
-  }, [innerInputRef, acceptSpace]);
+  }, [innerInputRef, inputType, acceptSpace]);
 
   function validateEmailFormat(stringVal) {
     return stringVal.match(/^[^ ]+@[^ ]+\.[a-z]{2,63}$/);

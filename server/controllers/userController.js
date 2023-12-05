@@ -113,22 +113,25 @@ const loginUser = asyncHandler(async (req, res) => {
 
     //Store email
     req.session.email = email;
-    req.session.cookie.httpOnly = true;
+    req.session.cookie.httpOnly = process.env.NODE_ENV === "production";
+    req.session.cookie.secure = process.env.NODE_ENV === "production";
     req.session.cookie.sameSite = true;
 
     //Setting cookie
+    //Reference:
+    //https://www.npmjs.com/package/express-session
     res.cookie("user", email, {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
       httpOnly: false,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS when under prod
       sameSite: true,
     });
     res.cookie("user_type", user.type, {
       path: "/",
       maxAge: 60 * 60 * 1000, // 1 hr in number of seconds
       httpOnly: false,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS when under prod
       sameSite: true,
     });
 
@@ -227,11 +230,11 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
     .status(400)
-    .json(formatMessage(false, "Mongoose error finding user"));    
+    .json(formatMessage(false, "Mongoose error finding user", null, error));    
   }
 
   //Generate, store and send password reset code
-  const code = crypto.randomUUID().slice(0, PASSWORD_RESET_CONSTANTS.CODE_LENGTH);
+  const code = crypto.randomUUID().slice(0, PASSWORD_RESET_CONSTANTS.CODE_LENGTH).toUpperCase();
   await sendPasswordResetCode(user, code);
   user.passwordReset.code = code;
   user.passwordReset.createdAt = Date.now();
@@ -243,9 +246,9 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     "passwordResetToken",
     generateToken(user._id, SCOPES.VERIFY_PASSWORD_RESET_CODE),
     {
-      httpOnly: true,
-      secure: true,
-      sameSite: true
+      httpOnly: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production"
     }
   );
   return res.status(200).json(formatMessage(true, "Password reset request accepted"));
@@ -280,7 +283,7 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
     .status(400)
-    .json(formatMessage(false, "Mongoose error finding user"));    
+    .json(formatMessage(false, "Mongoose error finding user", null, error));    
   }
 
   //Verify code
@@ -291,7 +294,7 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
     await user.save();
     return res
       .status(400)
-      .json(formatMessage(false, "Incorrect/expired password reset code"));
+      .json(formatMessage(false, "Invalid or expired password reset code"));
   }
 
   //Clear password reset token cookie
@@ -302,9 +305,9 @@ const verifyPasswordResetCode = asyncHandler(async (req, res) => {
     "passwordResetToken",
     generateToken(user._id, SCOPES.RESET_PASSWORD),
     {
-      httpOnly: true,
-      secure: true,
-      sameSite: true
+      httpOnly: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production"
     }
   );
   return res.status(200).json(formatMessage(true, "Password reset code is valid"));
@@ -333,7 +336,7 @@ const resetPassword = asyncHandler(async (req, res) => {
   } catch (error) {
     return res
     .status(400)
-    .json(formatMessage(false, "Mongoose error finding user"));    
+    .json(formatMessage(false, "Mongoose error finding user", null, error));    
   }
 
   //Salt and hash new password

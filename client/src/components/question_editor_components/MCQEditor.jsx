@@ -1,3 +1,4 @@
+import { CheckIcon, XMarkIcon } from "components/elements/SVGIcons";
 import { useEffect, useState } from "react";
 
 export default function MCQEditor({
@@ -132,22 +133,7 @@ function OptionInput({
           toggleAnswerIdList(option.id);
         }}
       >
-        {/* [Credit]: svg from https://codesandbox.io/p/sandbox/framer-motion-checkbox-animation-2cf2jn */}
-        <svg
-          key="check"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="2"
-          stroke="currentColor"
-          className="h-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4.5 12.75l6 6 9-13.5"
-          />
-        </svg>
+        <CheckIcon className="h-4 stroke-[1.5]" />
       </div>
       <div
         title="Remove option"
@@ -156,20 +142,7 @@ function OptionInput({
           if (removeOption) removeOption(option.id);
         }}
       >
-        {/* [Credit]: svg from https://heroicons.dev */}
-        <svg
-          className="h-4"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            clipRule="evenodd"
-            fillRule="evenodd"
-            d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-          ></path>
-        </svg>
+        <XMarkIcon className="h-4" />
       </div>
     </div>
   );

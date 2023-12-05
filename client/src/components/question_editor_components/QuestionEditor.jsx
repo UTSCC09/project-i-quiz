@@ -3,18 +3,23 @@ import { useState, useCallback } from "react";
 import MCQEditor from "./MCQEditor";
 import OEQEditor from "./OEQEditor";
 
-export default function QuestionEditor({ questionObject, updateQuestion }) {
+export default function QuestionEditor({
+  questionObject,
+  updateQuestion,
+  updateMaxScore,
+}) {
   const [questionType, questionTypeSet] = useState(questionObject.type);
 
   const onChange = useCallback(
     (newQuestionBody) => {
       updateQuestion({
-        id: questionObject.id,
+        ...newQuestionBody,
         type: questionType,
-        question: newQuestionBody,
+        _id: questionObject._id,
+        maxScore: questionObject.maxScore,
       });
     },
-    [questionObject.id, questionType, updateQuestion]
+    [questionObject.maxScore, questionObject._id, questionType, updateQuestion]
   );
 
   const questionTypeNames = [
@@ -44,29 +49,34 @@ export default function QuestionEditor({ questionObject, updateQuestion }) {
           selections={questionTypeNames}
           selection={questionTypeCodeToName(questionType)}
           width="150px"
+          label="Question type"
           onSelectionChange={(questionTypeName) => {
             const newTypeCode = questionTypeNameToCode(questionTypeName);
             questionTypeSet(newTypeCode);
             if (newTypeCode) {
               onChange({
-                prompt: questionObject.question.prompt,
-                choices: questionObject.question.choices ?? [
-                  { id: "0", content: "" },
-                ],
+                prompt: questionObject.prompt,
+                choices: questionObject.choices ?? [{ id: "0", content: "" }],
               });
             }
           }}
         />
+        <span className="text-sm py-2">Max Score:</span>
+        <input
+          className="simple-input w-12"
+          name="maxScore"
+          defaultValue={questionObject.maxScore}
+          onChange={(e) => {
+            updateMaxScore(questionObject._id, e.target.value);
+          }}
+        />
       </div>
       {questionType === "OEQ" ? (
-        <OEQEditor
-          questionBody={questionObject.question}
-          onChange={onChange}
-        />
+        <OEQEditor questionBody={questionObject} onChange={onChange} />
       ) : questionType === "MCQ" || questionType === "MSQ" ? (
         <MCQEditor
           allowMultipleAnswer={questionType === "MSQ"}
-          questionBody={questionObject.question}
+          questionBody={questionObject}
           onChange={onChange}
         />
       ) : (

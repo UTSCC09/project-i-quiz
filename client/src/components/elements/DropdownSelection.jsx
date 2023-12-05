@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronIcon } from "./SVGIcons";
 
 function DropdownSelection(
   {
@@ -75,7 +76,7 @@ function DropdownSelection(
                 checked={selection || dropdownShow}
                 readOnly
               />
-              <div className="text-left text-black absolute bottom-[6.3px] pl-4 w-full border-none">
+              <div className="text-left whitespace-nowrap overflow-hidden text-ellipsis text-black absolute bottom-[6.3px] pl-4 pr-8 w-full border-none">
                 {selection}
               </div>
               <span className="absolute start-4 top-1/2 text-sm -translate-y-1/2 text-gray-500 transition-all peer-checked:top-3 peer-checked:text-xs peer-focus:top-3 peer-focus:text-xs">
@@ -83,26 +84,11 @@ function DropdownSelection(
               </span>
             </div>
           ) : (
-            <div className="w-full text-gray-700 justify-center mr-4 h-8 sm:h-10 flex items-center">
+            <div className="w-full text-gray-700 justify-center mr-4 flex items-center">
               <div>{selection}</div>
             </div>
           )}
-          {/* [Credit]: svg from https://heroicons.dev */}
-          <svg
-            className="absolute right-0.5 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-180 mr-2.5 shrink-0 text-gray-600"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <path
-              clipRule="evenodd"
-              fillRule="evenodd"
-              d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
-              stroke="currentColor"
-              opacity="0.8"
-            ></path>
-          </svg>
+          <ChevronIcon className="absolute right-0.5 h-3.5 transition-all ease-in-out duration-200 peer-checked:rotate-180 mr-2.5 shrink-0 text-gray-600" />
         </div>
         <input
           type="checkbox"
@@ -136,7 +122,7 @@ function DropdownSelection(
                           onSelectionChange(selection);
                           dropdownShowSet(false);
                         }}
-                        className="px-6 py-2 hover:bg-gray-150 transition cursor-pointer whitespace-nowrap"
+                        className="px-6 py-1.5 hover:bg-gray-150 transition cursor-pointer whitespace-nowrap"
                         key={idx}
                       >
                         {selection}

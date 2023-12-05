@@ -1,0 +1,15 @@
+#Reference
+#https://cloud.google.com/appengine/docs/standard/nodejs/runtime
+#https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js
+
+runtime: nodejsYOUR_NODEJS_VERSION
+service: ENTER_YOUR_SERVER_SERVICE_NAME
+entrypoint: nodemon server.js
+env_variables:
+  MONGO_URI: MONGODB_URI
+  JWT_SECRET: YOUR_JWT_SECRET
+  SESSION_SECRET: YOUR_SESSION_SECRET
+  AUTH_EMAIL: "AUTHENTICATION_EMAIL"
+  AUTH_PASS: "AUTHENTICATION_PASSWORD"
+  CLIENT_BASE_URL: "DEPLOYED_CLIENT_URL"
+  SERVER_BASE_URL: "DEPLOYED_SERVER_URL"

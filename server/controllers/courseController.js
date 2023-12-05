@@ -1,7 +1,12 @@
 import asyncHandler from "express-async-handler";
 import Course from "../models/Course.js";
 import User from "../models/User.js";
+import Quiz from "../models/Quiz.js"
+import QuizResponse from "../models/QuizResponse.js";
+import sendGradedQuizEmail from "../utils/gradedQuizUtils.js";
 import formatMessage from "../utils/utils.js";
+import { getQuestions } from "./quizController.js";
+
 
 //@route  POST api/courses
 //@desc   Allow instructor to create a course
@@ -17,7 +22,7 @@ const createCourse = asyncHandler(async (req, res) => {
   } = req.body;
 
   //Verify all fields exist
-  if (!courseCode || !courseName || !courseSemester || !numOfSessions) {
+  if (!courseCode || !courseName || !courseSemester || !numOfSessions || !accessCode || !accentColor) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -317,7 +322,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 
   //Check if student is already enrolled in the specified course
   if (
-    student.courses.findIndex((course) => course.courseId == courseId) !== -1
+    student.courses.findIndex((course) => course.courseId === courseId) !== -1
   ) {
     //Check if student is already enrolled in the specified session
     if (course.sessions[sessionNumber - 1].students.includes(student._id)) {
@@ -466,7 +471,7 @@ const dropCourse = asyncHandler(async (req, res) => {
 const archiveCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.body;
 
-  if (courseId == null) {
+  if (!courseId) {
     return res.status(400).json(formatMessage(false, "Missing fields"));
   }
 
@@ -548,6 +553,58 @@ const setAccentColor = asyncHandler(async (req, res) => {
   }
 });
 
+//@route  post api/courses/sendGrades
+//@desc   Allow instructor to send grades to students' emails for a specific quiz
+//@access Private
+const sendStudentsGrades = asyncHandler (async (req, res) => {
+  const {courseId, quizId} = req.body;
+
+  if (!courseId || !quizId) {
+    return res.status(400).json(formatMessage(false, "Missing fields"));
+  }
+
+  const instructor = await User.findOne({ email: req.session.email });
+  if (!instructor) {
+    return res.status(400).json(formatMessage(false, "Invalid user"));
+  } else if (instructor.type !== "instructor") {
+    return res.status(400).json(formatMessage(false, "Invalid user type"));
+  }
+
+  const courseObject = await Course.findById(courseId);
+  if (!courseObject) {
+    return res.status(400).json(formatMessage(false, "Invalid courseId"));
+  } else if (!courseObject.instructor.equals(instructor._id)) {
+    return res.status(400).json(formatMessage(false, "Access denied"));
+  }
+
+  const quizObject = await Quiz.findById(quizId);
+  if (!quizObject) {
+    return res.status(400).json(formatMessage(false, "Invalid quizId"));
+  } 
+
+  const students = await getCourseStudents(courseId, instructor.email);
+  const questions = await getQuestions(quizId);
+  let totalMaxScore = 0;
+  for (const question of questions) {
+    totalMaxScore += question.maxScore ? question.maxScore : 0;
+  }
+
+  for (const student of students) {
+    const quizResponse = await QuizResponse.findOne({ quiz: quizId, student: student._id });
+    let studentScore = 0;
+    for (const questionResponse of quizResponse.questionResponses) {
+      studentScore += questionResponse.score;
+    }
+    if (quizResponse) {
+      await sendGradedQuizEmail(courseObject, student, quizObject, studentScore, totalMaxScore);
+    }
+  }
+
+  return res.json(formatMessage(true, "Sent quiz grades to students successfully!"));
+
+});
+
+
 // ------------------------------ Helper functions ------------------------------
 
 async function getEnrolledCourses(studentEmail) {
@@ -573,6 +630,27 @@ async function getEnrolledCourses(studentEmail) {
     });
   }
   return enrolledCourses;
+}
+
+// Get Students 
+async function getCourseStudents(courseId, instructorEmail) {
+  if (!courseId) {
+    return [];
+  }
+
+  let students = [];
+  const users = await User.find({});
+
+  users.forEach(function(user) {
+    for (const course of user.courses) {
+      if (course.courseId.toString() === courseId.toString() 
+      && user.email !== instructorEmail) {
+        students.push(user);
+      }
+    }
+  });
+
+  return students;
 }
 
 async function getInstructedCourses(instructorEmail) {
@@ -650,4 +728,5 @@ export {
   getCourseEnrollInfo,
   getCourse,
   checkNewCourseAvailability,
+  sendStudentsGrades,
 };

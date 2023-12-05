@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircleIcon, CheckIcon } from "./SVGIcons";
+import colors from "tailwindcss/colors";
 
 const RadioGroup = (props) => {
   const [selectedOptionId, setSelectedOptionId] = useState(
@@ -8,20 +10,26 @@ const RadioGroup = (props) => {
 
   function onOptionChange(oid) {
     setSelectedOptionId(oid);
-    props.autoSaveAnswers();
+    if (props.updateQuestionResponse)
+      props.updateQuestionResponse(props.radioGroupId, oid);
   }
+
+  useEffect(() => {
+    setSelectedOptionId(props.defaultOptionId);
+  }, [props.defaultOptionId]);
 
   return (
     <div className="flex flex-col gap-3">
-      {props.radioOptions.map((option) => {
+      {props.radioOptions.map((choice) => {
         return (
           <RadioOption
             {...props}
-            optionText={option.content}
-            optionId={option.id}
-            key={option.id}
+            optionText={choice.content}
+            optionId={choice.id}
+            key={choice.id}
             onOptionChange={onOptionChange}
             selectedOptionId={selectedOptionId}
+            correctOptionId={props.correctOptionId}
           />
         );
       })}
@@ -49,51 +57,66 @@ function RadioOption(props) {
           value={props.optionId}
           checked={props.selectedOptionId === props.optionId}
           onChange={() => {
-            props.onOptionChange(props.optionId);
+            !props.correctOptionId && props.onOptionChange(props.optionId);
           }}
           className="peer hidden"
         />
-        <label
-          htmlFor={`radioGroupId-${props.radioGroupId}-optionId${props.optionId}`}
-          className="flex cursor-pointer items-center rounded-lg border border-gray-100 bg-white p-4 shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500 peer-checked:font-medium peer-checked:bg-blue-10"
-        >
-          <motion.div
-            key="check"
-            initial="unchecked"
-            animate={
-              props.selectedOptionId === props.optionId
-                ? "checked"
-                : "unchecked"
-            }
-            variants={checkIconVariants}
+        {props.correctOptionId === props.optionId ? (
+          <label className="flex items-center rounded-lg border bg-white p-4 shadow-sm  border-green-600 ring-1 ring-green-600 font-medium">
+            <CheckIcon className="check-icon h-4 text-green-600 stroke-[4]" />
+            <div
+              className="ml-4 text-sm sm:text-base pr-4 break-words"
+              dangerouslySetInnerHTML={{ __html: props.optionText }}
+            ></div>
+            {props.correctOptionId === props.selectedOptionId && (
+              <div className="text-green-600 text-sm">
+                (Your answer is correct)
+              </div>
+            )}
+          </label>
+        ) : (
+          <label
+            htmlFor={`radioGroupId-${props.radioGroupId}-optionId${props.optionId}`}
+            className="flex cursor-pointer items-center rounded-lg border bg-white p-4 shadow-sm hover:border-gray-200 hover:bg-gray-50 peer-checked:border-[--color] peer-checked:ring-1 peer-checked:ring-[--color] peer-checked:font-medium peer-checked:bg-blue-10"
+            style={{
+              pointerEvents: props.correctOptionId && "none",
+              "--color": props.correctOptionId
+                ? colors.red[500]
+                : colors.blue[500],
+              backgroundColor: props.correctOptionId && colors.white,
+            }}
           >
-            {/* [Credit]: svg from https://heroicons.dev */}
-            <svg
-              className="check-icon h-5 fill-iquiz-blue drop-shadow-sm"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
+            <motion.div
+              key="check"
+              initial="unchecked"
+              animate={
+                props.selectedOptionId === props.optionId
+                  ? "checked"
+                  : "unchecked"
+              }
+              variants={checkIconVariants}
             >
-              <path
-                clipRule="evenodd"
-                fillRule="evenodd"
-                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
-              ></path>
-            </svg>
-          </motion.div>
-          <motion.div
-            initial="unchecked"
-            animate={
-              props.selectedOptionId === props.optionId
-                ? "checked"
-                : "unchecked"
-            }
-            variants={labelTextVariant}
-            className="-ml-2 text-sm sm:text-base pr-4 break-words"
-            dangerouslySetInnerHTML={{ __html: props.optionText }}
-          ></motion.div>
-        </label>
+              <CheckCircleIcon className="check-icon h-5 fill-[--color] drop-shadow-sm" />
+            </motion.div>
+            <motion.div
+              initial="unchecked"
+              animate={
+                props.selectedOptionId === props.optionId
+                  ? "checked"
+                  : "unchecked"
+              }
+              variants={labelTextVariant}
+              className="-ml-2 text-sm sm:text-base pr-4 break-words"
+              dangerouslySetInnerHTML={{ __html: props.optionText }}
+            ></motion.div>
+            {props.correctOptionId &&
+              props.selectedOptionId === props.optionId && (
+                <div className="ml-4 text-blue-600 text-sm">
+                  (You selected)
+                </div>
+              )}
+          </label>
+        )}
       </div>
     </AnimatePresence>
   );

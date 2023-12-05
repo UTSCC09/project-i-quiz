@@ -75,7 +75,7 @@ const SignInWindow = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          navigate("/home");
+          navigate("/");
         } else {
           errorMessageRef.current.textContent = result.message;
           errorMessageRef.current.classList.remove("hidden");
@@ -93,7 +93,7 @@ const SignInWindow = () => {
 
   return (
     <>
-      <div className="flex sm:items-center px-12 sm:px-20 py-28 lg:ml-[40vw] bg-white border border-gray-100 sm:rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[28rem] justify-center">
+      <div className="flex sm:items-center px-12 sm:px-20 py-24 lg:ml-[40vw] bg-white border border-gray-100 sm:rounded-md shadow-lg mt-24 sm:mt-0 h-full sm:h-fit w-full sm:w-[28rem] justify-center">
         <div className="flex flex-col justify-start w-full">
           <div className="flex flex-col gap-2">
             <div className="text-2xl font-bold">
@@ -161,7 +161,7 @@ const SignInWindow = () => {
             </div>
             <p className="mt-6 text-sm text-gray-500 self-center">
               Forgot password?{" "}
-              <Link to="/requestpasswordreset" className="text-gray-700 underline">
+              <Link to="/reset-password" className="text-gray-700 underline">
                 Reset it
               </Link>
             </p>

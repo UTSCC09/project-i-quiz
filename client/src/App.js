@@ -2,25 +2,20 @@ import { Routes, Route } from "react-router";
 import LoginPage from "pages/LoginPage";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import QuizInfoPage from "pages/QuizInfoPage";
 import QuizPage from "pages/QuizPage";
 import SignUpPage from "pages/SignUpPage";
-import RequestPasswordResetPage from "pages/RequestPasswordResetPage";
-import VerifyPasswordResetCodePage from "pages/VerifyPasswordResetCodePage";
-import ResetPasswordPage from "pages/ResetPasswordPage";
 import NotFoundPage from "pages/NotFoundPage";
 import DashboardPage from "pages/DashboardPage";
 import CoursePage from "pages/CoursePage";
 import ProtectedRoute from "components/ProtectedRoute";
 import QuizEditorPage from "pages/QuizEditorPage";
+import PasswordResetPage from "pages/PasswordResetPage";
+import QuizRedirect from "pages/QuizRedirect";
+import MarkQuizPage from "pages/MarkQuizPage";
+import RemarkPage from "pages/RemarkPage";
 
 const App = () => {
-  const { pathname } = useLocation();
-
-  /* Scroll to top on redirects */
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
   return (
     <Routes>
       {/* -- Protected Routes -- */}
@@ -34,18 +29,18 @@ const App = () => {
       />
 
       <Route
-        path="/quiz/:quizId"
+        path="/quiz-info/:quizId"
         element={
           <ProtectedRoute>
-            <QuizPage />
+            <QuizInfoPage />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/home"
+        path="/quiz/:quizId"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <QuizRedirect />
           </ProtectedRoute>
         }
       />
@@ -57,15 +52,35 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/create-quiz"
+        element={
+          <ProtectedRoute>
+            <QuizEditorPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/mark-quiz/:quizId"
+        element={
+          <ProtectedRoute>
+            <MarkQuizPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/regrade/:quizId"
+        element={
+          <ProtectedRoute>
+            <RemarkPage />
+          </ProtectedRoute>
+        }
+      />
       {/* -- Public Routes -- */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/requestpasswordreset" element={<RequestPasswordResetPage />} />
-      <Route path="/verifypasswordresetcode" element={<VerifyPasswordResetCodePage />} />
-      <Route path="/resetpassword" element={<ResetPasswordPage />} />
+      <Route path="/reset-password" element={<PasswordResetPage />} />
       <Route path="*" element={<NotFoundPage />} />
-      <Route path="/create-quiz" element={<QuizEditorPage />} />
     </Routes>
   );
 };

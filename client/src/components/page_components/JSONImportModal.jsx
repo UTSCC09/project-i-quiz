@@ -17,7 +17,7 @@ export default function JSONImportModal({
     <Modal
       modalShow={modalShow}
       modalShowSet={modalShowSet}
-      onClose={() => {}}
+      onClose={() => { }}
       content={
         <div className="w-full sm:w-[30rem]">
           <div className="flex flex-col gap-6">
@@ -31,7 +31,7 @@ export default function JSONImportModal({
               <AlertBanner ref={alertRef} />
               <textarea
                 ref={textAreaRef}
-                className="border rounded-md px-6 py-4 resize-y text-sm outline-none focus:ring ring-blue-200 transition-all h-48"
+                className="border rounded-md px-6 py-4 resize-y outline-none focus:ring ring-blue-200 transition-all h-32 sm:h-48"
                 placeholder="Paste the JSON object here"
               />
               <SimpleCheckBox

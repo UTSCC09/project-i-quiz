@@ -17,6 +17,9 @@ import {
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
 } from "api/QuizApi";
+import { AdjustmentsIcon, PlusIcon } from "components/elements/SVGIcons";
+import colors from "tailwindcss/colors";
+import Accordion from "components/elements/Accordion";
 
 export default function CoursePage() {
   const navigate = useNavigate();
@@ -25,8 +28,9 @@ export default function CoursePage() {
 
   const filters = ["New Quizzes", "All Quizzes", "Past Quizzes"];
   const { courseId } = useParams();
-  const [selection, setSelection] = useState("New Quizzes");
   const [quizList, setQuizList] = useState();
+  const [filteredQuizList, filteredQuizListSet] = useState([]);
+  const [draftQuizList, draftQuizListSet] = useState([]);
   const [courseObject, setCourseObject] = useState(passInCourseObject ?? {});
   const [accentColorModalShow, setAccentColorModalShow] = useState(false);
   const [courseArchiveModalShow, setCourseArchiveModalShow] = useState(false);
@@ -36,32 +40,34 @@ export default function CoursePage() {
   const [toastMessage, toastMessageSet] = useState();
 
   const isStudent = isStudentUserType();
-
-  const getFilteredQuizzes = useCallback(
-    (filter) => {
-      if (!quizList) {
-        return [];
-      }
-      const currentDateTime = new Date();
-      switch (filter) {
-        case "New Quizzes":
-          return quizList.filter((quiz) => {
-            const endTime = new Date(quiz.endTime);
-            return currentDateTime <= endTime;
-          });
-        case "All Quizzes":
-          return quizList;
-        case "Past Quizzes":
-          return quizList.filter((quiz) => {
-            const endTime = new Date(quiz.endTime);
-            return currentDateTime > endTime;
-          });
-        default:
-          return;
-      }
-    },
-    [quizList]
+  const [selection, setSelection] = useState(
+    isStudent ? "New Quizzes" : "All Quizzes"
   );
+
+  const getFilteredQuizzes = (filter, list) => {
+    if (!list) {
+      return [];
+    }
+    const currentDateTime = new Date();
+    switch (filter) {
+      case "New Quizzes":
+        return list.filter((quiz) => {
+          const endTime = new Date(quiz.endTime);
+          return !quiz.isDraft && currentDateTime <= endTime;
+        });
+      case "All Quizzes":
+        return list.filter((quiz) => {
+          return !quiz.isDraft;
+        });
+      case "Past Quizzes":
+        return list.filter((quiz) => {
+          const endTime = new Date(quiz.endTime);
+          return !quiz.isDraft && currentDateTime > endTime;
+        });
+      default:
+        return [];
+    }
+  };
 
   function refetchDataAndShowToast(successMessage) {
     fetchCourseObject(courseId).then((result) => {
@@ -77,6 +83,7 @@ export default function CoursePage() {
       } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
+          draftQuizListSet(resultPayload.filter((quiz) => quiz.isDraft));
         });
       }
 
@@ -90,6 +97,7 @@ export default function CoursePage() {
 
   function onSelectionChange(selection) {
     setSelection(selection);
+    filteredQuizListSet(getFilteredQuizzes(selection, quizList));
   }
 
   const variants = {
@@ -163,10 +171,17 @@ export default function CoursePage() {
       if (isStudent) {
         getQuizzesForEnrolledCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
+          filteredQuizListSet(
+            getFilteredQuizzes("New Quizzes", resultPayload)
+          );
         });
       } else {
         getQuizzesForInstructedCourse(courseId).then((resultPayload) => {
           setQuizList(resultPayload);
+          filteredQuizListSet(
+            getFilteredQuizzes("All Quizzes", resultPayload)
+          );
+          draftQuizListSet(resultPayload.filter((quiz) => quiz.isDraft));
         });
       }
     });
@@ -225,7 +240,7 @@ export default function CoursePage() {
       <NavBar />
       <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center py-36">
         <main className="h-fit flex flex-col md:px-24 px-8 w-full lg:w-[64rem]">
-          <div className="flex items-end justify-between mb-6 md:mb-8 h-16">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between mb-6 md:mb-8 h-28 sm:h-16">
             <div className="flex flex-col pr-4">
               <div className="flex items-center gap-3">
                 <span className="text-gray-900 font-bold text-3xl md:text-4xl mb-1">
@@ -242,80 +257,91 @@ export default function CoursePage() {
                 {courseObject.courseName}
               </span>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4 text-gray-700">
+            <div className="flex gap-2 sm:gap-4 text-gray-700">
               <div className="flex gap-2 sm:gap-4">
                 <DropdownMenu
                   buttonElement={
                     <button className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all">
-                      {/* [Credit]: svg from https://heroicons.dev */}
-                      <svg
-                        className="h-[18px] sm:h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={1.3}
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-                        />
-                      </svg>
+                      <AdjustmentsIcon className="h-[18px] sm:h-5" />
                     </button>
                   }
                   options={courseEditOptions}
+                  menuAlignLeft
                 />
                 {!isStudent && (
                   <Link
                     to="/create-quiz"
                     title="Create quiz"
                     state={{ passInCourseObject: courseObject }}
-                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl pb-1.5 sm:pb-2 font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
+                    className="bg-white shadow-sm h-8 sm:h-10 w-8 sm:w-10 text-2xl sm:text-3xl font-light text-center rounded-md border cursor-pointer hover:bg-gray-100 flex items-center justify-center transition-all select-none"
                   >
-                    +
+                    <PlusIcon className="h-[18px] sm:h-5" />
                   </Link>
                 )}
               </div>
-              <DropdownSelection
-                selections={filters}
-                selection={selection}
-                onSelectionChange={onSelectionChange}
-                showShadow
-              />
+              {
+                <DropdownSelection
+                  selections={filters}
+                  selection={selection}
+                  onSelectionChange={onSelectionChange}
+                  showShadow
+                />
+              }
             </div>
           </div>
-          <AnimatePresence initial={false}>
-            {quizList ? (
-              <div>
-                {getFilteredQuizzes(selection).length === 0 && (
-                  <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
-                    {selection === "All Quizzes"
-                      ? `No quizzes available`
-                      : `No ${selection.toLowerCase()} available`}
+          {quizList ? (
+            <div className="flex flex-col gap-8">
+              {draftQuizList.length !== 0 && (
+                <Accordion
+                  sectionName="Drafts"
+                  content={
+                    <PendingQuizList
+                      accentColor={colors.gray[500]}
+                      quizArr={draftQuizList}
+                      courseCode={courseObject.courseCode}
+                    />
+                  }
+                />
+              )}
+              <Accordion
+                sectionName="Released Quizzes"
+                hideHeader={draftQuizList.length === 0}
+                content={
+                  <div>
+                    <AnimatePresence initial={false}>
+                      <motion.div
+                        key={filteredQuizList}
+                        variants={variants}
+                        animate={"show"}
+                        initial={"hide"}
+                        exit={"hide"}
+                      >
+                        {filteredQuizList.length === 0 ? (
+                          <div className=" bg-gray-200 px-6 sm:px-8 h-16 flex items-center rounded-md text-sm sm:text-base text-gray-600">
+                            {selection === "All Quizzes"
+                              ? `No released quizzes`
+                              : `No ${selection.toLowerCase()} available`}
+                          </div>
+                        ) : (
+                          <QuizList
+                            accentColor={courseObject.accentColor}
+                            quizArr={filteredQuizList}
+                            courseCode={courseObject.courseCode}
+                          />
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
-                )}
-                <motion.div
-                  key={getFilteredQuizzes(selection)}
-                  variants={variants}
-                  animate={"show"}
-                >
-                  <QuizList
-                    accentColor={courseObject.accentColor}
-                    quizArr={getFilteredQuizzes(selection)}
-                    courseCode={courseObject.courseCode}
-                  />
-                </motion.div>
-              </div>
-            ) : (
-              <div className="animate-pulse w-full">
-                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
-                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
-                <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
-              </div>
-            )}
-          </AnimatePresence>
+                }
+              />
+            </div>
+          ) : (
+            <div className="animate-pulse w-full">
+              <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+              <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+              <div className="bg-gray-200 h-20 md:h-24 rounded-md mb-4"></div>
+            </div>
+          )}
         </main>
       </div>
     </>
@@ -327,7 +353,7 @@ function QuizList({ quizArr, accentColor, courseCode }) {
     <div className={"flex flex-col w-full gap-4"}>
       {quizArr
         .sort((a, b) => {
-          return new Date(a.startTime) - new Date(b.startTime);
+          return new Date(b.endTime) - new Date(a.endTime);
         })
         .map((currQuizObject, idx) => {
           return (
@@ -341,6 +367,25 @@ function QuizList({ quizArr, accentColor, courseCode }) {
             />
           );
         })}
+    </div>
+  );
+}
+
+function PendingQuizList({ quizArr, accentColor, courseCode }) {
+  return (
+    <div className={"flex flex-col w-full gap-4"}>
+      {quizArr.map((currQuizObject, idx) => {
+        return (
+          <QuizCard
+            accentColor={accentColor}
+            quizObject={{
+              ...currQuizObject,
+              courseCode,
+            }}
+            key={idx}
+          />
+        );
+      })}
     </div>
   );
 }

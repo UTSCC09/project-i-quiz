@@ -19,7 +19,7 @@ export default function AccessCodeUpdateModal({
       modalShowSet={modalShowSet}
       onClose={() => {}}
       content={
-        <div className="flex flex-col w-96 gap-6">
+        <div className="flex flex-col sm:w-96 gap-6">
           <h1 className="text-2xl font-bold">Update course access code</h1>
           <div className="flex flex-col gap-4">
             <AlertBanner ref={alertRef} />

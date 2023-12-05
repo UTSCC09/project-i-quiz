@@ -25,6 +25,11 @@ const MCQSchema = new mongoose.Schema({
   },
   answers: {
     type: [String],
+    required: [true, "Please provide answers for MCQ"],
+  },
+  maxScore: {
+    type: Number,
+    default: 0,
   },
 });
 

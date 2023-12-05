@@ -159,6 +159,28 @@ async function updateAccessCode(courseId, accessCode) {
     });
 }
 
+async function enrollInCourse(courseId, accentColor, sessionNumber, onSuccess, onError) {
+  return fetch("/api/courses/enroll", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    body: JSON.stringify({
+      courseId,
+      accentColor,
+      sessionNumber,
+    }),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      if (result.success) {
+        onSuccess(result.payload);
+      }
+      else {
+        onError(result.message);
+      }
+    });
+}
+
 export {
   updateAccentColor,
   archiveCourse,
@@ -169,4 +191,5 @@ export {
   fetchInstructedCourses,
   updateAccessCode,
   fetchCourseObject,
+  enrollInCourse,
 };

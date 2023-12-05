@@ -2,51 +2,56 @@ import { Router } from "express";
 import {
   createQuiz,
   getQuiz,
+  getQuizObject,
+  getMyQuizzes,
   getQuizzesForInstructedCourse,
   getQuizzesForEnrolledCourse,
   basicUpdateQuiz,
-  updateQuizQuestion,
+  updateQuiz,
   addQuizQuestions,
-  getQuizObject,
-  getUpcomingQuizzesForEnrolledCourses,
-  getUpcomingQuizzesForInstructedCourses,
-  getActiveQuizzesForEnrolledCourses,
-  getActiveQuizzesForInstructedCourses,
+  updateQuizQuestion,
+  releaseQuiz,
+  deleteDraftQuiz,
+  generateQuizPDF,
+  releaseQuizGrades,
+  getQuizStats,
 } from "../controllers/quizController.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.route("/")
-  .post(protect, createQuiz)
-  .patch(protect, basicUpdateQuiz);
+router.route("/").post(protect, createQuiz).patch(protect, basicUpdateQuiz);
 
-router.route("/question")
+router.route("/:quizId/questions").get(protect, getQuizObject);
+
+router.route("/:status").get(protect, getMyQuizzes);
+
+router
+  .route("/course/instructed/:courseId")
+  .get(protect, getQuizzesForInstructedCourse);
+
+router
+  .route("/course/enrolled/:courseId")
+  .get(protect, getQuizzesForEnrolledCourse);
+
+router.route("/update").post(protect, updateQuiz);
+
+router
+  .route("/question")
   .post(protect, addQuizQuestions)
   .patch(protect, updateQuizQuestion);
 
-router.route("/upcoming/student")
-  .get(protect, getUpcomingQuizzesForEnrolledCourses);
-
-router.route("/upcoming/instructor")
-  .get(protect, getUpcomingQuizzesForInstructedCourses);
-
-router.route("/active/student")
-  .get(protect, getActiveQuizzesForEnrolledCourses);
-
-router.route("/active/instructor")
-  .get(protect, getActiveQuizzesForInstructedCourses);
-
-router.route("/:quizId")
+router
+  .route("/:quizId")
   .get(protect, getQuiz)
+  .delete(protect, deleteDraftQuiz);
 
-router.route("/:quizId/questions")
-  .get(protect, getQuizObject)
+router.route("/:quizId/release").post(protect, releaseQuiz);
 
-router.route("/course/instructed/:courseId")
-  .get(protect, getQuizzesForInstructedCourse);
+router.route("/:quizId/grades-release").patch(protect, releaseQuizGrades);
 
-  router.route("/course/enrolled/:courseId")
-  .get(protect, getQuizzesForEnrolledCourse);
+router.route("/generate/:quizId").get(protect, generateQuizPDF);
+
+router.route("/stats/:quizId").get(protect, getQuizStats);
 
 export default router;
